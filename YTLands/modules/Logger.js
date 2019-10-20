@@ -33,7 +33,7 @@ class Logger {
      * @param {string} log 
      */
     async insertLog (level, log) {
-        await appendFile(logPath, `[${new Date().toISOString()}][LOG: ${level}], ${log}`);
+        await appendFile(logPath, `[${new Date().toISOString()}][LOG: ${level}], ${log}\n`);
     }
 };
 
