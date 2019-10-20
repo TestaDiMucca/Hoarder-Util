@@ -11,6 +11,9 @@ const {
     PLATFORMS
 } = require('../constants');
 
+/**
+ * Promisified versions of some YT download stuff
+ */
 const youtubeDL = {
     getInfo: promisify(ytDL.getInfo),
     getSubs: promisify(ytDL.getSubs)
