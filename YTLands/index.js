@@ -19,6 +19,11 @@ if (loadResult.error) {
 
 const staticPath = path.resolve(__dirname + '/public'); 
 
+/** Ensure the save directories exist so we don't error when writing */
+if (!!process.env.SAVE_PATH && !fs.existsSync(process.env.SAVE_PATH)) {
+    fs.mkdirSync(process.env.SAVE_PATH);
+}
+
 /* Configure Middleware */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

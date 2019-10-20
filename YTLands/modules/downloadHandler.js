@@ -1,6 +1,10 @@
-const youtubeDLCallback = require('youtube-dl');
+const ytDL = require('youtube-dl');
+const ffmetadata = require('ffmetadata');
+const fs = require('fs');
+const path = require('path');
 const { promisify } = require('util');
 
+const Logger = require('./Logger');
 const {
     DEFAULT_TITLING,
     SUPPORTED_OPTIONS,
@@ -8,8 +12,8 @@ const {
 } = require('../constants');
 
 const youtubeDL = {
-    getInfo: promisify(youtubeDLCallback.getInfo),
-    getSubs: promisify(youtubeDLCallback.getSubs)
+    getInfo: promisify(ytDL.getInfo),
+    getSubs: promisify(ytDL.getSubs)
 };
 
 /**
@@ -54,6 +58,11 @@ const handleDownload = async (req, res) => {
     }
 };
 
+/**
+ * Parse a link to see what pltform it is on
+ * Only supporting YouTube for now
+ * @param {string} link 
+ */
 const getPlatform = (link) => {
     const p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
     if (link.match(p)) {
@@ -63,13 +72,41 @@ const getPlatform = (link) => {
 }
 
 /**
- * 
+ * Download the video, actually
+ * In future, can use socket to send progress to client
  * @param {string} link 
  * @param {{ formatID: string }} options 
  */
 const downloadYoutube = (link, options) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
+        let video = ytDL(link, options ? ['-f', options.formatID] : null);
+        let size = 0, pos = 0, filename = '';
 
+        video.on('info', (info) => {
+            size = info.size;
+            filename = info._filename;
+            Logger.log(`Started downloading ${filename}`);
+
+            let file = path.resolve(process.env.SAVE_PATH || __dirname, info._filename);
+            resolve({ file });
+            video.pipe(fs.createWriteStream(file));
+        });
+
+        video.on('data', (chunk) => {
+            pos += chunk.length;
+
+            if (size) {
+                let percent = ((pos / size) * 100).toFixed(2);
+                console.log(`Downloading ${filename}: ${percent}%`);
+                // process.stdout.cursorTo(0);
+                // process.stdout.clearLine(1);
+                // process.stdout.write(percent + '%');
+            }
+        })
+
+        video.on('end', () => {
+            Logger.log(`Completed downloading ${filename}`);
+        });
     });
 };
 
@@ -102,10 +139,31 @@ const getYoutubeInfo = async (link, options = DEFAULT_TITLING) => {
     }
 };
 
+/**
+ * Fill in the info to the title options string
+ * @param {*} info 
+ * @param {string} options 
+ */
 const getTitleString = (info, options) => {
     let title = options;
     Object.keys(SUPPORTED_OPTIONS).forEach(key => title = title.replace(key, info[SUPPORTED_OPTIONS[key]]));
     return title;
+};
+
+/**
+ * Use ffmpeg to apply metadata to the file
+ * @param {string} filePath 
+ * @param {{ title: string, artist: string, year: string }} options 
+ */
+const applyMetaData = (filePath, options) => {
+    return new Promise(resolve => {
+        options.comment = 'Downloaded by some hacky thing powered by youtube-dl.';
+        ffmetadata.write(filePath, options, (err) => {
+
+            if (err) Logger.error(`Error on writing metadata: ${err.message}, ${filePath}`);
+            resolve();
+        });
+    });
 };
 
 module.exports = {
