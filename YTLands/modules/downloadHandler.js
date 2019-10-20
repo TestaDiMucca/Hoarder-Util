@@ -80,7 +80,7 @@ const getPlatform = (link) => {
 const downloadYoutube = (link, options) => {
     return new Promise(resolve => {
         let video = ytDL(link, options ? ['-f', options.formatID] : null);
-        let size = 0, pos = 0, filename = '';
+        let size = 0, pos = 0, filename = '', filePath = '';
 
         video.on('info', (info) => {
             size = info.size;
@@ -88,6 +88,7 @@ const downloadYoutube = (link, options) => {
             Logger.log(`Started downloading ${filename}`);
 
             let file = path.resolve(process.env.SAVE_PATH || __dirname, info._filename);
+            filePath = file;
             resolve({ file });
             video.pipe(fs.createWriteStream(file));
         });
@@ -104,8 +105,14 @@ const downloadYoutube = (link, options) => {
             }
         })
 
-        video.on('end', () => {
+        video.on('end', async () => {
             Logger.log(`Completed downloading ${filename}`);
+            const info = await getYoutubeInfo(link);
+            await applyMetaData(filePath, {
+                title: info.metadata.title,
+                artist: info.metadata.artist,
+                year: info.metadata.year
+            });
         });
     });
 };
@@ -126,7 +133,8 @@ const getYoutubeInfo = async (link, options = DEFAULT_TITLING) => {
 
     const metadata = {
         artist: uploader,
-        title: fulltitle
+        title: fulltitle,
+        year: hyphenDate.split('-')[0]
     };
 
     const formatsFiltered = formats.filter(format => format.ext === 'mp4' || format.ext === 'm4a');
