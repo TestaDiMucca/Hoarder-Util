@@ -16,8 +16,12 @@ const PLATFORMS = {
     YOUTUBE: 'youtube'
 };
 
+/** Format for date renamer, in moment.js string */
+const DEFAULT_FORMAT = 'YYYY[-]MM[-]DD[-]HH[-]mm';
+
 module.exports = {
     DEFAULT_TITLING,
+    DEFAULT_FORMAT,
     SUPPORTED_OPTIONS,
     PLATFORMS,
     PORT
