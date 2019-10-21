@@ -16,8 +16,9 @@ const DIR_PATH = process.env.RENAME_PATH || '/Users/admin/Pictures/SamplePhone';
 /**
  * Construct the list of files with the project new names
  * @param {string} dir 
+ * @param {{ suffix: boolean, tryDetect: boolean }} options
  */
-const buildList = (dir = DIR_PATH) => {
+const buildList = (dir = DIR_PATH, options = {}) => {
     return new Promise(async (resolve, reject) => {
         try {
             const pathList = await fsp.readdir(dir);
@@ -27,19 +28,42 @@ const buildList = (dir = DIR_PATH) => {
                 const filePath = path.resolve(dir, pathList[i]);
                 const info = await returnItemData(filePath);
                 const formattedDate = infoToFormatted(info);
-                let file = {
+                const skipRenamed = options.tryDetect ? tryDetectDate(pathList[i]) : false;
+                result.push({
                     filePath,
                     info,
-                    name:  pathList[i]
-                };
-                result.push(file);
-                console.log(filePath, formattedDate);
+                    name: pathList[i],
+                    newName: skipRenamed ? pathList[i] : (
+                        options.suffix ? getSuffixedName(pathList[i], formattedDate) : `${formattedDate}_${pathList[i]}`
+                    )
+                });
             }
             resolve(result);
         } catch (e) {
             reject(e);
         }
     });
+};
+
+/**
+ * Insert something at the end of filename with extension
+ * @param {string} original 
+ * @param {string} insert 
+ */
+const getSuffixedName = (original, insert) => {
+    const ind = original.lastIndexOf('.');
+    return ind > 0 ? original.substr(0, ind) + '_' + insert + original.substr(ind) : `${original}_${insert}`;
+};
+
+/**
+ * Try and see if this file has already been named before
+ * @param {string} fileName 
+ */
+const tryDetectDate = (fileName) => {
+    let res1 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{4}/g) || [];
+    let res2 = fileName.match(/\d{4}([\/.-])\d{2}\1\d{2}/g) || [];
+    let res3 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{2}/g) || [];
+    return res1.length > 0 || res2.length > 0 || res3.length > 0;
 };
 
 /**
@@ -66,12 +90,6 @@ const returnItemData = (image) => {
  */
 const getDateModified = (filePath) => {
     return fsp.stat(filePath);
-    // return new Promise((resolve, reject) => {
-    //     fs.stat(filePath, (err, stats) => {
-    //         if (err) return reject(err);
-    //         resolve(stats);
-    //     });
-    // });
 };
 
 /**
@@ -84,10 +102,13 @@ const makeDash = (date) => {
     return date.replace(/:/g, match => n++ <= N ? '-' : match);
 };
 
+/**
+ * Take the gathered info and distill it to a formatted date string
+ * @param {fs.Stats | Exif.ExifData} info 
+ * @param {string} format 
+ */
 const infoToFormatted = (info, format = DEFAULT_FORMAT) => {
     const useDate = info.CreateDate ? makeDash(info.CreateDate) : info.mtime;
     const mmnt = moment(useDate);
     return mmnt.format(format);
 };
-
-buildList()
