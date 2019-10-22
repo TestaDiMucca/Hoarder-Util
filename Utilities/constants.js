@@ -19,9 +19,13 @@ const PLATFORMS = {
 /** Format for date renamer, in moment.js string */
 const DEFAULT_FORMAT = 'YYYY[-]MM[-]DD[-]HH[-]mm';
 
+/** Main file that logs will go to */
+const MAIN_LOGFILE = 'log.txt';
+
 module.exports = {
     DEFAULT_TITLING,
     DEFAULT_FORMAT,
+    MAIN_LOGFILE,
     SUPPORTED_OPTIONS,
     PLATFORMS,
     PORT

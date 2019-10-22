@@ -8,15 +8,38 @@ const { DEFAULT_FORMAT } = require('../constants');
 
 const fsp = {
     readdir: promisify(fs.readdir),
+    rename: promisify(fs.rename),
     stat: promisify(fs.stat)
 };
 
 const DIR_PATH = process.env.RENAME_PATH || '/Users/admin/Pictures/SamplePhone';
 
 /**
+ * The exposed method to handle incoming requests
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+const handleRenames = async (req, res) => {
+    try {
+        const { path, execute, suffix, tryDetect } = req.body;
+        const usePath = !!path && await verifyPath(path) ? path : undefined;
+        const list = await buildList(usePath, { suffix, tryDetect });
+
+        if (!execute) return res.send(list);
+
+        const renamedNum = await renameList(list);
+        return res.status(200).send(`Renamed ${renamedNum} items`);
+    } catch (e) {
+        console.error(e);
+        return res.status(500).send(`Error with handle renames: ${e.message}`);
+    }
+};
+
+/**
  * Construct the list of files with the project new names
  * @param {string} dir 
  * @param {{ suffix: boolean, tryDetect: boolean }} options
+ * @returns {Array}
  */
 const buildList = (dir = DIR_PATH, options = {}) => {
     return new Promise(async (resolve, reject) => {
@@ -29,8 +52,10 @@ const buildList = (dir = DIR_PATH, options = {}) => {
                 const info = await returnItemData(filePath);
                 const formattedDate = infoToFormatted(info);
                 const skipRenamed = options.tryDetect ? tryDetectDate(pathList[i]) : false;
+                const isDir = await isDirectory(filePath);
                 result.push({
                     filePath,
+                    isDir,
                     info,
                     name: pathList[i],
                     newName: skipRenamed ? pathList[i] : (
@@ -42,6 +67,33 @@ const buildList = (dir = DIR_PATH, options = {}) => {
         } catch (e) {
             reject(e);
         }
+    });
+};
+
+/**
+ * Actually rename files based on what's passed in from the buildList function
+ * In the future, possible to connect socket to send back progress
+ * @param {Array<{ filePath: string, name: string, isDir: boolean, info: *, newName: string }>} list 
+ */
+const renameList = async (list) => {
+    // just replace name with newname
+    // don't rename if dir = true or no change in name
+    let count = 0;
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].isDir || list[i].name === list[i].newName) continue;
+
+        const newPath = (list[i].filePath).replace(list[i].name, list[i].newName);
+        await fsp.rename(list[i].filePath, newPath);
+        count++;
+    }
+    return count;
+};
+
+const isDirectory = (filePath) => {
+    return new Promise(resolve => {
+        fs.lstat(filePath, (err, stats) => {
+            resolve(stats.isDirectory());
+        });
     });
 };
 
@@ -60,10 +112,12 @@ const getSuffixedName = (original, insert) => {
  * @param {string} fileName 
  */
 const tryDetectDate = (fileName) => {
-    let res1 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{4}/g) || [];
-    let res2 = fileName.match(/\d{4}([\/.-])\d{2}\1\d{2}/g) || [];
-    let res3 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{2}/g) || [];
-    return res1.length > 0 || res2.length > 0 || res3.length > 0;
+    // let res1 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{4}/g) || [];
+    // let res2 = fileName.match(/\d{4}([\/.-])\d{2}\1\d{2}/g) || [];
+    // let res3 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{2}/g) || [];
+    // return res1.length > 0 || res2.length > 0 || res3.length > 0;
+    let res1 = fileName.match(/\d{1,2}\D\d{1,2}\D(\d{4}|\d{2})/g);
+    return res1.length > 0;
 };
 
 /**
@@ -111,4 +165,27 @@ const infoToFormatted = (info, format = DEFAULT_FORMAT) => {
     const useDate = info.CreateDate ? makeDash(info.CreateDate) : info.mtime;
     const mmnt = moment(useDate);
     return mmnt.format(format);
+};
+
+/**
+ * See if the path is accessible
+ * @param {string} path 
+ * @return {Promise<boolean>}
+ */
+const verifyPath = (path) => {
+    return new Promise(resolve => {
+        fs.access(path, error => {
+            if (!error) {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        });
+    });
+};
+
+buildList()
+
+module.exports = {
+    handleRenames
 };

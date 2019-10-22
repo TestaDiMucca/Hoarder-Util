@@ -1,8 +1,10 @@
 const fs = require('fs');
 const { promisify } = require('util');
 
+const { MAIN_LOGFILE } = require('../constants');
+
 const appendFile = promisify(fs.appendFile);
-const logPath = process.env.LOG_PATH || '../log.txt';
+const logPath = process.env.LOG_PATH || '../';
 
 /**
  * Tiny logger.
@@ -29,11 +31,20 @@ class Logger {
     }
 
     /**
+     * Just make a record of something in list format
+     * @param {string} message
+     * @param {string} file Please also include extension
+     */
+    async record (message, file) {
+        await appendFile(logPath + file, `> ${message}\n`);
+    }
+
+    /**
      * @param {number} level 
      * @param {string} log 
      */
     async insertLog (level, log) {
-        await appendFile(logPath, `[T:${new Date().toISOString()}][LOG: ${level}], ${log}\n`);
+        await appendFile(logPath + MAIN_LOGFILE, `[T:${new Date().toISOString()}][LOG: ${level}], ${log}\n`);
     }
 };
 

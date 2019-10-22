@@ -102,9 +102,6 @@ const downloadYoutube = (link, options) => {
             if (size) {
                 let percent = ((pos / size) * 100).toFixed(2);
                 console.log(`Downloading ${filename}: ${percent}%`);
-                // process.stdout.cursorTo(0);
-                // process.stdout.clearLine(1);
-                // process.stdout.write(percent + '%');
             }
         })
 

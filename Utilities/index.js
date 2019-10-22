@@ -1,6 +1,7 @@
 const loadResult = require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const app = express();
 
@@ -12,6 +13,9 @@ const {
     handleDownload,
     handleGetInfo
 } = require('./modules/downloadHandler');
+const {
+    handleRenames
+} = require('./modules/dateRenameHandler');
 
 if (loadResult.error) {
     Logger.error(`Error with loading config: ${loadResult.error.message ? loadResult.error.message : loadResult.error}`);
@@ -29,9 +33,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(staticPath));
 
-app.get('/', (req, res) => res.send('こんにちは, 「ZA WARUDO」!'));
+app.get('/test', (req, res) => res.send('こんにちは, 「ZA WARUDO」!'));
 
 app.post('/download', (req, res) => handleDownload(req, res));
 app.post('/info', (req, res) => handleGetInfo(req, res));
+app.post('/rename', (req, res) => handleRenames(req, res));
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}!`));
