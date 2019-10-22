@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const Logger = require('./modules/Logger');
+
 const {
     PORT
 } = require('./constants');
@@ -16,6 +17,9 @@ const {
 const {
     handleRenames
 } = require('./modules/dateRenameHandler');
+const {
+    handleMigration
+} = require('./modules/migrationHandler');
 
 if (loadResult.error) {
     Logger.error(`Error with loading config: ${loadResult.error.message ? loadResult.error.message : loadResult.error}`);
@@ -38,5 +42,6 @@ app.get('/test', (req, res) => res.send('こんにちは, 「ZA WARUDO」!'));
 app.post('/download', (req, res) => handleDownload(req, res));
 app.post('/info', (req, res) => handleGetInfo(req, res));
 app.post('/rename', (req, res) => handleRenames(req, res));
+app.post('/migrate', (req, res) => handleMigration(req, res));
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}!`));

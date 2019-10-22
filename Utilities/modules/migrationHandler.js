@@ -37,7 +37,7 @@ const handleMigration = async (req, res) => {
 
         const fileList = await scanDir(origin || originPath);
         const results = await executeMigrate(fileList, destination || destinationPath, !!copy ? false : true);
-
+        return res.status(200).send(`Migrated ${results} items`);
     } catch (e) {
         console.error(e);
         res.status(500).send(`Error on migrate: ${e.message}`);
@@ -50,7 +50,7 @@ const handleMigration = async (req, res) => {
  * @param {string} add 
  * @returns {Promise<ScannedFile[]>}
  */
-const scanDir = async (basePath, add = '') => {
+const scanDir = async (basePath, add = '.') => {
     /** @type ScannedFile[] */
     let result = [];
     let dir = await fsp.readdir(basePath);
@@ -58,7 +58,7 @@ const scanDir = async (basePath, add = '') => {
         let item = dir[i];
         if (await isDirectory(path.resolve(basePath, item))) {
             let sub = await scanDir(path.resolve(basePath, item), `${add}/${item}`);
-            result.concat(sub);
+            result.push(...sub);
         } else {
             result.push({
                 item,
@@ -67,7 +67,6 @@ const scanDir = async (basePath, add = '') => {
             });
         }
     }
-    console.log(result)
     return result;
 };
 
@@ -82,12 +81,15 @@ const executeMigrate = async (fileList, destination, move = true) => {
     let migrated = 0;
     for (let i = 0; i < fileList.length; i++) {
         try {
-            const dest = path.resolve(destinationPath, fileList[i].add, fileList[i].item);
-            console.log('move', fileList[i].fullPath, dest);
+            const dest = path.resolve(destination, fileList[i].add, fileList[i].item);
+            await useFnc(fileList[i].fullPath, dest);
+            migrated++;
+            console.log('migrate', fileList[i].fullPath, dest);
         } catch (e) {
             console.error(e);
         }
     }
+    return migrated;
 };
 
 module.exports = {
