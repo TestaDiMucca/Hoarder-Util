@@ -5,6 +5,7 @@ const path = require('path');
 const moment = require('moment');
 
 const { DEFAULT_FORMAT } = require('../constants');
+const { isDirectory, verifyPath } = require('../tools');
 
 const fsp = {
     readdir: promisify(fs.readdir),
@@ -89,14 +90,6 @@ const renameList = async (list) => {
     return count;
 };
 
-const isDirectory = (filePath) => {
-    return new Promise(resolve => {
-        fs.lstat(filePath, (err, stats) => {
-            resolve(stats.isDirectory());
-        });
-    });
-};
-
 /**
  * Insert something at the end of filename with extension
  * @param {string} original 
@@ -112,10 +105,6 @@ const getSuffixedName = (original, insert) => {
  * @param {string} fileName 
  */
 const tryDetectDate = (fileName) => {
-    // let res1 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{4}/g) || [];
-    // let res2 = fileName.match(/\d{4}([\/.-])\d{2}\1\d{2}/g) || [];
-    // let res3 = fileName.match(/\d{2}([\/.-])\d{2}\1\d{2}/g) || [];
-    // return res1.length > 0 || res2.length > 0 || res3.length > 0;
     let res1 = fileName.match(/\d{1,2}\D\d{1,2}\D(\d{4}|\d{2})/g);
     return res1.length > 0;
 };
@@ -165,23 +154,6 @@ const infoToFormatted = (info, format = DEFAULT_FORMAT) => {
     const useDate = info.CreateDate ? makeDash(info.CreateDate) : info.mtime;
     const mmnt = moment(useDate);
     return mmnt.format(format);
-};
-
-/**
- * See if the path is accessible
- * @param {string} path 
- * @return {Promise<boolean>}
- */
-const verifyPath = (path) => {
-    return new Promise(resolve => {
-        fs.access(path, error => {
-            if (!error) {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
-        });
-    });
 };
 
 buildList()
