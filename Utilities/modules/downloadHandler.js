@@ -80,9 +80,11 @@ const getPlatform = (link) => {
  * @param {string} link 
  * @param {{ formatID: string }} options 
  */
-const downloadYoutube = (link, options) => {
+const downloadYoutube = (link, rawOpts) => {
     return new Promise(resolve => {
-        let video = ytDL(link, options ? ['-f', options.formatID] : null);
+        const options = rawOpts ? typeof rawOpts === 'string' ? JSON.parse(rawOpts) : rawOpts : null;
+        console.log('Request with options', options);
+        let video = ytDL(link, options ? [`-f`, options.formatID] : null);
         let size = 0, pos = 0, filename = '', filePath = '';
 
         video.on('info', (info) => {
