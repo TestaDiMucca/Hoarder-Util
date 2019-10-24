@@ -53,7 +53,7 @@ const handleDownload = async (req, res) => {
         switch (platform) {
             case PLATFORMS.YOUTUBE:
                 const info = await downloadYoutube(link, options);
-                return res.status(200).send(info);
+                return res.status(200).send(`Began saving to ${info.file}`);
             default:
                 res.status(400).send('Link parsing could not find appropriate platform.')
         }
@@ -80,6 +80,7 @@ const getPlatform = (link) => {
  * In future, can use socket to send progress to client
  * @param {string} link 
  * @param {{ formatID: string }} options 
+ * @returns {Promise<{ file: string }>}
  */
 const downloadYoutube = (link, rawOpts) => {
     return new Promise((resolve, reject) => {
@@ -121,6 +122,7 @@ const downloadYoutube = (link, rawOpts) => {
                     artist: info.metadata.artist,
                     year: info.metadata.year
                 });
+                console.log('[downloadYoutube] Completed applying metadata');
             });
         } catch (e) {
             reject(e);

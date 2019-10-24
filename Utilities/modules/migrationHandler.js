@@ -31,9 +31,12 @@ const destinationPath = process.env.MIGRATE_TO_PATH || path.resolve(__dirname, '
 const handleMigration = async (req, res) => {
     try {
         const { origin, destination, copy } = req.body;
+        
         if ((!!origin && await verifyPath(origin) === false) || (!!destination && await verifyPath(destination) === false)) {
             throw { message: 'Bad paths provided!' };
         }
+
+        console.log(`[migrate] ${origin || originPath} to ${destinationPath || destinationPath}`);
 
         const fileList = await scanDir(origin || originPath);
         const results = await executeMigrate(fileList, destination || destinationPath, !!copy ? false : true);

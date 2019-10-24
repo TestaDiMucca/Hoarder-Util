@@ -37,8 +37,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(staticPath));
 
-app.get('/test', (req, res) => res.send('こんにちは, 「ZA WARUDO」!'));
+app.use((req, res, next) => {
+    console.log(`[index] ${req.method} to ${req.originalUrl}`);
+    next();
+});
 
+app.get('/test', (req, res) => {
+    res.send('こんにちは, 「ZA WARUDO」!')
+});
+app.get('/barebones', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public/barebones.html'));
+});
+
+app.post('/test', (req, res) => {
+    res.send('こんにちは, 「ZA WARUDO」! (POST ed.)')
+});
 app.post('/download', (req, res) => handleDownload(req, res));
 app.post('/info', (req, res) => handleGetInfo(req, res));
 app.post('/rename', (req, res) => handleRenames(req, res));
