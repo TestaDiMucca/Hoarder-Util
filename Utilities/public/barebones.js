@@ -1,6 +1,8 @@
 const submitYtDl = async () => {
+    toggleLoader(true);
     const url = $('#url-field').val();
     const format = $('#format-field').val();
+    
     const data = {
         link: url,
         options: !!format ? {
@@ -9,9 +11,11 @@ const submitYtDl = async () => {
     };
     const res = await postRequest('download', data);
     printMessage(res);
+    toggleLoader(false);
 };
 
 const submitRename = async () => {
+    toggleLoader(true);
     const origin = $('#rename-field').val();
     const checked = $('#execute-check').prop('checked');
     const data = {
@@ -26,9 +30,11 @@ const submitRename = async () => {
     } else {
         printMessage(res);
     }
+    toggleLoader(false);
 };
 
 const submitMigrate = async () => {
+    toggleLoader(true);
     const origin = $('#path1-field').val();
     const destination = $('#path2-field').val();
     const data = {
@@ -36,11 +42,12 @@ const submitMigrate = async () => {
         destination: destination && destination.length > 1 ? destination : null
     };
     const res = await postRequest('migrate', data);
+    toggleLoader(false);
     printMessage(res);
 };
 
 const toggleLoader = (state) => {
-    $('.loader').toggleClass('hidden', state);
+    $('.loader').toggleClass('hidden', !state);
 };
 
 const printMessage = (message) => {
@@ -59,10 +66,10 @@ const checkClipboard = async () => {
 const postRequest = async (url, params) => {
     return new Promise(async resolve => {
         const options = {
-            // headers: {
-            //     'content-type': 'application/json; charset=UTF-8'
-            // },
-            body: params,
+            headers: {
+                'content-type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify(params),
             method: 'post'
         };
 
@@ -76,8 +83,12 @@ const postRequest = async (url, params) => {
     });
 };
 
+const initWindowFuncs = () => {
+    window.toggleLoader = toggleLoader;
+};
+
 const main = () => {
-    
+    initWindowFuncs();
 };
 
 // window.addEventListener('focus', () => {

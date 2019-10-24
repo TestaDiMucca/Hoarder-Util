@@ -49,9 +49,11 @@ const handleGetInfo = async (req, res) => {
 const handleDownload = async (req, res) => {
     try {
         const { link, options } = req.body;
+        console.log(`[handleDownload] DLing vids ${link}`, options);
         const platform = getPlatform(link);
         switch (platform) {
             case PLATFORMS.YOUTUBE:
+                
                 const info = await downloadYoutube(link, options);
                 return res.status(200).send(`Began saving to ${info.file}`);
             default:
