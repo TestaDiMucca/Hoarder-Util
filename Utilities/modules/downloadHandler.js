@@ -1,5 +1,6 @@
 const ytDL = require('youtube-dl');
-const ffmetadata = require('ffmetadata');
+// const ffmetadata = require('ffmetadata');
+const { fork } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
@@ -81,41 +82,49 @@ const getPlatform = (link) => {
  * @param {{ formatID: string }} options 
  */
 const downloadYoutube = (link, rawOpts) => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
         const options = rawOpts ? typeof rawOpts === 'string' ? JSON.parse(rawOpts) : rawOpts : null;
         console.log('Request with options', options);
-        let video = ytDL(link, options ? [`-f`, options.formatID] : null);
-        let size = 0, pos = 0, filename = '', filePath = '';
+        try {
+            let video = ytDL(link, options ? [`-f`, options.formatID] : null);
+            let size = 0, pos = 0, filename = '', filePath = '';
 
-        video.on('info', (info) => {
-            size = info.size;
-            filename = info._filename;
-            Logger.log(`Started downloading ${filename}`);
+            video.on('info', (info) => {
+                size = info.size;
+                filename = info._filename;
+                Logger.log(`Started downloading ${filename}`);
 
-            let file = path.resolve(process.env.SAVE_PATH || __dirname, info._filename);
-            filePath = file;
-            resolve({ file });
-            video.pipe(fs.createWriteStream(file));
-        });
-
-        video.on('data', (chunk) => {
-            pos += chunk.length;
-
-            if (size) {
-                let percent = ((pos / size) * 100).toFixed(2);
-                console.log(`Downloading ${filename}: ${percent}%`);
-            }
-        })
-
-        video.on('end', async () => {
-            Logger.log(`Completed downloading ${filename}`);
-            const info = await getYoutubeInfo(link);
-            await applyMetaData(filePath, {
-                title: info.metadata.title,
-                artist: info.metadata.artist,
-                year: info.metadata.year
+                let file = path.resolve(process.env.SAVE_PATH || __dirname, info._filename);
+                filePath = file;
+                resolve({ file });
+                video.pipe(fs.createWriteStream(file));
             });
-        });
+
+            video.on('data', (chunk) => {
+                pos += chunk.length;
+
+                if (size) {
+                    let percent = ((pos / size) * 100).toFixed(2);
+                    console.log(`Downloading ${filename}: ${percent}%`);
+                }
+            });
+
+            video.on('error', e => {
+                reject(e);
+            });
+
+            video.on('end', async () => {
+                Logger.log(`Completed downloading ${filename}`);
+                const info = await getYoutubeInfo(link);
+                await applyMetaData(filePath, {
+                    title: info.metadata.title,
+                    artist: info.metadata.artist,
+                    year: info.metadata.year
+                });
+            });
+        } catch (e) {
+            reject(e);
+        }
     });
 };
 
@@ -127,7 +136,7 @@ const downloadYoutube = (link, rawOpts) => {
 const getYoutubeInfo = async (link, options = DEFAULT_TITLING) => {
     const info = await youtubeDL.getInfo(link);
     /* Upload date is returned in format: 20191018 */
-    const { formats, fulltitle, uploader, upload_date } = info;
+    const { formats, uploader, upload_date } = info;
 
     const hyphenDate = `${upload_date.substr(0, 4)}-${upload_date.substr(4, 2)}-${upload_date.substr(6, 2)}`;
 
@@ -135,7 +144,7 @@ const getYoutubeInfo = async (link, options = DEFAULT_TITLING) => {
 
     const metadata = {
         artist: uploader,
-        title: fulltitle,
+        title: filename,
         year: hyphenDate.split('-')[0]
     };
 
@@ -156,7 +165,9 @@ const getYoutubeInfo = async (link, options = DEFAULT_TITLING) => {
  */
 const getTitleString = (info, options) => {
     let title = options;
-    Object.keys(SUPPORTED_OPTIONS).forEach(key => title = title.replace(key, info[SUPPORTED_OPTIONS[key]]));
+    Object.keys(SUPPORTED_OPTIONS).forEach(key => {
+        title = title.replace(key, info[SUPPORTED_OPTIONS[key]])
+    });
     return title;
 };
 
@@ -168,11 +179,23 @@ const getTitleString = (info, options) => {
 const applyMetaData = (filePath, options) => {
     return new Promise(resolve => {
         options.comment = 'Downloaded by some hacky thing powered by youtube-dl.';
-        ffmetadata.write(filePath, options, (err) => {
 
-            if (err) Logger.error(`Error on writing metadata: ${err.message}, ${filePath}`);
+        let child = fork('./workers/metadata.js');
+        child.send({ filePath, options });
+
+        child.on('message', message => {
+            if (message.error) {
+                Logger.error('[applyMetaData] Error applying', e.message);
+                console.error(e, message.message);
+            }
             resolve();
         });
+
+        // ffmetadata.write(filePath, options, (err) => {
+
+        //     if (err) Logger.error(`Error on writing metadata: ${err.message}, ${filePath}`);
+        //     resolve();
+        // });
     });
 };
 

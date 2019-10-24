@@ -17,6 +17,7 @@
     "ffmetadata": "^1.5.0",
     "fs-extra": "^8.1.0",
     "moment": "^2.24.0",
+    "taglib2": "^2.9.6",
     "youtube-dl": "^2.0.1"
   }
 }
