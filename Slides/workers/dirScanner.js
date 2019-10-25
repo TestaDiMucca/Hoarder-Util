@@ -55,12 +55,9 @@ const close = () => {
  * @param {Array<any>} list 
  */
 const shuffleList = (list) => {
-    var j, x, i;
-    for (i = list.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = list[i];
-        list[i] = list[j];
-        list[j] = x;
+    for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
     }
     return a;
 };
