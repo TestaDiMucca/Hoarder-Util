@@ -43,7 +43,7 @@ app.get('/image', (req, res) => {
 
 const init = async () => {
     await handlerInstance.init();
-    app.listen(PORT, () => console.log(`Listening on port ${PORT}!`));
+    app.listen(PORT, () => console.log(`\x1b[36mListening on port ${PORT}!\x1b[0m`));
 };
 
 init();

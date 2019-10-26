@@ -2,12 +2,6 @@ const { fork } = require('child_process');
 const { ACTIONS } = require('./workers/dirScanner');
 
 const SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png'];
-// const STATUS = {
-//     INIT: 'FileHandler is in uninitiated state',
-//     SCANNING: 'Currently scanning file list',
-//     FILTERING: 'Currently filtering file list',
-//     READY: 'Ready'
-// };
 
 /**
  * Obj to build and manage the list
@@ -44,7 +38,8 @@ class FileHandler {
             child.send({ action, data });
             child.on('message', message => {
                 if (message.error) {
-                    console.log('[useWorker] Error from worker', e.data);
+                    console.log('\x1b[31m[useWorker] Error from worker', e.data, '\x1b[0m');
+                    console.log('If it is a pathing error, please make sure all network paths specified are mounted.');
                     console.error(e, message.data);
                     process.exit();
                 }
