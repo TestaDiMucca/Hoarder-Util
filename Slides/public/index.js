@@ -180,11 +180,16 @@ const adjustInterval = () => {
     }
 };
 
+const selectList = () => {
+    return useList = shuffle ? shuffledList : list;
+};
+
 const handleOpenOptions = () => {
     if (optionsOpen) return;
     setTimeout(() => {
         $('.viewer-area').toggleClass('blur', true);
         const useList = selectList();
+        constructInfoArea();
         $('#filename').text(useList[currIndex].fullPath);
         $('#interval-field').val(timer);
         clearShow();
@@ -193,14 +198,11 @@ const handleOpenOptions = () => {
     }, 10);
 };
 
-const selectList = () => {
-    return useList = shuffle ? shuffledList : list;
-};
-
 const closeOptions = () => {
     optionsOpen = false;
     $('.viewer-area').toggleClass('blur', false);
     $('.toolbar').toggleClass('hidden', true);
+    emptyInfoArea();
     startShow();
 };
 
@@ -293,6 +295,63 @@ const addListeners = () => {
                 return advanceSlide();
         }
     });
+};
+
+const constructInfoArea = async () => {
+    $('.info-area').append('<img class="loader" src="loading.gif" />');
+    const res = await fetch('config');
+    const json = await res.json();
+    const exif = await getExif();
+    const exifInsert = constructExifInfo(exif);
+    const { basePath, exclude, version } = json;
+    const contents = `
+        <h3>Image Exif Data</h3>
+        ${exifInsert}
+        <h3>Back-end Information</h3>
+        <li>Root Scan Path: ${basePath}</li>
+        <li>Excluded Dir: ${exclude.join(',')}</li>
+        <li>Version: ${version}</li>
+        `;
+    $('.info-area').empty();
+    $('.info-area').append(contents);
+};
+
+const constructExifInfo = (info) => {
+    if (info.message) {
+        return '<li>Could not read Exif data</li>';
+    }
+    const {
+        ExposureTime,
+        FNumber,
+        ISO,
+        CreateDate,
+        LensMake,
+        LensModel
+    } = info;
+    const mod = (info) => info ? info : 'unknown';
+
+    return `
+        <li>Create Date: ${mod(CreateDate)}</li>
+        <li>Aperture: ${mod(FNumber)}</li>
+        <li>Exposure Time: ${mod(ExposureTime)}</li>
+        <li>ISO: ${mod(ISO)}</li>
+        <li>Lens: ${mod(LensMake)} ${mod(LensModel)}</li>
+    `;
+};
+
+const emptyInfoArea = () => {
+    $('.info-area').empty();
+}; 
+
+const getExif = async () => {
+    try {
+        const encoded = encodeURIComponent(selectList()[currIndex].fullPath);
+        const res = await fetch(`exif?path=${encoded}`);
+        const json = await res.json();
+        return json;
+    } catch (e) {
+        console.log('Error getting exif', e);
+    }
 };
                           
 const main = async () => {

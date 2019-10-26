@@ -1,4 +1,5 @@
 const express = require('express');
+const minify = require('express-minify');
 const path = require('path');
 const app = express();
 require('dotenv').config();
@@ -20,6 +21,7 @@ let handlerInstance = new FileHandler(SCAN_PATH, true);
 let configInstance = new ConfigHandler();
 
 const staticPath = path.resolve(__dirname + '/public'); 
+app.use(minify());
 app.use(express.static(staticPath));
 
 // app.use((req, res, next) => {
@@ -43,6 +45,14 @@ app.get('/image', (req, res) => {
     } else {
         res.status(400).send({ message: 'Invalid path' });
     }
+});
+
+app.get('/exif', async (req, res) => {
+    const { path } = req.query;
+    console.log('exif request', path)
+    const usePath = decodeURIComponent(path);
+    const ret = await FileHandler.getExif(usePath);
+    res.send(ret);
 });
 
 app.get('/config', (req, res) => {

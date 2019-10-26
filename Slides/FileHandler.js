@@ -1,3 +1,4 @@
+const ExifImage = require('exif').ExifImage;
 const { fork } = require('child_process');
 const { ACTIONS } = require('./workers/dirScanner');
 
@@ -51,6 +52,24 @@ class FileHandler {
                     process.exit();
                 }
                 resolve(message.data);
+            });
+        });
+    }
+
+    /**
+     * @param {string} image 
+     */
+    static async getExif (image) {
+        return new Promise(resolve => {
+            new ExifImage({ image }, async (err, exif) => {
+                let info;
+                if (err) {
+                    info = { message: `Could not read Exif data: ${err.message}` };
+                } else {
+                    info = exif.exif;
+                    
+                }
+                resolve(info);
             });
         });
     }

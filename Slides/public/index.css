@@ -147,8 +147,7 @@ body {
 }
 
 .icon-bar {
-    margin-top: 1em;
-    margin-bottom: 1em;
+    margin: 1em;
 }
 
 .loader {
@@ -160,11 +159,36 @@ body {
 
 .option {
     cursor: pointer;
+    transition: all;
+    transition-duration: 0.5s;
+}
+
+.option:hover {
+    color: var(--main-color);
+    transform: scale(1.1);
 }
 
 .active {
     color: var(--main-color);
 }
+
+.toolbar h3 {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.2em;
+}
+
+.info-area {
+    height: 50%;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+}
+
+.info-area li {
+    margin-left: 2em;
+}
+
+
 
 #filename {
     word-wrap: normal;
