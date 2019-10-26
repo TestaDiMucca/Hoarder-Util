@@ -18,10 +18,10 @@ let handlerInstance = new FileHandler(SCAN_PATH, true);
 const staticPath = path.resolve(__dirname + '/public'); 
 app.use(express.static(staticPath));
 
-app.use((req, res, next) => {
-    console.log(`[index] ${req.method} to ${req.originalUrl}`);
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log(`[index] ${req.method} to ${req.originalUrl}`);
+//     next();
+// });
 
 app.get('/list', (req, res) => {
     if (handlerInstance.status === FileHandler.STATUS.READY) {
