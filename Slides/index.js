@@ -4,9 +4,12 @@ const app = express();
 require('dotenv').config();
 
 const FileHandler = require('./FileHandler');
+const ConfigHandler = require('./ConfigHandler');
 
-const PORT = process.env.PORT || 4001;
-const SCAN_PATH = process.env.SCAN_PATH || null;
+const { DEFAULT_PORT, DEFAULT_SCAN_PATH } = require('./constants');
+
+const PORT = process.env.PORT || DEFAULT_PORT;
+const SCAN_PATH = process.env.SCAN_PATH || DEFAULT_SCAN_PATH;
 
 if (!SCAN_PATH) {
     console.log('Please configure a scan path in the .env file. See .env.example if needed.');
@@ -14,6 +17,7 @@ if (!SCAN_PATH) {
 }
 
 let handlerInstance = new FileHandler(SCAN_PATH, true);
+let configInstance = new ConfigHandler();
 
 const staticPath = path.resolve(__dirname + '/public'); 
 app.use(express.static(staticPath));
@@ -39,11 +43,24 @@ app.get('/image', (req, res) => {
     } else {
         res.status(400).send({ message: 'Invalid path' });
     }
-})
+});
+
+app.get('/config', (req, res) => {
+    let data = configInstance.getConfig();
+    res.status(200).send(data);
+});
 
 const init = async () => {
-    await handlerInstance.init();
-    app.listen(PORT, () => console.log(`\x1b[36mListening on port ${PORT}!\x1b[0m`));
+    try {
+        await configInstance.load();
+        const config = configInstance.getConfig();
+        if (config.scanPath) handlerInstance.setNewScanPath(config.scanPath);
+        await handlerInstance.init(config);
+        app.listen(PORT, () => console.log(`\x1b[36m[index] Listening on port ${PORT}!\x1b[0m`));
+    } catch (e) {
+        console.error('[index] Error on init', e);
+        process.exit();
+    }
 };
 
 init();

@@ -21,7 +21,8 @@ process.on('message', async message => {
         let res;
         switch (action) {
             case ACTIONS.SCAN_DIR:
-                res = await scanDir(data);
+                const { path, excludes } = data;
+                res = await scanDir(path, undefined, excludes);
                 return sendReply(null, res);
             case ACTIONS.FILTER:
                 const { paths, formats } = data;
@@ -107,13 +108,19 @@ const filterList = (fileList, supported) => {
     });
 };
 
-const scanDir = async (basePath, add = '.') => {
+/**
+ * @param {string} basePath 
+ * @param {string} add 
+ * @param {Array<string>} excludes 
+ */
+const scanDir = async (basePath, add = '.', excludes) => {
     /** @type ScannedFile[] */
     let result = [];
     let dir = await fsp.readdir(basePath);
     for (let i = 0; i < dir.length; i++) {
         let item = dir[i];
         if (await isDirectory(path.resolve(basePath, item))) {
+            if (excludes.indexOf(item) !== -1) continue;
             let sub = await scanDir(path.resolve(basePath, item), `${add}/${item}`);
             result.push(...sub);
         } else {

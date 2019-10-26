@@ -1,7 +1,7 @@
 const { fork } = require('child_process');
 const { ACTIONS } = require('./workers/dirScanner');
 
-const SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png'];
+const { SUPPORTED_FORMATS } = require('./constants');
 
 /**
  * Obj to build and manage the list
@@ -15,24 +15,28 @@ class FileHandler {
         this.status = FileHandler.STATUS.INIT;
     }
 
+    setNewScanPath (scanPath) {
+        this.scanPath = scanPath;
+    }
+
     validatePath (path) {
         return this.fullPathsOnly.indexOf(path) !== -1;
     }
 
-    async init () {
+    async init (config) {
         console.log('[FileHandler] Begin scanning');
         this.status = FileHandler.STATUS.SCANNING;
-        let paths = await this.useWorker(ACTIONS.SCAN_DIR, this.scanPath);
+        let paths = await this.useWorker(ACTIONS.SCAN_DIR, { path: this.scanPath, excludes: config.exclude });
         console.log(`[FileHandler] ${paths.length} items found. Begin filtering`);
         this.status = FileHandler.STATUS.FILTERING;
         let filtered = await this.useWorker(ACTIONS.FILTER, { paths, formats: SUPPORTED_FORMATS });
-        console.log('[FileHandler] after filter', filtered.length)
-        let filtered2 = await this.useWorker(ACTIONS.VERIFY, filtered);
-        console.log('[FileHandler] after access check', filtered2.length);
+        console.log('[FileHandler] after filter', filtered.length);
+        filtered = await this.useWorker(ACTIONS.VERIFY, filtered);
+        console.log('[FileHandler] after access check', filtered.length);
         this.status = FileHandler.STATUS.READY;
-        this.list = filtered2;
-        this.fullPathsOnly = filtered2.map(i => i.fullPath);
-        console.log('[FileHandler] Filtered final list to length', filtered2.length);
+        this.list = filtered;
+        this.fullPathsOnly = filtered.map(i => i.fullPath);
+        console.log('[FileHandler] Filtered final list to length', filtered.length);
     }
 
     async useWorker (action, data) {
