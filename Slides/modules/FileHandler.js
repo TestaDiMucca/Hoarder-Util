@@ -1,8 +1,8 @@
 const ExifImage = require('exif').ExifImage;
 const { fork } = require('child_process');
-const { ACTIONS } = require('./workers/dirScanner');
+const { ACTIONS } = require('../workers/dirScanner');
 
-const { SUPPORTED_FORMATS } = require('./constants');
+const { SUPPORTED_FORMATS, REFRESH_INTERVAL } = require('../constants');
 
 /**
  * Obj to build and manage the list
@@ -14,17 +14,43 @@ class FileHandler {
         this.fullPathsOnly = [];
         this.scanPath = scanPath;
         this.status = FileHandler.STATUS.INIT;
+        this.config = null;
+
+        this.refreshTimer = null;
+    }
+
+    /**
+     * Never let the refresh happen faster than once an hour
+     */
+    startRefreshInterval () {
+        this.refreshTimer = setInterval(() => {
+            this.init(this.config);
+        }, Math.max(REFRESH_INTERVAL, 60 * 60 * 1000));
+    }
+
+    stopRefreshInterval () {
+        if (this.refreshTimer) clearInterval(this.refreshTimer);
+        this.refreshTimer = null;
     }
 
     setNewScanPath (scanPath) {
         this.scanPath = scanPath;
     }
 
+    /**
+     * Check whether or not the client is requesting a path that we sent them
+     * @param {string} path 
+     */
     validatePath (path) {
         return this.fullPathsOnly.indexOf(path) !== -1;
     }
 
+    /**
+     * Scan the directories and such, and filter as needed
+     * @param {*} config 
+     */
     async init (config) {
+        this.config = config;
         console.log('[FileHandler] Begin scanning');
         this.status = FileHandler.STATUS.SCANNING;
         let paths = await this.useWorker(ACTIONS.SCAN_DIR, { path: this.scanPath, excludes: config.exclude });
@@ -40,6 +66,12 @@ class FileHandler {
         console.log('[FileHandler] Filtered final list to length', filtered.length);
     }
 
+    /**
+     * Call the worker process to do various scanning/filtering tasks
+     * We don't want to block the main thread as the load can be intensive
+     * @param {string} action 
+     * @param {*} data 
+     */
     async useWorker (action, data) {
         return new Promise(resolve => {
             let child = fork('./workers/dirScanner.js');

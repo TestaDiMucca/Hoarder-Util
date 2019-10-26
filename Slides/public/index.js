@@ -309,8 +309,9 @@ const constructInfoArea = async () => {
         ${exifInsert}
         <h3>Back-end Information</h3>
         <li>Root Scan Path: ${basePath}</li>
-        <li>Excluded Dir: ${exclude.join(',')}</li>
+        <li>Excluded Dirs: ${exclude.join(',')}</li>
         <li>Version: ${version}</li>
+        <li>Powered by 我是印度人™ tech</li>
         `;
     $('.info-area').empty();
     $('.info-area').append(contents);

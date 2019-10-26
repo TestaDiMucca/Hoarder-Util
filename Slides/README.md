@@ -6,6 +6,12 @@ Just connect to the host and let it run.
 
 This exists to give the Pi-Hole Pi an additional purpose besides blocking mobile.aria.microsoft/whatever.
 
+# Included Dependencies
+
+- NoSleep.js (0.9.0)
+- jQuery.min (3.4.1)
+- Material Icons (3.0.1)
+
 # .env
 
 - `PORT`: The default port that the server will be listening to

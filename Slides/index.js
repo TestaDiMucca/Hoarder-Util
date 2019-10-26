@@ -4,8 +4,8 @@ const path = require('path');
 const app = express();
 require('dotenv').config();
 
-const FileHandler = require('./FileHandler');
-const ConfigHandler = require('./ConfigHandler');
+const FileHandler = require('./modules/FileHandler');
+const ConfigHandler = require('./modules/ConfigHandler');
 
 const { DEFAULT_PORT, DEFAULT_SCAN_PATH } = require('./constants');
 
@@ -23,11 +23,6 @@ let configInstance = new ConfigHandler();
 const staticPath = path.resolve(__dirname + '/public'); 
 app.use(minify());
 app.use(express.static(staticPath));
-
-// app.use((req, res, next) => {
-//     console.log(`[index] ${req.method} to ${req.originalUrl}`);
-//     next();
-// });
 
 app.get('/list', (req, res) => {
     if (handlerInstance.status === FileHandler.STATUS.READY) {
@@ -49,7 +44,6 @@ app.get('/image', (req, res) => {
 
 app.get('/exif', async (req, res) => {
     const { path } = req.query;
-    console.log('exif request', path)
     const usePath = decodeURIComponent(path);
     const ret = await FileHandler.getExif(usePath);
     res.send(ret);
@@ -60,15 +54,21 @@ app.get('/config', (req, res) => {
     res.status(200).send(data);
 });
 
+app.post('/rescan', (req, res) => {
+    handlerInstance.init(configInstance.getConfig());
+    res.end();
+});
+
 const init = async () => {
     try {
         await configInstance.load();
         const config = configInstance.getConfig();
+        /* Maybe we want to just pass a reference to the config? */
         if (config.scanPath) handlerInstance.setNewScanPath(config.scanPath);
         await handlerInstance.init(config);
         app.listen(PORT, () => console.log(`\x1b[36m[index] Listening on port ${PORT}!\x1b[0m`));
     } catch (e) {
-        console.error('[index] Error on init', e);
+        console.error('\x1b[31m[index] Error on init', e, '\x1b[0m');
         process.exit();
     }
 };

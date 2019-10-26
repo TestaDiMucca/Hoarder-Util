@@ -1,3 +1,7 @@
+/**
+ * @file dirScanner worker handles all the setup, constructing file lists
+ */
+
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
@@ -35,9 +39,8 @@ process.on('message', async message => {
                 res = await shuffleList(data);
                 return sendReply(null, res);
             default:
-                sendReply(null, `action ${action} not supported`);
+                return sendReply(null, `action ${action} not supported`);
         }
-        close();
     } catch (e) {
         console.error('[worker] Error', e);
         sendReply(e, e.message);
@@ -46,6 +49,7 @@ process.on('message', async message => {
 
 const sendReply = (error, data) => {
     process.send({ error, data });
+    close();
 }
 
 const close = () => {
