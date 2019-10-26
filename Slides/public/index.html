@@ -24,15 +24,18 @@
         <img class="viewer-img hidden" id="slot-2" />
     </div>
     <div class="control-bar">
-        <i class="material-icons option" onclick="backSlide()">
-            skip_previous
-        </i>
-        <i class="material-icons play-pause option" onclick="handlePlayPause()">
-            pause
-        </i>
-        <i class="material-icons option" onclick="advanceSlide()">
-            skip_next
-        </i>
+        <nav class="play-bits">
+            <i class="material-icons option" onclick="backSlide()">
+                skip_previous
+            </i>
+            <i class="material-icons play-pause option" onclick="handlePlayPause()">
+                pause
+            </i>
+            <i class="material-icons option" onclick="advanceSlide()">
+                skip_next
+            </i>
+        </nav>
+        <p id="mini-filename"></p>
     </div>
     <div class="toolbar hidden">
         <i class="material-icons option close-btn" title="Close" onclick="closeOptions()">

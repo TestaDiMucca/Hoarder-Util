@@ -33,6 +33,7 @@
 }
 
 body {
+    overflow: hidden;
     width: 100vw;
     height: 100vh;
     margin: 0;
@@ -97,7 +98,9 @@ body {
     transition-duration: 0.5s;
     width: 50%;
     z-index: 999;
+}
 
+.play-bits {
     color: white;
     display: flex;
     justify-content: center;
@@ -115,6 +118,13 @@ body {
 .control-bar-hover {
     opacity: 1;
     /* pointer-events: unset; */
+}
+
+#mini-filename {
+    color: var(--main-color);
+    text-align: center;
+    font-size: 0.7em;
+    line-height: 0em;
 }
 
 .toolbar {

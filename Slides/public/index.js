@@ -6,6 +6,7 @@ let interval = null;
 let cache = {};
 let shuffle = true;
 let optionsOpen = false;
+let panelOpen = false;
 
 const nosleep = new NoSleep();
 
@@ -86,6 +87,7 @@ const getFileList = async () => {
     const json = await res.json();
     list = json;
     shuffledList = shuffleList(list.slice(0));
+    console.log(list)
     return json;
 }
 
@@ -102,10 +104,18 @@ const loadNext = (skipCurrent = false) => {
     loadOne(currIndex, true, skipCurrent);
     loadOne(currIndex + 1, false, skipCurrent);
     cleanCaches(+currIndex);
+
+    if (panelOpen) updateCaption();
+};
+
+const updateCaption = () => {
+    const useList = selectList();
+    const item = useList[currIndex];
+    $('#mini-filename').text(`(${currIndex + 1}/${list.length}) - ${item.add}/${item.item}`);
 };
 
 const loadOne = async (i, onStage, shouldWipe = false) => {
-    const useList = shuffle ? shuffledList : list;
+    const useList = selectList();
     if (!useList[i]) return;
     if (i < 0) i = useList.length - 1;
     if (i >= useList.length) i = 0;
@@ -174,13 +184,17 @@ const handleOpenOptions = () => {
     if (optionsOpen) return;
     setTimeout(() => {
         $('.viewer-area').toggleClass('blur', true);
-        const useList = shuffle ? shuffledList : list;
+        const useList = selectList();
         $('#filename').text(useList[currIndex].fullPath);
         $('#interval-field').val(timer);
         clearShow();
         $('.toolbar').toggleClass('hidden', false);
         optionsOpen = true;
     }, 10);
+};
+
+const selectList = () => {
+    return useList = shuffle ? shuffledList : list;
 };
 
 const closeOptions = () => {
@@ -239,6 +253,16 @@ const checkIndex = () => {
     }
 };
 
+/**
+ * 
+ * @param {boolean} show 
+ */
+const showControl = (show) => {
+    $('.control-bar').toggleClass('control-bar-hover', show);
+    panelOpen = show;
+    if (show) updateCaption();
+};
+
 const addListeners = () => {
     window.onbeforeunload = () => {
         localStorage.setItem(LS_KEYS.POS, currIndex);
@@ -255,8 +279,8 @@ const addListeners = () => {
     });
 
     $('.control-bar').hover(
-        () => $('.control-bar').toggleClass('control-bar-hover', true),
-        () => $('.control-bar').toggleClass('control-bar-hover', false)
+        () => showControl(true),
+        () => showControl(false)
     );
 
     document.addEventListener('keydown', (e) => {

@@ -102,8 +102,7 @@ const shuffleList = (list) => {
 const filterList = (fileList, supported) => {
     return fileList.filter(item => {
         if (item.item.indexOf('._') !== -1) return false;
-        const ext = item.item.split('.').pop();
-        delete item.add; /* Delete add, don't need it */
+        const ext = item.item.split('.').pop().toLowerCase();
         return supported.indexOf(ext) !== -1;
     });
 };
