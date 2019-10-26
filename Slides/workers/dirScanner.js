@@ -3,7 +3,8 @@ const path = require('path');
 const { promisify } = require('util');
 
 const fsp = {
-    readdir: promisify(fs.readdir)
+    readdir: promisify(fs.readdir),
+    access: promisify(fs.access)
 };
 
 /**
@@ -26,8 +27,11 @@ process.on('message', async message => {
                 const { paths, formats } = data;
                 res = filterList(paths, formats);
                 return sendReply(null, res);
+            case ACTIONS.VERIFY:
+                res = await verifyPaths(data);
+                return sendReply(null, res);
             case ACTIONS.SHUFFLE:
-                res = shuffleList(data);
+                res = await shuffleList(data);
                 return sendReply(null, res);
             default:
                 sendReply(null, `action ${action} not supported`);
@@ -51,6 +55,35 @@ const close = () => {
 };
 
 /**
+ * 
+ * @param {Array<ScannedFile>} list 
+ */
+const verifyPaths = async (list) => {
+    let newList = [];
+    for (let i = 0; i < list.length; i++) {
+        let verified = await checkAccess(list[i].fullPath);
+        if (verified) {
+            newList.push(list[i]);
+        } else {
+            console.log(`[worker] removed ${list[i].item} due to failed access`);
+        }
+    }
+    return newList;
+}
+
+const checkAccess = async (path) => {
+    return new Promise(resolve => {
+        fs.access(path, fs.constants.R_OK, err => {
+            if (err) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+}
+
+/**
  * Shufflein place with Fisher-Yates algorithm
  * @param {Array<any>} list 
  */
@@ -59,7 +92,7 @@ const shuffleList = (list) => {
         const j = Math.floor(Math.random() * (i + 1));
         [list[i], list[j]] = [list[j], list[i]];
     }
-    return a;
+    return list;
 };
 
 /**
@@ -68,6 +101,7 @@ const shuffleList = (list) => {
  */
 const filterList = (fileList, supported) => {
     return fileList.filter(item => {
+        if (item.item.indexOf('._') !== -1) return false;
         const ext = item.item.split('.').pop();
         delete item.add; /* Delete add, don't need it */
         return supported.indexOf(ext) !== -1;
@@ -110,7 +144,8 @@ const isDirectory = (filePath) => {
 const ACTIONS = {
     SCAN_DIR: 'scanDir',
     FILTER: 'filter',
-    SHUFFLE: 'shuffle'
+    SHUFFLE: 'shuffle',
+    VERIFY: 'verify'
 };
 
 module.exports = {

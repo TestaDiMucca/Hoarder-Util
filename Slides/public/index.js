@@ -1,20 +1,41 @@
 let list;
+let shuffledList;
 let currIndex = 0;
 let timer = 5; /* in secomds */
 let interval = null;
 let cache = {};
+let shuffle = false;
+let optionsOpen = false;
+
+let nosleep = new NoSleep();
 
 const LS_KEYS = {
     POS: 'pos'
 };
 const CACHE_KEEP_RANGE = 2;
 
+const toggleShuffle = () => {
+    shuffle = !shuffle;
+    Object.keys(cache).forEach(key => delete cache[key]);
+};
+
+const shuffleList = (list) => {
+    for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
+    }
+    return list;
+};
+
 const startShow = () => {
+    console.log('startShow');
     interval = setInterval(advanceSlide, timer * 1000);
+    nosleep.enable();
 };
 
 const clearShow = () => {
     if (interval) clearInterval(interval);
+    nosleep.disable();
 };
 
 const advanceSlide = () => {
@@ -27,6 +48,8 @@ const getFileList = async () => {
     const json = await res.json();
     console.log(json);
     list = json;
+    shuffledList = shuffleList(list.slice(0));
+    console.log(shuffledList);
     return json;
 }
 
@@ -42,18 +65,18 @@ const loadNext = () => {
 };
 
 const loadOne = async (i, onStage) => {
-    if (!list[i]) return;
+    const useList = shuffle ? shuffledList : list;
+    if (!useList[i]) return;
 
-    if (i < 0) i = list.length - 1;
-    if (i >= list.length) i = 0;
+    if (i < 0) i = useList.length - 1;
+    if (i >= useList.length) i = 0;
     const target = getSlotForIndex(i);
-    const fullPath = list[i].fullPath;
+    const fullPath = useList[i].fullPath;
     console.log('onstage: index', i, fullPath, !!cache[i]);
     $(target).toggleClass('hidden', !onStage);
     const imgStr = cache[i] ? cache[i] : await fetchImage(fullPath);
     cache[i] = imgStr;
     $(target).attr('src', imgStr);
-    // $(target).toggleClass('hidden', !onStage);
 };
 
 const cleanCaches = (currentIndex) => {
@@ -97,8 +120,68 @@ const postRequest = async (url, params) => {
     });
 };
 
-window.onbeforeunload = () => {
-    localStorage.setItem(LS_KEYS.POS, currIndex);
+const handleClick = () => {
+    if (optionsOpen) return;
+    setTimeout(() => {
+        const useList = shuffle ? shuffledList : list;
+        $('#filename').text(useList[currIndex].fullPath);
+        clearShow();
+        $('.toolbar').toggleClass('hidden', false);
+        optionsOpen = true;
+    }, 10);
+};
+
+const closeOptions = () => {
+    optionsOpen = false;
+    $('.toolbar').toggleClass('hidden', true);
+    startShow();
+};
+
+const handleFullscreen = () => {
+    const element = document.body;
+    const doc = document;
+
+    if (
+        !doc.fullscreenElement &&
+        !doc.mozFullScreenElement &&
+        !doc.webkitFullscreenElement &&
+        !doc.msFullscreenElement
+    ) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen(Elem.ALLOW_KEYBOARD_INPUT);
+        }
+
+        element.style.width = '100%';
+        element.style.height = '100%';
+    } else {
+        if (doc.exitFullscreen) {
+            doc.exitFullscreen();
+        } else if (doc.msExitFullscreen) {
+            doc.msExitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+            doc.mozCancelFullScreen();
+        } else if (doc.webkitExitFullscreen) {
+            doc.webkitExitFullscreen();
+        }
+    }
+};
+
+const exitFullscreen = () => {
+    if (doc.exitFullscreen) {
+        doc.exitFullscreen();
+    } else if (doc.msExitFullscreen) {
+        doc.msExitFullscreen();
+    } else if (doc.mozCancelFullScreen) {
+        doc.mozCancelFullScreen();
+    } else if (doc.webkitExitFullscreen) {
+        doc.webkitExitFullscreen();
+    }
 };
 
 const checkIndex = () => {
@@ -108,9 +191,27 @@ const checkIndex = () => {
     }
 };
 
+const addListeners = () => {
+    window.onbeforeunload = () => {
+        localStorage.setItem(LS_KEYS.POS, currIndex);
+    };
+
+    let specifiedElement = document.querySelector('.toolbar');
+    document.addEventListener('click', (event) => {
+        var isClickInside = specifiedElement.contains(event.target);
+
+        if (!isClickInside && optionsOpen) {
+            console.log('closing click outside')
+            //the click was outside the specifiedElement, do something
+            closeOptions();
+        }
+    });
+};
+
 const main = async () => {
     await getFileList();
     checkIndex();
+    addListeners();
     // fetchImage(list[0].fullPath);
     loadNext();
     startShow();

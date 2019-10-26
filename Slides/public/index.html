@@ -10,17 +10,28 @@
     <script src="jquery.min.js"></script>
     <link rel="stylesheet" href="index.css">
     <link rel="shortcut icon" href="favicon.ico" />
+    <meta name="apple-mobile-web-app-capable" content="yes" >
 </head>
 
 <body>
+    <script src="noSleep.js"></script>
     <script src="index.js"></script>
-    <div class="viewer-area">
+    <div class="viewer-area" onclick="handleClick()">
         <img class="viewer-img hidden" id="slot-0" />
         <img class="viewer-img hidden" id="slot-1" />
         <img class="viewer-img hidden" id="slot-2" />
     </div>
-    <div class="toolbar">
-
+    <div class="toolbar hidden">
+        <p id="filename"></p>
+        <i class="material-icons option" onclick="handleFullscreen()">
+            fullscreen
+        </i>
+        <i class="material-icons option" onclick="toggleShuffle()">
+            shuffle
+        </i>
+        <i class="material-icons option" onclick="closeOptions()">
+            close
+        </i>
     </div>
 </body>
 

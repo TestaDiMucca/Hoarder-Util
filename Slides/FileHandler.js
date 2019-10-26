@@ -23,13 +23,16 @@ class FileHandler {
         console.log('[FileHandler] Begin scanning');
         this.status = FileHandler.STATUS.SCANNING;
         let paths = await this.useWorker(ACTIONS.SCAN_DIR, this.scanPath);
-        console.log('[FileHandler] Begin filtering');
+        console.log(`[FileHandler] ${paths.length} items found. Begin filtering`);
         this.status = FileHandler.STATUS.FILTERING;
         let filtered = await this.useWorker(ACTIONS.FILTER, { paths, formats: SUPPORTED_FORMATS });
+        console.log('[FileHandler] after filter', filtered.length)
+        let filtered2 = await this.useWorker(ACTIONS.VERIFY, filtered);
+        console.log('[FileHandler] after access check', filtered2.length);
         this.status = FileHandler.STATUS.READY;
-        this.list = filtered;
-        this.fullPathsOnly = filtered.map(i => i.fullPath);
-        console.log('[FileHandler] Filtered list to length', filtered.length);
+        this.list = filtered2;
+        this.fullPathsOnly = filtered2.map(i => i.fullPath);
+        console.log('[FileHandler] Filtered final list to length', filtered2.length);
     }
 
     async useWorker (action, data) {
