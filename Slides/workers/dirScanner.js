@@ -124,7 +124,7 @@ const scanDir = async (basePath, add = '.', excludes) => {
     for (let i = 0; i < dir.length; i++) {
         let item = dir[i];
         if (await isDirectory(path.resolve(basePath, item))) {
-            if (excludes.indexOf(item) !== -1) continue;
+            if (excludes && excludes.indexOf(item) !== -1) continue;
             let sub = await scanDir(path.resolve(basePath, item), `${add}/${item}`);
             result.push(...sub);
         } else {

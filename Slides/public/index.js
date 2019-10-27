@@ -1,5 +1,8 @@
+/* For caching the lists */
 let list;
 let shuffledList;
+
+/* State */
 let currIndex = 0;
 let timer = 5; /* in secomds */
 let interval = null;
@@ -7,6 +10,10 @@ let cache = {};
 let shuffle = true;
 let optionsOpen = false;
 let panelOpen = false;
+
+/* Hide mouse variables */
+let idleTimer;
+let forceHide = false;
 
 const nosleep = new NoSleep();
 
@@ -266,6 +273,8 @@ const showControl = (show) => {
 };
 
 const addListeners = () => {
+    $('body').css('cursor', 'none');
+
     window.onbeforeunload = () => {
         localStorage.setItem(LS_KEYS.POS, currIndex);
         localStorage.setItem(LS_KEYS.TIMER, timer);
@@ -293,6 +302,21 @@ const addListeners = () => {
                 return backSlide();
             case 'ArrowRight':
                 return advanceSlide();
+        }
+    });
+
+    $('body').mousemove(() => {
+        if (!forceHide) {
+            $('body').css('cursor', '');
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                $('body').css('cursor', 'none');
+
+                forceHide = true;
+                setTimeout(() => {
+                    forceHide = false;
+                }, 200);
+            }, 1000);
         }
     });
 };
