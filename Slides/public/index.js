@@ -155,7 +155,6 @@ const loadNext = (skipCurrent = false) => {
 };
 
 const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
-    // console.log('loadone', i, onStage)
     const useList = selectList();
     if (!useList[i]) return;
     if (i < 0) i = useList.length - 1;
@@ -224,6 +223,17 @@ const adjustInterval = () => {
 
 const selectList = () => {
     return useList = shuffle ? shuffledList : list;
+};
+
+const rotateImage = async () => {
+    if (interval) clearShow();
+    const fullPath = selectList()[currIndex].fullPath;
+    const encoded = encodeURIComponent(fullPath);
+    const url = `edit?method=rotate&path=${encoded}`;
+    await postRequest(url, {});
+    const imgStr = await fetchImage(fullPath);
+    cache[currIndex] = imgStr;
+    $(getSlotForIndex(currIndex)).attr('src', imgStr);
 };
 
 const handleOpenOptions = () => {
@@ -395,7 +405,7 @@ const constructExifInfo = (info) => {
     return `
         <li>Create Date: ${mod(CreateDate)}</li>
         <li>Aperture: ${mod(FNumber)}</li>
-        <li>Exposure Time: ${mod(ExposureTime)}</li>
+        <li>Exposure Time: ${mod(decimalToFraction(ExposureTime))}</li>
         <li>ISO: ${mod(ISO)}</li>
         <li>Lens: ${mod(LensMake)} ${mod(LensModel)}</li>
     `;
@@ -426,3 +436,39 @@ const main = async () => {
 };
 
 $(document).ready(main);
+
+/** Courtesy redteamsnippets from Github */
+function gcd(a, b) {
+    return (b) ? gcd(b, a % b) : a;
+}
+var decimalToFraction = function (decimal) {
+    if (!decimal) return null;
+
+    const _decimal = +decimal;
+    if (_decimal == parseInt(_decimal)) {
+        return {
+            top: parseInt(_decimal),
+            bottom: 1,
+            display: parseInt(_decimal) + '/' + 1
+        };
+    }
+    else {
+        var top = _decimal.toString().includes(".") ? _decimal.toString().replace(/\d+[.]/, '') : 0;
+        var bottom = Math.pow(10, top.toString().replace('-', '').length);
+        if (_decimal >= 1) {
+            top = +top + (Math.floor(_decimal) * bottom);
+        }
+        else if (_decimal <= -1) {
+            top = +top + (Math.ceil(_decimal) * bottom);
+        }
+
+        var x = Math.abs(gcd(top, bottom));
+        // return {
+        //     top: (top / x),
+        //     bottom: (bottom / x),
+        //     display: (top / x) + '/' + (bottom / x)
+        // };
+        const fracString = `${top / x}/${bottom / x}`;
+        return fracString.length > 10 ? decimal : fracString;
+    }
+};

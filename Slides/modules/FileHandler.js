@@ -1,8 +1,19 @@
 const ExifImage = require('exif').ExifImage;
+const sharp = require('sharp');
+const piexif = require('piexifjs');
+const fs = require('fs');
 const { fork } = require('child_process');
 const { ACTIONS } = require('../workers/dirScanner');
 
 const { SUPPORTED_FORMATS, REFRESH_INTERVAL } = require('../constants');
+
+const { promisify } = require('util');
+
+/* At some point these could go in a helper file... */
+const fsp = {
+    readFile: promisify(fs.readFile),
+    writeFile: promisify(fs.writeFile)
+};
 
 /**
  * Obj to build and manage the list
@@ -18,6 +29,7 @@ class FileHandler {
         this.config = null;
 
         this.refreshTimer = null;
+        sharp.cache(false);
     }
 
     /**
@@ -25,7 +37,7 @@ class FileHandler {
      */
     startRefreshInterval () {
         this.refreshTimer = setInterval(() => {
-            this.init(this.config);
+            this.init(this.config, true);
         }, Math.max(REFRESH_INTERVAL, 60 * 60 * 1000));
     }
 
@@ -49,8 +61,9 @@ class FileHandler {
     /**
      * Scan the directories and such, and filter as needed
      * @param {*} config 
+     * @param {boolean} [skipVerify=false]
      */
-    async init (config) {
+    async init (config, skipVerify = false) {
         this.config = config;
         console.log('[FileHandler] Begin scanning');
         this.status = FileHandler.STATUS.SCANNING;
@@ -59,7 +72,7 @@ class FileHandler {
         this.status = FileHandler.STATUS.FILTERING;
         let filtered = await this.useWorker(ACTIONS.FILTER, { paths, formats: SUPPORTED_FORMATS });
         console.log('[FileHandler] after filter', filtered.length);
-        filtered = await this.useWorker(ACTIONS.VERIFY, filtered);
+        if (!skipVerify) filtered = await this.useWorker(ACTIONS.VERIFY, filtered);
         console.log('[FileHandler] after access check', filtered.length);
         this.shuffled = await this.useWorker(ACTIONS.SHUFFLE, filtered);
         console.log('[FileHandler] Shuffled list cached');
@@ -105,6 +118,38 @@ class FileHandler {
                     
                 }
                 resolve(info);
+            });
+        });
+    }
+
+    static async editImage (path, method) {
+        return new Promise(resolve => {
+            fs.access(path, fs.constants.W_OK, async err => {
+                if (err) {
+                    return resolve({ message: `Error: ${path}: ${err.message}` });
+                }
+                try {
+                    console.log(`[FileHandler] ${method} request to ${path}`);
+                    switch (method) {
+                        case 'rotate':
+                            // const buffer = await sharp(path).rotate(90).toBuffer();
+                            // fs.writeFile(path, buffer, err => {
+                            //     resolve(err ? { message: err.message } : {});
+                            // })
+                            const originalBuffer = await fsp.readFile(path);
+                            const exifDump = piexif.load(originalBuffer.toString('binary'));
+                            const rotatedBuffer = await sharp(path).rotate(90).toBuffer();
+                            const finalBinary = piexif.insert(piexif.dump(exifDump), rotatedBuffer.toString('binary'));
+                            await fsp.writeFile(path, new Buffer(finalBinary, 'binary'));
+                            resolve({});
+                            break;
+                        default:
+                            resolve({ message: `Error: unsupported method ${method}` });
+                    }
+                } catch (e) {
+                    console.error(e);
+                    resolve({ message: `Error processing image ${e.message}` });
+                }
             });
         });
     }

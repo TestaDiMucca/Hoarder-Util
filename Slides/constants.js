@@ -1,6 +1,6 @@
 const DEFAULT_PORT = 4001;
 const DEFAULT_SCAN_PATH = './Photos';
-const VER = '0.0.1';
+const VER = '0.0.2';
 const CONFIG_PATH = './config.json';
 const SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png'];
 const REFRESH_INTERVAL = 24 * 60 * 60 * 1000;

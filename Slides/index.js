@@ -50,13 +50,20 @@ app.get('/exif', async (req, res) => {
     res.send(ret);
 });
 
+app.post('/edit', async (req, res) => {
+    const { path, method } = req.query;
+    const usePath = decodeURIComponent(path);
+    const ret = await FileHandler.editImage(usePath, method);
+    res.send(ret);
+});
+
 app.get('/config', (req, res) => {
     let data = configInstance.getConfig();
     res.status(200).send(data);
 });
 
 app.post('/rescan', (req, res) => {
-    handlerInstance.init(configInstance.getConfig());
+    handlerInstance.init(configInstance.getConfig(), true);
     res.end();
 });
 
