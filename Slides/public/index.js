@@ -10,6 +10,8 @@ let cache = {};
 let shuffle = true;
 let optionsOpen = false;
 let panelOpen = false;
+let filepathActive = false;
+let playCache;
 
 /* Hide mouse variables */
 let idleTimer;
@@ -20,7 +22,8 @@ const nosleep = new NoSleep();
 /** Localstorage cache items */
 const LS_KEYS = {
     POS: 'pos',
-    TIMER: 'timer'
+    TIMER: 'timer',
+    SHOW_NAME: 'showName'
 };
 const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
@@ -36,6 +39,17 @@ const toggleShuffle = () => {
     $('#shuffle-option').toggleClass('active', shuffle);
     clearCache();
     loadNext(true);
+};
+
+const toggleBottomName = () => {
+    const active = $('#filepath-toggle').prop('checked');
+    filepathActive = active;
+    if (filepathActive) {
+        updateBottomName();
+        $('.bottom-name').removeClass('hidden');
+    } else {
+        $('.bottom-name').addClass('hidden');
+    }
 };
 
 const clearCache = () => {
@@ -68,6 +82,9 @@ const showNotifier = (pausing) => {
 
 };
 
+/**
+ * Master play method
+ */
 const startShow = () => {
     console.log('startShow');
     showNotifier(false);
@@ -76,6 +93,9 @@ const startShow = () => {
     nosleep.enable();
 };
 
+/**
+ * Master pause method
+ */
 const clearShow = () => {
     if (interval) clearInterval(interval);
     showNotifier(true);
@@ -138,6 +158,12 @@ const updateCaption = () => {
     $('#mini-filename').text(`(${currIndex + 1}/${list.length}) - ${item.add}/${item.item}`);
 };
 
+const updateBottomName = () => {
+    const useList = selectList();
+    const item = useList[currIndex];
+    $('.bottom-name').text(`${item.add}/${item.item}`);
+};
+
 /**
  * Actual fnc to load the images and manage the cache
  * @param {boolean} skipCurrent 
@@ -153,6 +179,7 @@ const loadNext = (skipCurrent = false) => {
     handleZIndexes();
 
     if (panelOpen) updateCaption();
+    if (filepathActive) updateBottomName();
 };
 
 const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
@@ -233,6 +260,7 @@ const selectList = () => {
 
 const rotateImage = async () => {
     if (interval) clearShow();
+    $('.rotate').addClass('disabled');
     const fullPath = selectList()[currIndex].fullPath;
     const encoded = encodeURIComponent(fullPath);
     const url = `edit?method=rotate&path=${encoded}`;
@@ -240,11 +268,13 @@ const rotateImage = async () => {
     const imgStr = await fetchImage(fullPath);
     cache[currIndex] = imgStr;
     $(getSlotForIndex(currIndex)).attr('src', imgStr);
+    $('.rotate').removeClass('disabled');
 };
 
 const handleOpenOptions = () => {
     if (optionsOpen) return;
     setTimeout(() => {
+        playCache = !!interval;
         $('.viewer-area').toggleClass('blur', true);
         const useList = selectList();
         constructInfoArea();
@@ -253,6 +283,7 @@ const handleOpenOptions = () => {
         clearShow();
         $('.toolbar').toggleClass('hidden', false);
         optionsOpen = true;
+        
     }, 10);
 };
 
@@ -261,7 +292,7 @@ const closeOptions = () => {
     $('.viewer-area').toggleClass('blur', false);
     $('.toolbar').toggleClass('hidden', true);
     emptyInfoArea();
-    startShow();
+    if (playCache) startShow();
 };
 
 const handleFullscreen = () => {
@@ -311,6 +342,11 @@ const checkIndex = () => {
     if (lTimer !== undefined) {
         timer = Math.max(lTimer, 3);
     }
+    const lShowName = localStorage.getItem(LS_KEYS.SHOW_NAME);
+    if (lShowName !== undefined) {
+        filepathActive = lShowName;
+        toggleBottomName(filepathActive);
+    }
 };
 
 /**
@@ -329,6 +365,7 @@ const addListeners = () => {
     window.onbeforeunload = () => {
         localStorage.setItem(LS_KEYS.POS, currIndex);
         localStorage.setItem(LS_KEYS.TIMER, timer);
+        localStorage.setItem(LS_KEYS.SHOW_NAME, filepathActive);
     };
 
     let specifiedElement = document.querySelector('.toolbar');
@@ -348,6 +385,7 @@ const addListeners = () => {
     document.addEventListener('keydown', (e) => {
         e.preventDefault();
         const key = e.key;
+        console.log(key);
         switch (key) {
             case ' ':
                 return handlePlayPause();
@@ -355,6 +393,8 @@ const addListeners = () => {
                 return backSlide();
             case 'ArrowRight':
                 return advanceSlide();
+            case 'r':
+                return rotateImage();
         }
     });
 
@@ -469,11 +509,6 @@ var decimalToFraction = function (decimal) {
         }
 
         var x = Math.abs(gcd(top, bottom));
-        // return {
-        //     top: (top / x),
-        //     bottom: (bottom / x),
-        //     display: (top / x) + '/' + (bottom / x)
-        // };
         const fracString = `${top / x}/${bottom / x}`;
         return fracString.length > 10 ? decimal : fracString;
     }

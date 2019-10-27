@@ -25,6 +25,7 @@
         <i class="material-icons notifier fader">
             pause
         </i>
+        <span class="bottom-name hidden"></span>
     </div>
     <div class="control-bar">
         <nav class="play-bits">
@@ -34,10 +35,6 @@
                 </i>
                 <i class="material-icons option" title="Shuffle" id="shuffle-option" onclick="toggleShuffle()">
                     shuffle
-                </i>
-            
-                <i class="material-icons option" title="Reset" onclick="reset()">
-                    replay
                 </i>
             </span>
             <span class="middle-area">
@@ -52,7 +49,7 @@
                 </i>
             </span>
             <span class="icon-bar">
-                <i class="material-icons option" title="Rotate" onclick="rotateImage()">
+                <i class="material-icons rotate option" title="Rotate" onclick="rotateImage()">
                     rotate_right
                 </i>
             </span>
@@ -68,11 +65,21 @@
 
         <span class="title"><b>File:</b><p id="filename"></p></span>
         
-        
-        <div>
+        <div class="setting">
             <span>Interval (s):</span>
             <input type="number" id="interval-field" placeholder="Interval in Seconds" onchange="adjustInterval()" />
         </div>
+        <div class="setting">
+            <span>Show file path:</span>
+            <input type="checkbox" id="filepath-toggle" onchange="toggleBottomName()" />
+        </div>
+        <div class="option setting" onclick="reset()">
+            <span>Reset to Slide 1</span>
+        </div>
+        <!-- <i class="material-icons option" title="Reset" onclick="reset()">
+            replay
+        </i> -->
+
         <div class="info-area">
 
         </div>
