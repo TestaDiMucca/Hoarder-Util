@@ -25,8 +25,9 @@ app.use(minify());
 app.use(express.static(staticPath));
 
 app.get('/list', (req, res) => {
+    const { shuffled } = req.query;
     if (handlerInstance.status === FileHandler.STATUS.READY) {
-        res.send(handlerInstance.list);
+        res.send(!!shuffled ? handlerInstance.shuffled : handlerInstance.list);
     } else {
         res.send({ message: handlerInstance.status });
     }

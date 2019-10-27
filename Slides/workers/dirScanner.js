@@ -5,11 +5,14 @@
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
+const { NAMES } = require('../constants');
 
 const fsp = {
     readdir: promisify(fs.readdir),
     access: promisify(fs.access)
 };
+
+const NAMAE = `\x1b[33mworker-${NAMES[Math.floor(Math.random() * NAMES.length)]}\x1b[0m`;
 
 /**
  * A return result of the scan
@@ -23,9 +26,11 @@ process.on('message', async message => {
     try {
         const { action, data } = message;
         let res;
+        console.log(`[${NAMAE}] Worker live with action (${action})`);
         switch (action) {
             case ACTIONS.SCAN_DIR:
                 const { path, excludes } = data;
+                console.log('Begin scan with excludes', excludes)
                 res = await scanDir(path, undefined, excludes);
                 return sendReply(null, res);
             case ACTIONS.FILTER:
@@ -42,7 +47,7 @@ process.on('message', async message => {
                 return sendReply(null, `action ${action} not supported`);
         }
     } catch (e) {
-        console.error('[worker] Error', e);
+        console.error(`[${NAMAE}] Error`, e);
         sendReply(e, e.message);
     }
 });
@@ -54,7 +59,7 @@ const sendReply = (error, data) => {
 
 const close = () => {
     setTimeout(() => {
-        console.log('[worker] 再見!');
+        console.log(`[${NAMAE}] 再見!`);
         process.exit();
     }, 1000);
 };
@@ -65,12 +70,14 @@ const close = () => {
  */
 const verifyPaths = async (list) => {
     let newList = [];
+    const onePercent = Math.floor(list.length / 100) + 1;
     for (let i = 0; i < list.length; i++) {
+        if (i % onePercent === 0) console.log(`[${NAMAE}] Verified ${i}/${list.length} (${((i / list.length) * 100).toFixed(2)}%)`);
         let verified = await checkAccess(list[i].fullPath);
         if (verified) {
             newList.push(list[i]);
         } else {
-            console.log(`[worker] removed ${list[i].item} due to failed access`);
+            console.log(`[${NAMAE}] removed ${list[i].item} due to failed access`);
         }
     }
     return newList;
@@ -121,11 +128,15 @@ const scanDir = async (basePath, add = '.', excludes) => {
     /** @type ScannedFile[] */
     let result = [];
     let dir = await fsp.readdir(basePath);
+    console.log(`[${NAMAE}] Found ${dir.length} items in ${add}`);
     for (let i = 0; i < dir.length; i++) {
         let item = dir[i];
         if (await isDirectory(path.resolve(basePath, item))) {
-            if (excludes && excludes.indexOf(item) !== -1) continue;
-            let sub = await scanDir(path.resolve(basePath, item), `${add}/${item}`);
+            if (excludes && excludes.indexOf(item) !== -1) {
+                console.log(`[${NAMAE}] Ignoring dir (${item})`);
+                continue;
+            }
+            let sub = await scanDir(path.resolve(basePath, item), `${add}/${item}`, excludes);
             result.push(...sub);
         } else {
             result.push({

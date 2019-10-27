@@ -52,8 +52,25 @@ const shuffleList = (list) => {
     return list;
 };
 
+/**
+ * @param {boolean} pausing 
+ */
+const showNotifier = (pausing) => {
+    const target = '.notifier';
+    let old = document.querySelector(target);
+    let newEl = old.cloneNode(true);
+    old.parentNode.replaceChild(newEl, old);
+    if (pausing) {
+        $(target).text('pause');
+    } else {
+        $(target).text('play_arrow');
+    }
+
+};
+
 const startShow = () => {
     console.log('startShow');
+    showNotifier(false);
     $('.play-pause').text('pause');
     interval = setInterval(advanceSlide, (Math.max(timer, MIN_TIME)) * 1000);
     nosleep.enable();
@@ -61,6 +78,7 @@ const startShow = () => {
 
 const clearShow = () => {
     if (interval) clearInterval(interval);
+    showNotifier(true);
     interval = null;
     $('.play-pause').text('play_arrow');
     nosleep.disable();
@@ -93,7 +111,8 @@ const getFileList = async () => {
     const res = await fetch('list');
     const json = await res.json();
     list = json;
-    shuffledList = shuffleList(list.slice(0));
+    const shuf = await fetch('list?shuffled=1');
+    shuffledList = await shuf.json();
     console.log(list)
     return json;
 }
@@ -111,8 +130,20 @@ const loadNext = (skipCurrent = false) => {
     loadOne(currIndex, true, skipCurrent);
     loadOne(currIndex + 1, false, skipCurrent);
     cleanCaches(+currIndex);
+    handleZIndexes();
 
     if (panelOpen) updateCaption();
+};
+
+const handleZIndexes = () => {
+    const prevEle = getSlotForIndex(currIndex - 1);
+    const currEle = getSlotForIndex(currIndex);
+    const nextEle = getSlotForIndex(currIndex + 1);
+
+    $(prevEle).removeClass('middle-slide');
+    $(currEle).removeClass('top-slide');
+    $(currEle).addClass('middle-slide');
+    $(nextEle).addClass('top-slide');
 };
 
 const updateCaption = () => {
@@ -127,7 +158,7 @@ const loadOne = async (i, onStage, shouldWipe = false) => {
     if (i < 0) i = useList.length - 1;
     if (i >= useList.length) i = 0;
     const target = getSlotForIndex(i);
-    if (shouldWipe) $(target).attr('src', null);
+    if (shouldWipe || onStage) $(target).attr('src', null);
     const fullPath = useList[i].fullPath;
     // console.log('onstage: index', i, fullPath, !!cache[i]);
     $(target).toggleClass('hidden', !onStage);
@@ -298,6 +329,8 @@ const addListeners = () => {
         e.preventDefault();
         const key = e.key;
         switch (key) {
+            case ' ':
+                return handlePlayPause();
             case 'ArrowLeft':
                 return backSlide();
             case 'ArrowRight':

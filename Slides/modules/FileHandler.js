@@ -11,6 +11,7 @@ class FileHandler {
     constructor (scanPath, postponeScan = false) {
         if (!postponeScan) this.init(scanPath);
         this.list = [];
+        this.shuffled = [];
         this.fullPathsOnly = [];
         this.scanPath = scanPath;
         this.status = FileHandler.STATUS.INIT;
@@ -60,6 +61,8 @@ class FileHandler {
         console.log('[FileHandler] after filter', filtered.length);
         filtered = await this.useWorker(ACTIONS.VERIFY, filtered);
         console.log('[FileHandler] after access check', filtered.length);
+        this.shuffled = await this.useWorker(ACTIONS.SHUFFLE, filtered);
+        console.log('[FileHandler] Shuffled list cached');
         this.status = FileHandler.STATUS.READY;
         this.list = filtered;
         this.fullPathsOnly = filtered.map(i => i.fullPath);
