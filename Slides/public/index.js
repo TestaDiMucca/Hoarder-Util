@@ -3,15 +3,27 @@ let list;
 let shuffledList;
 
 /* State */
-let currIndex = 0;
-let timer = 5; /* in secomds */
+// let currIndex = 0;
+// let timer = 5; /* in secomds */
 let interval = null;
+/* Cache images */
 let cache = {};
-let shuffle = true;
-let optionsOpen = false;
-let panelOpen = false;
-let filepathActive = false;
+/* Star images */
+let starred = [];
+// let shuffle = true;
+// let optionsOpen = false;
+// let panelOpen = false;
+// let filepathActive = false;
 let playCache;
+
+let state = {
+    currIndex: 0,
+    timer: 5,
+    shuffle: true,
+    optionsOpen: false,
+    panelOpen: false,
+    filepathActive: false
+};
 
 /* Hide mouse variables */
 let idleTimer;
@@ -29,22 +41,22 @@ const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
 
 const reset = async () => {
-    currIndex = 0;
+    state.currIndex = 0;
     clearCache();
     main();
 }
 
 const toggleShuffle = () => {
-    shuffle = !shuffle;
-    $('#shuffle-option').toggleClass('active', shuffle);
+    state.shuffle = !state.shuffle;
+    $('#shuffle-option').toggleClass('active', state.shuffle);
     clearCache();
     loadNext(true);
 };
 
 const toggleBottomName = () => {
     const active = $('#filepath-toggle').prop('checked');
-    filepathActive = active;
-    if (filepathActive) {
+    state.filepathActive = active;
+    if (state.filepathActive) {
         updateBottomName();
         $('.bottom-name').removeClass('hidden');
     } else {
@@ -89,7 +101,7 @@ const startShow = () => {
     console.log('startShow');
     showNotifier(false);
     $('.play-pause').text('pause');
-    interval = setInterval(advanceSlide, (Math.max(timer, MIN_TIME)) * 1000);
+    interval = setInterval(advanceSlide, (Math.max(state.timer, MIN_TIME)) * 1000);
     nosleep.enable();
 };
 
@@ -105,14 +117,14 @@ const clearShow = () => {
 };
 
 const advanceSlide = () => {
-    currIndex++;
-    if (currIndex >= list.length) currIndex = 0;
+    state.currIndex++;
+    if (state.currIndex >= list.length) state.currIndex = 0;
     loadNext();
 };
 
 const backSlide = () => {
-    currIndex--;
-    if (currIndex < 0) currIndex = list.length - 1;
+    state.currIndex--;
+    if (state.currIndex < 0) state.currIndex = list.length - 1;
     loadNext();
 }
 
@@ -137,14 +149,20 @@ const getFileList = async () => {
     return json;
 }
 
+const getNewShuffleList = async () => {
+    const shuf = await fetch('list?newShuffle=1');
+    shuffledList = await shuf.json();
+    return;
+}
+
 const getSlotForIndex = (i) => {
     return `#slot-${ i % 3 }`;
 };
 
 const handleZIndexes = () => {
-    const prevEle = getSlotForIndex(currIndex - 1);
-    const currEle = getSlotForIndex(currIndex);
-    const nextEle = getSlotForIndex(currIndex + 1);
+    const prevEle = getSlotForIndex(state.currIndex - 1);
+    const currEle = getSlotForIndex(state.currIndex);
+    const nextEle = getSlotForIndex(state.currIndex + 1);
 
     $(prevEle).removeClass('middle-slide');
     $(currEle).removeClass('top-slide');
@@ -154,13 +172,13 @@ const handleZIndexes = () => {
 
 const updateCaption = () => {
     const useList = selectList();
-    const item = useList[currIndex];
-    $('#mini-filename').text(`(${currIndex + 1}/${list.length}) - ${item.add}/${item.item}`);
+    const item = useList[state.currIndex];
+    $('#mini-filename').text(`(${state.currIndex + 1}/${list.length}) - ${item.add}/${item.item}`);
 };
 
 const updateBottomName = () => {
     const useList = selectList();
-    const item = useList[currIndex];
+    const item = useList[state.currIndex];
     $('.bottom-name').text(`${item.add}/${item.item}`);
 };
 
@@ -170,16 +188,16 @@ const updateBottomName = () => {
  */
 const loadNext = (skipCurrent = false) => {
     brieflyHideLoader();
-    cleanCaches(+currIndex);
-    loadOne(currIndex - 1, false, skipCurrent);
-    loadOne(currIndex, true, skipCurrent);
-    loadOne(currIndex + 1, false, skipCurrent);
+    cleanCaches(+state.currIndex);
+    loadOne(state.currIndex - 1, false, skipCurrent);
+    loadOne(state.currIndex, true, skipCurrent);
+    loadOne(state.currIndex + 1, false, skipCurrent);
 
-    loadOne(currIndex + 2, false, false, false);
+    loadOne(state.currIndex + 2, false, false, false);
     handleZIndexes();
 
-    if (panelOpen) updateCaption();
-    if (filepathActive) updateBottomName();
+    if (state.panelOpen) updateCaption();
+    if (state.filepathActive) updateBottomName();
 };
 
 const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
@@ -247,48 +265,48 @@ const postRequest = async (url, params) => {
 const adjustInterval = () => {
     const timerTemp = $('#interval-field').val();
     if (timerTemp < MIN_TIME) {
-        timer = MIN_TIME;
+        state.timer = MIN_TIME;
         $('#interval-field').val(MIN_TIME);
     } else {
-        timer = timerTemp;
+        state.timer = timerTemp;
     }
 };
 
 const selectList = () => {
-    return useList = shuffle ? shuffledList : list;
+    return useList = state.shuffle ? shuffledList : list;
 };
 
 const rotateImage = async () => {
     if (interval) clearShow();
     $('.rotate').addClass('disabled');
-    const fullPath = selectList()[currIndex].fullPath;
+    const fullPath = selectList()[state.currIndex].fullPath;
     const encoded = encodeURIComponent(fullPath);
     const url = `edit?method=rotate&path=${encoded}`;
     await postRequest(url, {});
     const imgStr = await fetchImage(fullPath);
-    cache[currIndex] = imgStr;
-    $(getSlotForIndex(currIndex)).attr('src', imgStr);
+    cache[state.currIndex] = imgStr;
+    $(getSlotForIndex(state.currIndex)).attr('src', imgStr);
     $('.rotate').removeClass('disabled');
 };
 
 const handleOpenOptions = () => {
-    if (optionsOpen) return;
+    if (state.optionsOpen) return;
     setTimeout(() => {
         playCache = !!interval;
         $('.viewer-area').toggleClass('blur', true);
         const useList = selectList();
         constructInfoArea();
-        $('#filename').text(useList[currIndex].fullPath);
-        $('#interval-field').val(timer);
+        $('#filename').text(useList[state.currIndex].fullPath);
+        $('#interval-field').val(state.timer);
         clearShow();
         $('.toolbar').toggleClass('hidden', false);
-        optionsOpen = true;
+        state.optionsOpen = true;
         
     }, 10);
 };
 
 const closeOptions = () => {
-    optionsOpen = false;
+    state.optionsOpen = false;
     $('.viewer-area').toggleClass('blur', false);
     $('.toolbar').toggleClass('hidden', true);
     emptyInfoArea();
@@ -336,16 +354,16 @@ const handleFullscreen = () => {
 const checkIndex = () => {
     const lIndex = localStorage.getItem(LS_KEYS.POS);
     if (lIndex !== undefined) {
-        currIndex = +lIndex;
+        state.currIndex = +lIndex;
     }
     const lTimer = localStorage.getItem(LS_KEYS.TIMER);
     if (lTimer !== undefined) {
-        timer = Math.max(lTimer, 3);
+        state.timer = Math.max(+lTimer, 3);
     }
     const lShowName = localStorage.getItem(LS_KEYS.SHOW_NAME);
     if (lShowName !== undefined) {
-        filepathActive = lShowName;
-        toggleBottomName(filepathActive);
+        state.filepathActive = lShowName;
+        toggleBottomName(state.filepathActive);
     }
 };
 
@@ -355,7 +373,7 @@ const checkIndex = () => {
  */
 const showControl = (show) => {
     $('.control-bar').toggleClass('control-bar-hover', show);
-    panelOpen = show;
+    state.panelOpen = show;
     if (show) updateCaption();
 };
 
@@ -363,8 +381,8 @@ const addListeners = () => {
     $('body').css('cursor', 'none');
 
     window.onbeforeunload = () => {
-        localStorage.setItem(LS_KEYS.POS, currIndex);
-        localStorage.setItem(LS_KEYS.TIMER, timer);
+        localStorage.setItem(LS_KEYS.POS, state.currIndex);
+        localStorage.setItem(LS_KEYS.TIMER, state.timer);
         localStorage.setItem(LS_KEYS.SHOW_NAME, filepathActive);
     };
 
@@ -372,7 +390,7 @@ const addListeners = () => {
     document.addEventListener('click', (event) => {
         let isClickInside = specifiedElement.contains(event.target);
 
-        if (!isClickInside && optionsOpen) {
+        if (!isClickInside && state.optionsOpen) {
             closeOptions();
         }
     });
@@ -463,7 +481,7 @@ const emptyInfoArea = () => {
 
 const getExif = async () => {
     try {
-        const encoded = encodeURIComponent(selectList()[currIndex].fullPath);
+        const encoded = encodeURIComponent(selectList()[state.currIndex].fullPath);
         const res = await fetch(`exif?path=${encoded}`);
         const json = await res.json();
         return json;
@@ -475,7 +493,7 @@ const getExif = async () => {
 const main = async () => {
     await getFileList();
     checkIndex();
-    $('#shuffle-option').toggleClass('active', shuffle);
+    $('#shuffle-option').toggleClass('active', state.shuffle);
     addListeners();
     loadNext();
     startShow();
@@ -499,7 +517,7 @@ var decimalToFraction = function (decimal) {
         };
     }
     else {
-        var top = _decimal.toString().includes(".") ? _decimal.toString().replace(/\d+[.]/, '') : 0;
+        var top = _decimal.toString().includes('.') ? _decimal.toString().replace(/\d+[.]/, '') : 0;
         var bottom = Math.pow(10, top.toString().replace('-', '').length);
         if (_decimal >= 1) {
             top = +top + (Math.floor(_decimal) * bottom);

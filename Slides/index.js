@@ -24,10 +24,14 @@ const staticPath = path.resolve(__dirname + '/public');
 app.use(minify());
 app.use(express.static(staticPath));
 
-app.get('/list', (req, res) => {
-    const { shuffled } = req.query;
+app.get('/list', async (req, res) => {
+    const { shuffled, newShuffle } = req.query;
     if (handlerInstance.status === FileHandler.STATUS.READY) {
-        res.send(!!shuffled ? handlerInstance.shuffled : handlerInstance.list);
+        if (!!newShuffle) {
+            res.send(await handlerInstance.getNewShuffle());
+        } else {
+            res.send(!!shuffled ? handlerInstance.shuffled : handlerInstance.list);
+        }
     } else {
         res.send({ message: handlerInstance.status });
     }

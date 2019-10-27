@@ -82,6 +82,11 @@ class FileHandler {
         console.log('[FileHandler] Filtered final list to length', filtered.length);
     }
 
+    async getNewShuffle () {
+        const res = await this.useWorker(ACTIONS.SHUFFLE, this.list);
+        return res;
+    }
+
     /**
      * Call the worker process to do various scanning/filtering tasks
      * We don't want to block the main thread as the load can be intensive
