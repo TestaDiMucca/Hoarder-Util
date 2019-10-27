@@ -143,6 +143,7 @@ const updateCaption = () => {
  * @param {boolean} skipCurrent 
  */
 const loadNext = (skipCurrent = false) => {
+    brieflyHideLoader();
     cleanCaches(+currIndex);
     loadOne(currIndex - 1, false, skipCurrent);
     loadOne(currIndex, true, skipCurrent);
@@ -168,6 +169,11 @@ const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
     cache[i] = imgStr;
     if (loadDom) $(target).attr('src', imgStr);
     // console.log(Object.keys(cache))
+};
+
+const brieflyHideLoader = () => {
+    $('#main-loader').addClass('hidden');
+    setTimeout(() => $('#main-loader').removeClass('hidden'), 1000);
 };
 
 const cleanCaches = (currentIndex) => {
@@ -369,7 +375,7 @@ const addListeners = () => {
 };
 
 const constructInfoArea = async () => {
-    $('.info-area').append('<img class="loader" src="loading.gif" />');
+    $('.info-area').append('<img class="loader" src="loading.svg" />');
     const res = await fetch('config');
     const json = await res.json();
     const exif = await getExif();

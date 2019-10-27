@@ -132,10 +132,6 @@ class FileHandler {
                     console.log(`[FileHandler] ${method} request to ${path}`);
                     switch (method) {
                         case 'rotate':
-                            // const buffer = await sharp(path).rotate(90).toBuffer();
-                            // fs.writeFile(path, buffer, err => {
-                            //     resolve(err ? { message: err.message } : {});
-                            // })
                             const originalBuffer = await fsp.readFile(path);
                             const exifDump = piexif.load(originalBuffer.toString('binary'));
                             const rotatedBuffer = await sharp(path).rotate(90).toBuffer();
