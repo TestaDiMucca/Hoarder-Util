@@ -22,7 +22,7 @@ const LS_KEYS = {
     POS: 'pos',
     TIMER: 'timer'
 };
-const CACHE_KEEP_RANGE = 2;
+const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
 
 const reset = async () => {
@@ -121,20 +121,6 @@ const getSlotForIndex = (i) => {
     return `#slot-${ i % 3 }`;
 };
 
-/**
- * Actual fnc to load the images and manage the cache
- * @param {boolean} skipCurrent 
- */
-const loadNext = (skipCurrent = false) => {
-    loadOne(currIndex - 1, false, skipCurrent);
-    loadOne(currIndex, true, skipCurrent);
-    loadOne(currIndex + 1, false, skipCurrent);
-    cleanCaches(+currIndex);
-    handleZIndexes();
-
-    if (panelOpen) updateCaption();
-};
-
 const handleZIndexes = () => {
     const prevEle = getSlotForIndex(currIndex - 1);
     const currEle = getSlotForIndex(currIndex);
@@ -152,7 +138,24 @@ const updateCaption = () => {
     $('#mini-filename').text(`(${currIndex + 1}/${list.length}) - ${item.add}/${item.item}`);
 };
 
-const loadOne = async (i, onStage, shouldWipe = false) => {
+/**
+ * Actual fnc to load the images and manage the cache
+ * @param {boolean} skipCurrent 
+ */
+const loadNext = (skipCurrent = false) => {
+    cleanCaches(+currIndex);
+    loadOne(currIndex - 1, false, skipCurrent);
+    loadOne(currIndex, true, skipCurrent);
+    loadOne(currIndex + 1, false, skipCurrent);
+
+    loadOne(currIndex + 2, false, false, false);
+    handleZIndexes();
+
+    if (panelOpen) updateCaption();
+};
+
+const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
+    // console.log('loadone', i, onStage)
     const useList = selectList();
     if (!useList[i]) return;
     if (i < 0) i = useList.length - 1;
@@ -160,11 +163,12 @@ const loadOne = async (i, onStage, shouldWipe = false) => {
     const target = getSlotForIndex(i);
     if (shouldWipe || onStage) $(target).attr('src', null);
     const fullPath = useList[i].fullPath;
-    // console.log('onstage: index', i, fullPath, !!cache[i]);
-    $(target).toggleClass('hidden', !onStage);
+    // console.log('onstage: index', i, onStage, !!cache[i]);
+    if (loadDom) $(target).toggleClass('hidden', !onStage);
     const imgStr = cache[i] ? cache[i] : await fetchImage(fullPath);
     cache[i] = imgStr;
-    $(target).attr('src', imgStr);
+    if (loadDom) $(target).attr('src', imgStr);
+    // console.log(Object.keys(cache))
 };
 
 const cleanCaches = (currentIndex) => {
