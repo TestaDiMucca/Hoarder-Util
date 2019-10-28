@@ -12,11 +12,6 @@ const { DEFAULT_PORT, DEFAULT_SCAN_PATH } = require('./constants');
 const PORT = process.env.PORT || DEFAULT_PORT;
 const SCAN_PATH = process.env.SCAN_PATH || DEFAULT_SCAN_PATH;
 
-if (!SCAN_PATH) {
-    console.log('Please configure a scan path in the .env file. See .env.example if needed.');
-    process.exit();
-}
-
 let handlerInstance = new FileHandler(SCAN_PATH, true);
 let configInstance = new ConfigHandler();
 

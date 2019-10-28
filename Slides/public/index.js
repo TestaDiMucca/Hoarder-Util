@@ -16,7 +16,9 @@ let state = {
     shuffle: true,
     optionsOpen: false,
     panelOpen: false,
-    filepathActive: false
+    filepathActive: false,
+    playing: true,
+    favsOpen: false
 };
 
 /* Hide mouse variables */
@@ -91,7 +93,8 @@ const startShow = () => {
     console.log('startShow');
     showNotifier('play_arrow');
     $('.play-pause').text('pause');
-    interval = setInterval(advanceSlide, (Math.max(state.timer, MIN_TIME)) * 1000);
+    state.playing = true;
+    if (!interval) interval = setTimeout(advanceSlide, (Math.max(state.timer, MIN_TIME)) * 1000);
     nosleep.enable();
 };
 
@@ -99,9 +102,10 @@ const startShow = () => {
  * Master pause method
  */
 const clearShow = () => {
-    if (interval) clearInterval(interval);
+    if (interval) clearTimeout(interval);
     showNotifier('pause');
     interval = null;
+    state.playing = false;
     $('.play-pause').text('play_arrow');
     nosleep.disable();
 };
@@ -119,7 +123,7 @@ const backSlide = () => {
 }
 
 const handlePlayPause = () => {
-    if (interval) {
+    if (state.playing) {
         clearShow();
     } else {
         startShow();
@@ -149,7 +153,7 @@ const getSlotForIndex = (i) => {
     return `#slot-${ i % 3 }`;
 };
 
-const handleZIndexes = () => {
+const slideChangedActions = () => {
     const prevEle = getSlotForIndex(state.currIndex - 1);
     const currEle = getSlotForIndex(state.currIndex);
     const nextEle = getSlotForIndex(state.currIndex + 1);
@@ -158,6 +162,17 @@ const handleZIndexes = () => {
     $(currEle).removeClass('top-slide');
     $(currEle).addClass('middle-slide');
     $(nextEle).addClass('top-slide');
+
+    updateFavIcon();
+};
+
+const updateFavIcon = () => {
+    const item = useList[state.currIndex].fullPath;
+    if (starred[item]) {
+        $('.favorite').addClass('active');
+    } else {
+        $('.favorite').removeClass('active');
+    }
 };
 
 const updateCaption = () => {
@@ -184,7 +199,7 @@ const loadNext = (skipCurrent = false) => {
     loadOne(state.currIndex + 1, false, skipCurrent);
 
     loadOne(state.currIndex + 2, false, false, false);
-    handleZIndexes();
+    slideChangedActions();
 
     if (state.panelOpen) updateCaption();
     if (state.filepathActive) updateBottomName();
@@ -198,12 +213,15 @@ const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
     const target = getSlotForIndex(i);
     if (shouldWipe || onStage) $(target).attr('src', null);
     const fullPath = useList[i].fullPath;
-    // console.log('onstage: index', i, onStage, !!cache[i]);
     if (loadDom) $(target).toggleClass('hidden', !onStage);
     const imgStr = cache[i] ? cache[i] : await fetchImage(fullPath);
     cache[i] = imgStr;
     if (loadDom) $(target).attr('src', imgStr);
-    // console.log(Object.keys(cache))
+
+    if (onStage && state.playing) {
+        if (interval) clearTimeout(interval);
+        interval = setTimeout(advanceSlide, (Math.max(state.timer, MIN_TIME)) * 1000); 
+    }
 };
 
 const brieflyHideLoader = () => {
@@ -286,7 +304,7 @@ const rotateImage = async () => {
 const handleOpenOptions = () => {
     if (state.optionsOpen) return;
     setTimeout(() => {
-        playCache = !!interval;
+        playCache = state.playing;
         $('.viewer-area').toggleClass('blur', true);
         const useList = selectList();
         constructInfoArea();
@@ -371,6 +389,12 @@ const showControl = (show) => {
     if (show) updateCaption();
 };
 
+const showFavbar = (show) => {
+    $('.fav-bar').toggleClass('control-bar-hover', show);
+    state.favsOpen = show;
+    if (show) renderStarredList();
+};
+
 const constructInfoArea = async () => {
     $('.info-area').append('<img class="loader info-loader" src="loading.svg" />');
     const res = await fetch('config');
@@ -429,30 +453,69 @@ const getExif = async () => {
     }
 };
 
-const addStarred = (pathName) => {
+const addFav = (pathName) => {
+    showNotifier('favorite');
     starred[pathName] = 1;
     renderStarredList();
 };
 
-const removeStarred = (pathName) => {
+const removeFav = (pathName) => {
     if (!starred[pathName]) return;
     delete starred[pathName];
     renderStarredList();
 };
 
+const handleFav = () => {
+    const pathName = useList[state.currIndex].fullPath;
+    if (starred[pathName]) {
+        removeFav(pathName);
+    } else {
+        addFav(pathName);
+    }
+    updateFavIcon();
+};
+
 const renderStarredList = () => {
+    if (!state.favsOpen) return;
     // cache saved pos to reinstate after rendering
     const paths = Object.keys(starred);
+    $('.fav-bar').empty();
+    const addition = `
+        <h3>Favorites</h3>
+        ${paths.map(path => `
+            <div class="favorite-row" onclick="showFav('${path}')">${path}</div>
+        `).join('')}
+        <div class="option setting copy-favs" onclick="copyFavs()">Copy list to clipboard</div>
+    `;
+    $('.fav-bar').append(addition);
+};
+
+const copyFavs = () => {
+    const string = JSON.stringify(Object.keys(starred));
+    copyToClipboard(string);
+};
+
+const showFav = (path) => {
+    if (state.playing) clearShow();
+    console.log('showfav', path);
+    const list = selectList();
+    const index = list.map(i => i.fullPath).indexOf(path);
+    state.currIndex = index;
+    loadNext();
+};
+
+const copyShuffle = () => {
+    const json = JSON.stringify(shuffledList);
+    copyToClipboard(json);
 };
 
 /* Courtesy anazard - github  */
-const copyToClipboard = () => {
+const copyToClipboard = (text) => {
     showNotifier('file_copy');
-    const json = JSON.stringify(shuffledList);
     const body = document.querySelector('body');
     let $tempInput = document.createElement('INPUT');
     body.appendChild($tempInput);
-    $tempInput.setAttribute('value', json)
+    $tempInput.setAttribute('value', text)
     $tempInput.select();
     document.execCommand('copy');
     body.removeChild($tempInput);
@@ -482,6 +545,11 @@ const addListeners = () => {
         () => showControl(false)
     );
 
+    $('.fav-bar').hover(
+        () => showFavbar(true),
+        () => showFavbar(false)
+    );
+
     document.addEventListener('keydown', (e) => {
         e.preventDefault();
         const key = e.key;
@@ -495,6 +563,8 @@ const addListeners = () => {
             case 'r':
                 if (state.optionsOpen) return;
                 return rotateImage();
+            case 'f':
+                return handleFav();
         }
     });
 

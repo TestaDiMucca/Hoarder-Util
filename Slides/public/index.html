@@ -52,6 +52,9 @@
                 <i class="material-icons rotate option" title="Rotate" onclick="rotateImage()">
                     rotate_right
                 </i>
+                <i class="material-icons favorite option" title="Fav" onclick="handleFav()">
+                    favorite
+                </i>
             </span>
         </nav>
         <p id="mini-filename"></p>
@@ -79,7 +82,7 @@
         <div class="option setting" onclick="getNewShuffleList()">
             <span>Use Local Shuffle List</span>
         </div>
-        <div class="option setting" onclick="copyToClipboard()">
+        <div class="option setting" onclick="copyShuffle()">
             <span>Copy Shuffle JSON To Clipboard</span>
         </div>
         <!-- <i class="material-icons option" title="Reset" onclick="reset()">
