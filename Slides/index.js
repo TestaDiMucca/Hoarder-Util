@@ -71,6 +71,11 @@ app.post('/rescan', (req, res) => {
     res.end();
 });
 
+app.post('/dump-shuffle', async (req, res) => {
+    await handlerInstance.dumpShuffle();
+    res.end();
+});
+
 const init = async () => {
     try {
         await configInstance.load();

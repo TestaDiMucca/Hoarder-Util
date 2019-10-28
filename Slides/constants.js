@@ -2,6 +2,7 @@ const DEFAULT_PORT = 4001;
 const DEFAULT_SCAN_PATH = './Photos';
 const VER = '0.0.2';
 const CONFIG_PATH = './config.json';
+const STARTER_SHUFFLE_PATH = './shuffle.json';
 const SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png'];
 const REFRESH_INTERVAL = 24 * 60 * 60 * 1000;
 const NAMES = [
@@ -16,5 +17,6 @@ module.exports = {
     VER,
     SUPPORTED_FORMATS,
     REFRESH_INTERVAL,
-    NAMES
+    NAMES,
+    STARTER_SHUFFLE_PATH
 };

@@ -43,6 +43,10 @@ process.on('message', async message => {
             case ACTIONS.SHUFFLE:
                 res = await shuffleList(data);
                 return sendReply(null, res);
+            case ACTIONS.MERGE:
+                const { list, preShuffle } = data;
+                res = await mergePreshuffled(list, preShuffle);
+                return sendReply(null, res);
             default:
                 return sendReply(null, `action ${action} not supported`);
         }
@@ -62,6 +66,19 @@ const close = () => {
         console.log(`[${NAMAE}] 再見!`);
         process.exit();
     }, 1000);
+};
+
+/**
+ * Create a new shuffle list based on a starter, adding new items
+ * @param {ScannedFile[]} list 
+ * @param {ScannedFile[]} preShuffle 
+ */
+const mergePreshuffled = async (list, preShuffle) => {
+    let newItems = list.filter(file => !preShuffle.find(obj => obj.fullPath === file.fullPath));
+    newItems = shuffleList(newItems);
+    // console.log(newItems[425])
+    console.log(`[${NAMAE}] Finished merge list with ${newItems.length} new items`);
+    return preShuffle.concat(newItems);
 };
 
 /**
@@ -166,7 +183,8 @@ const ACTIONS = {
     SCAN_DIR: 'scanDir',
     FILTER: 'filter',
     SHUFFLE: 'shuffle',
-    VERIFY: 'verify'
+    VERIFY: 'verify',
+    MERGE: 'merge'
 };
 
 module.exports = {

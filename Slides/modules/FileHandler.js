@@ -3,9 +3,11 @@ const sharp = require('sharp');
 const piexif = require('piexifjs');
 const fs = require('fs');
 const { fork } = require('child_process');
+
+const ConfigHandler = require('./ConfigHandler');
 const { ACTIONS } = require('../workers/dirScanner');
 
-const { SUPPORTED_FORMATS, REFRESH_INTERVAL } = require('../constants');
+const { SUPPORTED_FORMATS, REFRESH_INTERVAL, STARTER_SHUFFLE_PATH } = require('../constants');
 
 const { promisify } = require('util');
 
@@ -68,18 +70,28 @@ class FileHandler {
         console.log('[FileHandler] Begin scanning');
         this.status = FileHandler.STATUS.SCANNING;
         let paths = await this.useWorker(ACTIONS.SCAN_DIR, { path: this.scanPath, excludes: config.exclude });
+        let starterShuffle = await ConfigHandler.getStarterShuffle();
+        if (!!starterShuffle) this.shuffled = await this.initWithStarterShuffle(paths, starterShuffle);
         console.log(`[FileHandler] ${paths.length} items found. Begin filtering`);
         this.status = FileHandler.STATUS.FILTERING;
         let filtered = await this.useWorker(ACTIONS.FILTER, { paths, formats: SUPPORTED_FORMATS });
         console.log('[FileHandler] after filter', filtered.length);
         if (!skipVerify) filtered = await this.useWorker(ACTIONS.VERIFY, filtered);
         console.log('[FileHandler] after access check', filtered.length);
-        this.shuffled = await this.useWorker(ACTIONS.SHUFFLE, filtered);
+        if (!starterShuffle) this.shuffled = await this.useWorker(ACTIONS.SHUFFLE, filtered);
         console.log('[FileHandler] Shuffled list cached');
         this.status = FileHandler.STATUS.READY;
         this.list = filtered;
         this.fullPathsOnly = filtered.map(i => i.fullPath);
         console.log('[FileHandler] Filtered final list to length', filtered.length);
+    }
+
+    async initWithStarterShuffle (list, preShuffle) {
+        let merged = await this.useWorker(ACTIONS.MERGE, { list, preShuffle });
+        merged = await this.useWorker(ACTIONS.FILTER, { paths: merged, formats: SUPPORTED_FORMATS });
+        merged = await this.useWorker(ACTIONS.VERIFY, merged);
+        // we should have a shuffled list now
+        return merged;
     }
 
     async getNewShuffle () {
@@ -107,6 +119,14 @@ class FileHandler {
                 resolve(message.data);
             });
         });
+    }
+
+    /**
+     * Save a JSON of the shuffle order so it can persist through restarts
+     */
+    async dumpShuffle () {
+        await fsp.writeFile(STARTER_SHUFFLE_PATH, JSON.stringify(this.shuffled));
+        return;
     }
 
     /**

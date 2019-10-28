@@ -2,7 +2,7 @@ const fs = require('fs');
 const { promisify } = require('util');
 const { resolve: pathResolve } = require('path');
 
-const { CONFIG_PATH, VER } = require('../constants');
+const { CONFIG_PATH, VER, STARTER_SHUFFLE_PATH } = require('../constants');
 
 const fsp = {
     readFile: promisify(fs.readFile)
@@ -33,6 +33,22 @@ class Config {
 
     getConfig () {
         return this.config;
+    }
+
+    /**
+     * Preserve shuffle order from before, past server restarts
+     */
+    static getStarterShuffle () {
+        return new Promise(async resolve => {
+            try {
+                const results = await fsp.readFile(pathResolve(__dirname, '..', STARTER_SHUFFLE_PATH), ENCODING);
+                const config = JSON.parse(results);
+                console.log(`[ConfigHandler] Loaded starter shuffle with ${config.length} results.`);
+                resolve(config);
+            } catch (e) {
+                resolve();
+            }
+        })
     }
 }
 
