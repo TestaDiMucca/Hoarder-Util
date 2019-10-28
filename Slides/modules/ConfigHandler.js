@@ -5,13 +5,17 @@ const { resolve: pathResolve } = require('path');
 const { CONFIG_PATH, VER, STARTER_SHUFFLE_PATH } = require('../constants');
 
 const fsp = {
-    readFile: promisify(fs.readFile)
+    readFile: promisify(fs.readFile),
+    rename: promisify(fs.rename)
 };
 const ENCODING = 'utf8';
 
 class Config {
     constructor () {
-        this.config = {};
+        this.config = {
+            basePath: process.env.SCAN_PATH,
+            version: VER
+        };
     }
 
     async load () {
@@ -19,11 +23,7 @@ class Config {
             try {
                 let results = await fsp.readFile(pathResolve(__dirname, '..', CONFIG_PATH), ENCODING);
                 let config = JSON.parse(results);
-                let other = {
-                    basePath: process.env.SCAN_PATH,
-                    version: VER
-                };
-                this.config = Object.assign(config, other);
+                this.config = Object.assign({}, this.config, config);
                 resolve();
             } catch (e) {
                 reject(e);
@@ -44,6 +44,12 @@ class Config {
                 const results = await fsp.readFile(pathResolve(__dirname, '..', STARTER_SHUFFLE_PATH), ENCODING);
                 const config = JSON.parse(results);
                 console.log(`[ConfigHandler] Loaded starter shuffle with ${config.length} results.`);
+                try {
+                    const pIndex = STARTER_SHUFFLE_PATH.lastIndexOf('.');
+                    const newName = STARTER_SHUFFLE_PATH.substr(0, pIndex) + Date.now() + STARTER_SHUFFLE_PATH.substr(n);
+                    await fsp.rename(STARTER_SHUFFLE_PATH, newName);
+                } catch (e) {}
+                
                 resolve(config);
             } catch (e) {
                 resolve();
