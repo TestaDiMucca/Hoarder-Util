@@ -3,17 +3,11 @@ let list;
 let shuffledList;
 
 /* State */
-// let currIndex = 0;
-// let timer = 5; /* in secomds */
 let interval = null;
 /* Cache images */
 let cache = {};
 /* Star images */
-let starred = [];
-// let shuffle = true;
-// let optionsOpen = false;
-// let panelOpen = false;
-// let filepathActive = false;
+let starred = {};
 let playCache;
 
 let state = {
@@ -81,16 +75,12 @@ const shuffleList = (list) => {
 /**
  * @param {boolean} pausing 
  */
-const showNotifier = (pausing) => {
+const showNotifier = (content) => {
     const target = '.notifier';
     let old = document.querySelector(target);
     let newEl = old.cloneNode(true);
     old.parentNode.replaceChild(newEl, old);
-    if (pausing) {
-        $(target).text('pause');
-    } else {
-        $(target).text('play_arrow');
-    }
+    $(target).text(content);
 
 };
 
@@ -99,7 +89,7 @@ const showNotifier = (pausing) => {
  */
 const startShow = () => {
     console.log('startShow');
-    showNotifier(false);
+    showNotifier('play_arrow');
     $('.play-pause').text('pause');
     interval = setInterval(advanceSlide, (Math.max(state.timer, MIN_TIME)) * 1000);
     nosleep.enable();
@@ -110,7 +100,7 @@ const startShow = () => {
  */
 const clearShow = () => {
     if (interval) clearInterval(interval);
-    showNotifier(true);
+    showNotifier('pause');
     interval = null;
     $('.play-pause').text('play_arrow');
     nosleep.disable();
@@ -278,7 +268,10 @@ const selectList = () => {
 
 const rotateImage = async () => {
     if (interval) clearShow();
+    showNotifier('rotate_right');
+    brieflyHideLoader();
     $('.rotate').addClass('disabled');
+    $('#main-loader').addClass('top');
     const fullPath = selectList()[state.currIndex].fullPath;
     const encoded = encodeURIComponent(fullPath);
     const url = `edit?method=rotate&path=${encoded}`;
@@ -287,6 +280,7 @@ const rotateImage = async () => {
     cache[state.currIndex] = imgStr;
     $(getSlotForIndex(state.currIndex)).attr('src', imgStr);
     $('.rotate').removeClass('disabled');
+    $('#main-loader').removeClass('top');
 };
 
 const handleOpenOptions = () => {
@@ -377,63 +371,8 @@ const showControl = (show) => {
     if (show) updateCaption();
 };
 
-const addListeners = () => {
-    $('body').css('cursor', 'none');
-
-    window.onbeforeunload = () => {
-        localStorage.setItem(LS_KEYS.POS, state.currIndex);
-        localStorage.setItem(LS_KEYS.TIMER, state.timer);
-        localStorage.setItem(LS_KEYS.SHOW_NAME, filepathActive);
-    };
-
-    let specifiedElement = document.querySelector('.toolbar');
-    document.addEventListener('click', (event) => {
-        let isClickInside = specifiedElement.contains(event.target);
-
-        if (!isClickInside && state.optionsOpen) {
-            closeOptions();
-        }
-    });
-
-    $('.control-bar').hover(
-        () => showControl(true),
-        () => showControl(false)
-    );
-
-    document.addEventListener('keydown', (e) => {
-        e.preventDefault();
-        const key = e.key;
-        console.log(key);
-        switch (key) {
-            case ' ':
-                return handlePlayPause();
-            case 'ArrowLeft':
-                return backSlide();
-            case 'ArrowRight':
-                return advanceSlide();
-            case 'r':
-                return rotateImage();
-        }
-    });
-
-    $('body').mousemove(() => {
-        if (!forceHide) {
-            $('body').css('cursor', '');
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                $('body').css('cursor', 'none');
-
-                forceHide = true;
-                setTimeout(() => {
-                    forceHide = false;
-                }, 200);
-            }, 1000);
-        }
-    });
-};
-
 const constructInfoArea = async () => {
-    $('.info-area').append('<img class="loader" src="loading.svg" />');
+    $('.info-area').append('<img class="loader info-loader" src="loading.svg" />');
     const res = await fetch('config');
     const json = await res.json();
     const exif = await getExif();
@@ -488,6 +427,91 @@ const getExif = async () => {
     } catch (e) {
         console.log('Error getting exif', e);
     }
+};
+
+const addStarred = (pathName) => {
+    starred[pathName] = 1;
+    renderStarredList();
+};
+
+const removeStarred = (pathName) => {
+    if (!starred[pathName]) return;
+    delete starred[pathName];
+    renderStarredList();
+};
+
+const renderStarredList = () => {
+    // cache saved pos to reinstate after rendering
+    const paths = Object.keys(starred);
+};
+
+/* Courtesy anazard - github  */
+const copyToClipboard = () => {
+    showNotifier('file_copy');
+    const json = JSON.stringify(shuffledList);
+    const body = document.querySelector('body');
+    let $tempInput = document.createElement('INPUT');
+    body.appendChild($tempInput);
+    $tempInput.setAttribute('value', json)
+    $tempInput.select();
+    document.execCommand('copy');
+    body.removeChild($tempInput);
+};
+
+
+const addListeners = () => {
+    $('body').css('cursor', 'none');
+
+    window.onbeforeunload = () => {
+        localStorage.setItem(LS_KEYS.POS, state.currIndex);
+        localStorage.setItem(LS_KEYS.TIMER, state.timer);
+        localStorage.setItem(LS_KEYS.SHOW_NAME, state.filepathActive);
+    };
+
+    let specifiedElement = document.querySelector('.toolbar');
+    document.addEventListener('click', (event) => {
+        let isClickInside = specifiedElement.contains(event.target);
+
+        if (!isClickInside && state.optionsOpen) {
+            closeOptions();
+        }
+    });
+
+    $('.control-bar').hover(
+        () => showControl(true),
+        () => showControl(false)
+    );
+
+    document.addEventListener('keydown', (e) => {
+        e.preventDefault();
+        const key = e.key;
+        switch (key) {
+            case ' ':
+                return handlePlayPause();
+            case 'ArrowLeft':
+                return backSlide();
+            case 'ArrowRight':
+                return advanceSlide();
+            case 'r':
+                if (state.optionsOpen) return;
+                return rotateImage();
+        }
+    });
+
+    $('body').mousemove(() => {
+        if (!forceHide) {
+            $('body').css('cursor', '');
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                $('body').css('cursor', 'none');
+
+                forceHide = true;
+                setTimeout(() => {
+                    forceHide = false;
+                }, 200);
+            }, 1000);
+        }
+    });
 };
                           
 const main = async () => {
