@@ -76,7 +76,8 @@ class FileHandler {
         this.status = FileHandler.STATUS.FILTERING;
         let filtered = await this.useWorker(ACTIONS.FILTER, { paths, formats: SUPPORTED_FORMATS });
         console.log('[FileHandler] after filter', filtered.length);
-        if (!skipVerify) filtered = await this.useWorker(ACTIONS.VERIFY, filtered);
+        if (!skipVerify && !starterShuffle) filtered = await this.useWorker(ACTIONS.VERIFY, filtered);
+        if (!!starterShuffle) filtered = await this.useWorker(ACTIONS.VERIFY_AGAINST, { verified: this.shuffled, unverified: filtered });
         console.log('[FileHandler] after access check', filtered.length);
         if (!starterShuffle) this.shuffled = await this.useWorker(ACTIONS.SHUFFLE, filtered);
         console.log('[FileHandler] Shuffled list cached');
@@ -153,6 +154,7 @@ class FileHandler {
                     info = { message: `Could not read Exif data: ${err.message}` };
                 } else {
                     info = exif.exif;
+                    info.gps = exif.gps;
                     
                 }
                 resolve(info);

@@ -30,7 +30,7 @@ process.on('message', async message => {
         switch (action) {
             case ACTIONS.SCAN_DIR:
                 const { path, excludes } = data;
-                console.log('Begin scan with excludes', excludes)
+                console.log(`[${NAMAE}] Begin scan with excludes`, excludes);
                 res = await scanDir(path, undefined, excludes);
                 return sendReply(null, res);
             case ACTIONS.FILTER:
@@ -46,6 +46,11 @@ process.on('message', async message => {
             case ACTIONS.MERGE:
                 const { list, preShuffle } = data;
                 res = await mergePreshuffled(list, preShuffle);
+                return sendReply(null, res);
+            case ACTIONS.VERIFY_AGAINST:
+                const { unverified, verified } = data;
+                res = verifyAgainst(verified, unverified);
+                console.log(`[${NAMAE}] Done verify against`);
                 return sendReply(null, res);
             default:
                 return sendReply(null, `action ${action} not supported`);
@@ -69,17 +74,39 @@ const close = () => {
 };
 
 /**
+ * Verify a list against one that is already verified
+ * @param {ScannedFile[]} verified 
+ * @param {ScannedFile[]} unverified 
+ */
+const verifyAgainst = (verified, unverified) => {
+    const dict = createDict(verified);
+    return unverified.filter(file => !!dict[file.fullPath]);
+};
+
+/**
  * Create a new shuffle list based on a starter, adding new items
  * @param {ScannedFile[]} list 
  * @param {ScannedFile[]} preShuffle 
  */
 const mergePreshuffled = async (list, preShuffle) => {
-    let newItems = list.filter(file => !preShuffle.find(obj => obj.fullPath === file.fullPath));
+    const dict = createDict(preShuffle);
+    let newItems = list.filter(file => !dict[file.fullPath]);
+    console.log(`[${NAMAE}] Filtered to ${newItems.length} new items, begin shuffle new`);
     newItems = shuffleList(newItems);
-    // console.log(newItems[425])
-    console.log(`[${NAMAE}] Finished merge list with ${newItems.length} new items`);
+    console.log(`[${NAMAE}] Finished merge list with ${preShuffle.length} new items`);
     return preShuffle.concat(newItems);
 };
+
+/**
+ * Create a quick way to look up if keys are in the pre-shuffle
+ *  O(n) > O(n^2) after all
+ * @param {ScannedFile[]} list
+ */
+const createDict = (list) => {
+    let ret = {};
+    list.forEach(file => ret[file.fullPath] = 1);
+    return ret;
+}
 
 /**
  * 
@@ -184,7 +211,8 @@ const ACTIONS = {
     FILTER: 'filter',
     SHUFFLE: 'shuffle',
     VERIFY: 'verify',
-    MERGE: 'merge'
+    MERGE: 'merge',
+    VERIFY_AGAINST: 'verifyAgainst'
 };
 
 module.exports = {

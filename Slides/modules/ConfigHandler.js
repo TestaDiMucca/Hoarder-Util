@@ -46,7 +46,7 @@ class Config {
                 console.log(`[ConfigHandler] Loaded starter shuffle with ${config.length} results.`);
                 try {
                     const pIndex = STARTER_SHUFFLE_PATH.lastIndexOf('.');
-                    const newName = STARTER_SHUFFLE_PATH.substr(0, pIndex) + Date.now() + STARTER_SHUFFLE_PATH.substr(n);
+                    const newName = STARTER_SHUFFLE_PATH.substr(0, pIndex) + '_' + Date.now() + STARTER_SHUFFLE_PATH.substr(pIndex);
                     await fsp.rename(STARTER_SHUFFLE_PATH, newName);
                 } catch (e) {}
                 

@@ -18,7 +18,8 @@ let state = {
     panelOpen: false,
     filepathActive: false,
     playing: true,
-    favsOpen: false
+    favsOpen: false,
+    actionDisabled: false
 };
 
 /* Hide mouse variables */
@@ -164,6 +165,7 @@ const slideChangedActions = () => {
     $(nextEle).addClass('top-slide');
 
     updateFavIcon();
+    $('.progress.front').width(`${ Math.round((state.currIndex / list.length) * 100 ) }%`)
 };
 
 const updateFavIcon = () => {
@@ -265,6 +267,9 @@ const selectList = () => {
 };
 
 const rotateImage = async () => {
+    if (state.actionDisabled) return;
+    state.actionDisabled = true;
+    const cachePlay = state.playing;
     if (interval) clearShow();
     showNotifier('rotate_right');
     brieflyHideLoader();
@@ -279,6 +284,8 @@ const rotateImage = async () => {
     $(getSlotForIndex(state.currIndex)).attr('src', imgStr);
     $('.rotate').removeClass('disabled');
     $('#main-loader').removeClass('top');
+    state.actionDisabled = false;
+    if (cachePlay) startShow();
 };
 
 const handleOpenOptions = () => {
@@ -379,6 +386,7 @@ const constructInfoArea = async () => {
     const res = await fetch('config');
     const json = await res.json();
     const exif = await getExif();
+    const gps = exif.gps ? processGPSExif(exif.gps) : null;
     const exifInsert = constructExifInfo(exif);
     const { basePath, exclude, version } = json;
     const contents = `
@@ -392,6 +400,24 @@ const constructInfoArea = async () => {
         `;
     $('.info-area').empty();
     $('.info-area').append(contents);
+};
+
+const processGPSExif = (info) => {
+    const { GPSLatitude, GPSLatitudeRef, GPSLongitude, GPSLongitudeRef } = info;
+    return {
+        long: singleGPSParse(GPSLongitude, GPSLongitudeRef),
+        lat: singleGPSParse(GPSLatitude, GPSLatitudeRef)
+    }
+};
+
+const singleGPSParse = (dms, ref) => {
+    try {
+        let dd = dms[0] + dms[1] / 60 + dms[2] / (60 * 60);
+        if (ref == 'S' || ref == 'W') dd = dd * -1;
+        return dd;
+    } catch (e) {
+        return 0;
+    }
 };
 
 const constructExifInfo = (info) => {
@@ -552,10 +578,16 @@ const addListeners = () => {
         () => showControl(false)
     );
 
+    let favBarTimeout;
     $('.fav-bar').hover(
-        () => showFavbar(true),
+        () => {
+            favBarTimeout = setTimeout(() => showFavbar(true), 1000);
+        },
         () => showFavbar(false)
     );
+    $('.fav-bar').mouseleave(() => {
+        if (!!favBarTimeout) clearTimeout(favBarTimeout);
+    });
 
     document.addEventListener('keydown', (e) => {
         e.preventDefault();

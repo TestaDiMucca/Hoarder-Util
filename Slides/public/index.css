@@ -151,6 +151,14 @@ body {
     padding: 1em;
 }
 
+.scroll-area {
+    height: 100%;
+    width: 100%;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 .fav-bar {
     position: absolute;
     color: white;
@@ -237,15 +245,18 @@ h3 {
     user-select: none;
     -moz-user-select: none;
 
-    text-shadow: 2px 2px black;
+    /* text-shadow: 2px 2px black; */
     font-size: 1.2em;
+    padding: 0.1em 0.4em;
+    border-radius: 0.5em;
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
-.info-area {
+/* .info-area {
     height: 50%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
+    overflow-x: hidden; */
+    /* overflow-y: auto;
+} */
 
 .info-area li {
     margin-left: 2em;
@@ -305,7 +316,7 @@ h3 {
 }
 
 .fader {
-    animation-duration: 0.5s;
+    animation-duration: 1s;
     animation-name: fadeout;
     animation-timing-function: ease-out;
 
@@ -320,6 +331,26 @@ h3 {
     to {
         opacity: 0;
     }
+}
+
+.progress {
+    position: absolute;
+    bottom: 1.5em;
+    height: 0.3em;
+    border-radius: 30%;
+    opacity: 0.7;
+}
+
+.progress.back {
+    width: 100%;
+    background-color: darkslategray;
+    z-index: 1;
+}
+
+.progress.front {
+    width: 100%;
+    background-color: gray;
+    z-index: 2;
 }
 
 :-webkit-full-screen body,
