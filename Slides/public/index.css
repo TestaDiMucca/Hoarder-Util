@@ -222,6 +222,9 @@ body {
 .toolbar h3 {
     background-color: rgba(255, 255, 255, 0.1);
     padding: 0.2em;
+}
+
+h3 {
     user-select: none;
 }
 
@@ -254,6 +257,12 @@ body {
 
 .top-slide {
     z-index: 2;
+}
+
+.option-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1em;
 }
 
 #filename {

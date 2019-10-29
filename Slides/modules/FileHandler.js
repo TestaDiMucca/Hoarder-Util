@@ -130,6 +130,19 @@ class FileHandler {
     }
 
     /**
+     * @param {number} index 
+     */
+    async shuffleAfter (index) {
+        console.log('shuffling all after', index);
+        let temp = this.shuffled.slice(0);
+        let preserve = temp.splice(0, index);
+        temp = await this.useWorker(ACTIONS.SHUFFLE, temp);
+        let res = [...preserve, ...temp];
+        this.shuffled = res;
+        return res;
+    }
+
+    /**
      * @param {string} image 
      */
     static async getExif (image) {

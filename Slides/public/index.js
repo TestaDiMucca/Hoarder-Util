@@ -250,26 +250,6 @@ const arrayBufferToBase64 = (buffer) => {
     return window.btoa(binary);
 };
 
-const postRequest = async (url, params) => {
-    return new Promise(async resolve => {
-        const options = {
-            headers: {
-                'content-type': 'application/json; charset=UTF-8'
-            },
-            body: JSON.stringify(params),
-            method: 'post'
-        };
-
-        const res = await fetch(url, options);
-        const text = await res.text();
-        try {
-            resolve(JSON.parse(text));
-        } catch (e) {
-            resolve(text);
-        }
-    });
-};
-
 const adjustInterval = () => {
     const timerTemp = $('#interval-field').val();
     if (timerTemp < MIN_TIME) {
@@ -313,7 +293,6 @@ const handleOpenOptions = () => {
         clearShow();
         $('.toolbar').toggleClass('hidden', false);
         state.optionsOpen = true;
-        
     }, 10);
 };
 
@@ -507,6 +486,34 @@ const showFav = (path) => {
 const copyShuffle = () => {
     const json = JSON.stringify(shuffledList);
     copyToClipboard(json);
+};
+
+const shuffleAfter = async () => {
+    const newList = await postRequest(`/shuffle-after?index=${state.currIndex + 1}`);
+    shuffledList = newList;
+    clearCache();
+    loadNext();
+};
+
+
+const postRequest = async (url, params) => {
+    return new Promise(async resolve => {
+        const options = {
+            headers: {
+                'content-type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify(params),
+            method: 'post'
+        };
+
+        const res = await fetch(url, options);
+        const text = await res.text();
+        try {
+            resolve(JSON.parse(text));
+        } catch (e) {
+            resolve(text);
+        }
+    });
 };
 
 /* Courtesy anazard - github  */

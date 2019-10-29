@@ -68,23 +68,29 @@
 
         <span class="title"><b>File:</b><p id="filename"></p></span>
         
-        <div class="setting">
-            <span>Interval (s):</span>
-            <input type="number" id="interval-field" placeholder="Interval in Seconds" onchange="adjustInterval()" />
+        <div class="option-group">
+            <div class="setting">
+                <span>Interval (s):</span>
+                <input type="number" id="interval-field" placeholder="Interval in Seconds" onchange="adjustInterval()" />
+            </div>
+            <div class="setting">
+                <span>Show file path:</span>
+                <input type="checkbox" id="filepath-toggle" onchange="toggleBottomName()" />
+            </div>
+            <div class="option setting" onclick="reset()">
+                <span>Reset to Slide 1</span>
+            </div>
+            <div class="option setting" onclick="getNewShuffleList()">
+                <span>Use Local Shuffle List</span>
+            </div>
+            <div class="option setting" onclick="copyShuffle()">
+                <span>Copy Shuffle JSON To Clipboard</span>
+            </div>
+            <div class="option setting" onclick="shuffleAfter()">
+                <span>Shuffle Everything After</span>
+            </div>
         </div>
-        <div class="setting">
-            <span>Show file path:</span>
-            <input type="checkbox" id="filepath-toggle" onchange="toggleBottomName()" />
-        </div>
-        <div class="option setting" onclick="reset()">
-            <span>Reset to Slide 1</span>
-        </div>
-        <div class="option setting" onclick="getNewShuffleList()">
-            <span>Use Local Shuffle List</span>
-        </div>
-        <div class="option setting" onclick="copyShuffle()">
-            <span>Copy Shuffle JSON To Clipboard</span>
-        </div>
+        
         <!-- <i class="material-icons option" title="Reset" onclick="reset()">
             replay
         </i> -->

@@ -71,6 +71,12 @@ app.post('/dump-shuffle', async (req, res) => {
     res.end();
 });
 
+app.post('/shuffle-after', async (req, res) => {
+    const { index } = req.query;
+    const data = await handlerInstance.shuffleAfter(+index);
+    res.send(data);
+});
+
 const init = async () => {
     try {
         await configInstance.load();
