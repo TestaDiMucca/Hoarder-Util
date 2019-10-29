@@ -1,6 +1,6 @@
 const DEFAULT_PORT = 4001;
 const DEFAULT_SCAN_PATH = './Photos';
-const VER = '0.0.2';
+const VER = '0.0.3';
 const CONFIG_PATH = './config.json';
 const STARTER_SHUFFLE_PATH = './shuffle.json';
 const SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png'];

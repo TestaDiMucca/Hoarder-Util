@@ -9,6 +9,7 @@ let cache = {};
 /* Star images */
 let starred = {};
 let playCache;
+let map;
 
 let state = {
     currIndex: 0,
@@ -386,8 +387,9 @@ const constructInfoArea = async () => {
     const res = await fetch('config');
     const json = await res.json();
     const exif = await getExif();
+    console.log(exif)
     const gps = exif.gps ? processGPSExif(exif.gps) : null;
-    const exifInsert = constructExifInfo(exif);
+    const exifInsert = constructExifInfo(exif, gps);
     const { basePath, exclude, version } = json;
     const contents = `
         <h3>Image Exif Data</h3>
@@ -420,7 +422,7 @@ const singleGPSParse = (dms, ref) => {
     }
 };
 
-const constructExifInfo = (info) => {
+const constructExifInfo = (info, gps) => {
     if (info.message) {
         return '<li>Could not read Exif data</li>';
     }
@@ -434,16 +436,67 @@ const constructExifInfo = (info) => {
     } = info;
     const mod = (info) => info ? info : 'unknown';
 
+    setTimeout(() => placeMap(gps), 10);
+
+    const validGPS = !!gps.long && gps.lat;
+
     return `
         <li>Create Date: ${mod(CreateDate)}</li>
         <li>Aperture: ${mod(FNumber)}</li>
         <li>Exposure Time: ${mod(decimalToFraction(ExposureTime))}</li>
         <li>ISO: ${mod(ISO)}</li>
         <li>Lens: ${mod(LensMake)} ${mod(LensModel)}</li>
+        ${validGPS ? '<div id="map"></div>' : ''}
     `;
 };
 
+const placeMap = (gps) => {
+    const { long, lat } = gps;
+    if (!long || !lat) return;
+    map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/dark-v10',
+        center: [long, lat],
+        zoom: 7
+    });
+    // map.setLayoutProperty('text-layer', 'text-ignore-placement', true);
+    // map.setLayoutProperty('text-layer', 'text-allow-overlap', true);
+    // map.resize();
+    let imgLoaded = false;
+
+    map.on('styledata', function () {
+        if (imgLoaded) return;
+        imgLoaded = true;
+        map.loadImage('cat.gif', function (error, image) {
+            if (error) throw error;
+            map.addImage('cat', image);
+            map.addLayer({
+                "id": "points",
+                "type": "symbol",
+                "source": {
+                    "type": "geojson",
+                    "data": {
+                        "type": "FeatureCollection",
+                        "features": [{
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [long, lat]
+                            }
+                        }]
+                    }
+                },
+                "layout": {
+                    "icon-image": "cat",
+                    "icon-size": 0.25
+                }
+            });
+        });
+    });
+};
+
 const emptyInfoArea = () => {
+    map = null;
     $('.info-area').empty();
 }; 
 
@@ -622,12 +675,23 @@ const addListeners = () => {
         }
     });
 };
+
+const getMapbox = async () => {
+    try {
+        const res = await fetch('mapbox-key');
+        const fetchedKey = await res.text();
+        if (mapboxgl) mapboxgl.accessToken = fetchedKey;
+    } catch (e) {
+        console.error('Failed to get mapbox key.', e);
+    }
+}
                           
 const main = async () => {
     await getFileList();
     checkIndex();
     $('#shuffle-option').toggleClass('active', state.shuffle);
     addListeners();
+    getMapbox();
     loadNext();
     startShow();
 };

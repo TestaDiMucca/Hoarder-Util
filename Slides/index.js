@@ -77,6 +77,10 @@ app.post('/shuffle-after', async (req, res) => {
     res.send(data);
 });
 
+app.get('/mapbox-key', (req, res) => {
+    res.send(process.env.MAPBOX_KEY);
+});
+
 const init = async () => {
     try {
         await configInstance.load();
