@@ -38,6 +38,9 @@ const LS_KEYS = {
 const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
 
+const LOADER_IMG = '<img class="loader info-loader" src="loading.svg" />';
+const CLOCK_IMG = '<img class="paused-bit" src="clock.svg" />'
+
 const reset = async () => {
     state.currIndex = 0;
     clearCache();
@@ -98,6 +101,8 @@ const startShow = () => {
     state.playing = true;
     if (!interval) interval = setTimeout(advanceSlide, (Math.max(state.timer, MIN_TIME)) * 1000);
     nosleep.enable();
+
+    if (state.filepathActive) $('.paused-bit').remove();
 };
 
 /**
@@ -110,6 +115,8 @@ const clearShow = () => {
     state.playing = false;
     $('.play-pause').text('play_arrow');
     nosleep.disable();
+
+    if (state.filepathActive) $('.bottom-name').append(CLOCK_IMG);
 };
 
 const advanceSlide = () => {
@@ -188,6 +195,7 @@ const updateBottomName = () => {
     const useList = selectList();
     const item = useList[state.currIndex];
     $('.bottom-name').text(`${item.add}/${item.item}`);
+    if (!state.playing) $('.bottom-name').append(CLOCK_IMG);
 };
 
 /**
@@ -221,7 +229,7 @@ const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
     cache[i] = imgStr;
     if (loadDom) $(target).attr('src', imgStr);
 
-    if (onStage && state.playing) {
+    if (onStage && state.playing && i === state.currIndex) {
         if (interval) clearTimeout(interval);
         interval = setTimeout(advanceSlide, (Math.max(state.timer, MIN_TIME)) * 1000); 
     }
@@ -298,7 +306,7 @@ const handleOpenOptions = () => {
         constructInfoArea();
         $('#filename').text(useList[state.currIndex].fullPath);
         $('#interval-field').val(state.timer);
-        clearShow();
+        if (state.playing) clearShow();
         $('.toolbar').toggleClass('hidden', false);
         state.optionsOpen = true;
     }, 10);
@@ -383,7 +391,7 @@ const showFavbar = (show) => {
 };
 
 const constructInfoArea = async () => {
-    $('.info-area').append('<img class="loader info-loader" src="loading.svg" />');
+    $('.info-area').append(LOADER_IMG);
     const res = await fetch('config');
     const json = await res.json();
     const exif = await getExif();
@@ -459,9 +467,7 @@ const placeMap = (gps) => {
         center: [long, lat],
         zoom: 7
     });
-    // map.setLayoutProperty('text-layer', 'text-ignore-placement', true);
-    // map.setLayoutProperty('text-layer', 'text-allow-overlap', true);
-    // map.resize();
+
     let imgLoaded = false;
 
     map.on('styledata', function () {

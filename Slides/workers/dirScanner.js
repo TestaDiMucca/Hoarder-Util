@@ -66,6 +66,9 @@ const sendReply = (error, data) => {
     close();
 }
 
+/**
+ * Close the process
+ */
 const close = () => {
     setTimeout(() => {
         console.log(`[${NAMAE}] 再見!`);
@@ -127,6 +130,10 @@ const verifyPaths = async (list) => {
     return newList;
 }
 
+/**
+ * Check whether or not we have read access
+ * @param {string} path 
+ */
 const checkAccess = async (path) => {
     return new Promise(resolve => {
         fs.access(path, fs.constants.R_OK, err => {

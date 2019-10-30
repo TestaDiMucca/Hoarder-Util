@@ -13,7 +13,11 @@ const fsp = {
     stat: promisify(fs.stat)
 };
 
+const CACHE_TIME = 2 * 60 * 1000;
 const DIR_PATH = process.env.RENAME_PATH || '/Users/admin/Pictures/SamplePhone';
+
+let taskRunning = false;
+let cache = {};
 
 /**
  * The exposed method to handle incoming requests
@@ -21,12 +25,17 @@ const DIR_PATH = process.env.RENAME_PATH || '/Users/admin/Pictures/SamplePhone';
  * @param {Response} res 
  */
 const handleRenames = async (req, res) => {
+    if (taskRunning) return res.status(500).send('Task is already running');
     try {
         const { path, execute, suffix, tryDetect } = req.body;
         const usePath = !!path && await verifyPath(path) ? path : undefined;
-        const list = await buildList(usePath, { suffix, tryDetect });
 
-        if (!execute) return res.send(list);
+        const cached = cache[makeCacheKey(usePath, suffix, tryDetect)];
+
+        const list = cached ? cached : await buildList(usePath, { suffix, tryDetect });
+        if (!cached) cacheList(usePath, suffix, tryDetect, list);
+
+        if (!execute) return res.status(200).send(list);
 
         const renamedNum = await renameList(list);
         return res.status(200).send(`Renamed ${renamedNum} items`);
@@ -37,6 +46,29 @@ const handleRenames = async (req, res) => {
 };
 
 /**
+ * Put the list into memory for a short time so if execute is called shortly after, no re-scan
+ * @param {*} path 
+ * @param {*} suffix 
+ * @param {*} tryDetect 
+ * @param {*} results 
+ */
+const cacheList = (path, suffix, tryDetect, results) => {
+    const key = makeCacheKey(path, suffix, tryDetect);
+    cache[key] = results;
+    setTimeout(() => delete cache[key], CACHE_TIME);
+};
+
+/**
+ * Make a string out of the keys
+ * @param {*} path 
+ * @param {*} suffix 
+ * @param {*} tryDetect 
+ */
+const makeCacheKey = (path, suffix, tryDetect) => {
+    return path + suffix + tryDetect;
+}
+
+/**
  * Construct the list of files with the project new names
  * @param {string} dir 
  * @param {{ suffix: boolean, tryDetect: boolean }} options
@@ -44,27 +76,31 @@ const handleRenames = async (req, res) => {
  */
 const buildList = (dir = DIR_PATH, options = {}) => {
     return new Promise(async (resolve, reject) => {
+        taskRunning = true;
         try {
-            const pathList = await fsp.readdir(dir);
+            let pathList = await fsp.readdir(dir);
+            console.log(`[DateRenameHandler] Path list found ${pathList.length} items`);
+            const onePercent = Math.floor(pathList.length / 100) + 1;
     
-            let result = [];
             for (let i = 0; i < pathList.length; i++) {
+                if (i % onePercent === 0) console.log(`[DateRenameHandler] Processed ${i}/${pathList.length} (${((i / pathList.length) * 100).toFixed(2)}%)`);
                 const filePath = path.resolve(dir, pathList[i]);
                 const info = await returnItemData(filePath);
                 const formattedDate = infoToFormatted(info);
                 const skipRenamed = options.tryDetect ? tryDetectDate(pathList[i]) : false;
                 const isDir = await isDirectory(filePath);
-                result.push({
+                pathList[i] = {
                     filePath,
                     isDir,
-                    info,
                     name: pathList[i],
                     newName: skipRenamed ? pathList[i] : (
                         options.suffix ? getSuffixedName(pathList[i], formattedDate) : `${formattedDate}_${pathList[i]}`
                     )
-                });
+                };
             }
-            resolve(result);
+            console.log(`[DateRenameHandler] Done scanning.`);
+            taskRunning = false;
+            resolve(pathList);
         } catch (e) {
             reject(e);
         }
@@ -74,12 +110,11 @@ const buildList = (dir = DIR_PATH, options = {}) => {
 /**
  * Actually rename files based on what's passed in from the buildList function
  * In the future, possible to connect socket to send back progress
- * @param {Array<{ filePath: string, name: string, isDir: boolean, info: *, newName: string }>} list 
+ * @param {Array<{ filePath: string, name: string, isDir: boolean, newName: string }>} list 
  */
 const renameList = async (list) => {
-    // just replace name with newname
-    // don't rename if dir = true or no change in name
     let count = 0;
+    taskRunning = true;
     for (let i = 0; i < list.length; i++) {
         if (list[i].isDir || list[i].name === list[i].newName) continue;
 
@@ -87,6 +122,7 @@ const renameList = async (list) => {
         await fsp.rename(list[i].filePath, newPath);
         count++;
     }
+    taskRunning = false;
     return count;
 };
 
@@ -155,8 +191,6 @@ const infoToFormatted = (info, format = DEFAULT_FORMAT) => {
     const mmnt = moment(useDate);
     return mmnt.format(format);
 };
-
-buildList()
 
 module.exports = {
     handleRenames

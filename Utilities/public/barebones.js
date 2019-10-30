@@ -48,6 +48,7 @@ const submitMigrate = async () => {
 
 const toggleLoader = (state) => {
     $('.loader').toggleClass('hidden', !state);
+    toggleUILock(state);
 };
 
 const printMessage = (message) => {
@@ -85,6 +86,10 @@ const postRequest = async (url, params) => {
 
 const initWindowFuncs = () => {
     window.toggleLoader = toggleLoader;
+};
+
+const toggleUILock = (locked) => {
+    $('.tools').toggleClass('lock', locked);
 };
 
 const main = () => {

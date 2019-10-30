@@ -47,6 +47,10 @@ body {
     flex-direction: column;
 }
 
+.lock {
+    pointer-events: none;
+}
+
 button {
     cursor: pointer;
     background-color: var(--main-color);

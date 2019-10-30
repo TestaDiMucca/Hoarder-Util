@@ -250,6 +250,13 @@ h3 {
     padding: 0.1em 0.4em;
     border-radius: 0.5em;
     background-color: rgba(0, 0, 0, 0.7);
+
+    display: flex;
+}
+
+.paused-bit {
+    height: 1.2em;
+    margin-left: 0.5em;
 }
 
 /* .info-area {
