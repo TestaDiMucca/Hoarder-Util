@@ -18,20 +18,20 @@ class Trip extends BaseObject {
     }
 
     async update () {
-
+        const sql = `UPDATE ${Trip.dbTable} SET title = ? WHERE id = ?`;
+        return await db.run(sql, [this.title, this.id]);
     }
 
     async load () {
-        await super.load(Trip.dbTable);
+        return await super.load(Trip.dbTable);
     }
 
     async delete () {
-        const sql = `DELETE FROM ${Trip.dbTable} WHERE id = ?`;
-        return await db.run(sql, [this.id]);
+        return await super.delete(Trip.dbTable);
     }
 
-    loadDays () {
-
+    async loadDays () {
+        this.evaluateStartEnd();
     }
 
     evaluateStartEnd () {
@@ -39,7 +39,13 @@ class Trip extends BaseObject {
     }
 
     static async loadTrips () {
-        let result = await db.all(`SELECT * FROM ${Trip.dbTable}`);
+        let rows = await db.all(`SELECT * FROM ${Trip.dbTable}`);
+
+        return rows.map(row => {
+            let newTrip = new Trip(row.id);
+            newTrip.setProperties(row);
+            return newTrip;
+        });
     }
 }
 

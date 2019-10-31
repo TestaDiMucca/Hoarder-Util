@@ -1,6 +1,9 @@
+const db = require('./Database');
+
 class BaseObject {
     constructor(id) {
         this.id = id;
+        this.loaded = false;
     }
 
     async save () {
@@ -12,8 +15,10 @@ class BaseObject {
     }
 
     async load (table) {
+        if (this.loaded) return;
         const sql = `SELECT * FROM ${table} WHERE id = ?`;
         const info = await db.get(sql, [this.id]);
+        if (info) this.loaded = true;
         this.setProperties(info);
     }
 
@@ -23,6 +28,11 @@ class BaseObject {
 
     async update () {
 
+    }
+
+    async delete (table) {
+        const sql = `DELETE FROM ${table} WHERE id = ?`;
+        return await db.run(sql, [this.id]);
     }
 
     /**
