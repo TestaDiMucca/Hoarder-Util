@@ -7,6 +7,7 @@ require('dotenv').config();
 const FileHandler = require('./modules/FileHandler');
 const ConfigHandler = require('./modules/ConfigHandler');
 const TripsHandler = require('./modules/TripsHandler');
+let db = require('./Objects/Database');
 
 const { DEFAULT_PORT, DEFAULT_SCAN_PATH } = require('./constants');
 
@@ -16,7 +17,6 @@ const SCAN_PATH = process.env.SCAN_PATH || DEFAULT_SCAN_PATH;
 let handlerInstance = new FileHandler(SCAN_PATH, true);
 let configInstance = new ConfigHandler();
 let tripInstance = new TripsHandler();
-let db = require('./Objects/Database');
 
 const staticPath = path.resolve(__dirname + '/public'); 
 app.use(minify());

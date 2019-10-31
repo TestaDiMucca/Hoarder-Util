@@ -120,12 +120,14 @@ const clearShow = () => {
 };
 
 const advanceSlide = () => {
+    if (state.actionDisabled) return;
     state.currIndex++;
     if (state.currIndex >= list.length) state.currIndex = 0;
     loadNext();
 };
 
 const backSlide = () => {
+    if (state.actionDisabled) return;
     state.currIndex--;
     if (state.currIndex < 0) state.currIndex = list.length - 1;
     loadNext();

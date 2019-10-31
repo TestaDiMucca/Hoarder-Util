@@ -1,4 +1,5 @@
 const db = require('./Database');
+const Tools = require('./Tools');
 
 class BaseObject {
     constructor(id) {
@@ -6,6 +7,9 @@ class BaseObject {
         this.loaded = false;
     }
 
+    /**
+     * Call create or update depending on if ID already exists.
+     */
     async save () {
         if (this.id) {
             return await this.update();
@@ -14,12 +18,15 @@ class BaseObject {
         }
     }
 
+    /**
+     * @param {string} table Name of the table to load from
+     */
     async load (table) {
         if (this.loaded) return;
         const sql = `SELECT * FROM ${table} WHERE id = ?`;
         const info = await db.get(sql, [this.id]);
         if (info) this.loaded = true;
-        this.setProperties(info);
+        this.setProperties(Tools.processRow(info));
     }
 
     async create () {

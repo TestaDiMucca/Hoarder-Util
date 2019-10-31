@@ -23,7 +23,8 @@ class Trip extends BaseObject {
     }
 
     async load () {
-        return await super.load(Trip.dbTable);
+        await super.load(Trip.dbTable);
+        await this.loadDays();
     }
 
     async delete () {
@@ -31,11 +32,12 @@ class Trip extends BaseObject {
     }
 
     async loadDays () {
+        this.days = await TripDay.loadDays(this.id);
         this.evaluateStartEnd();
     }
 
     evaluateStartEnd () {
-
+        
     }
 
     static async loadTrips () {
@@ -44,6 +46,7 @@ class Trip extends BaseObject {
         return rows.map(row => {
             let newTrip = new Trip(row.id);
             newTrip.setProperties(row);
+            await newTrip.loadDays();
             return newTrip;
         });
     }
