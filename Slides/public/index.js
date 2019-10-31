@@ -370,8 +370,10 @@ const checkIndex = () => {
         state.timer = Math.max(+lTimer, 3);
     }
     const lShowName = localStorage.getItem(LS_KEYS.SHOW_NAME);
+    console.log(lShowName)
     if (lShowName !== undefined) {
-        state.filepathActive = lShowName;
+        state.filepathActive = lShowName === 'true';
+        $('#filepath-toggle').prop('checked', state.filepathActive);
         toggleBottomName(state.filepathActive);
     }
 };
