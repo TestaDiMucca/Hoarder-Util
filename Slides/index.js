@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const FileHandler = require('./modules/FileHandler');
 const ConfigHandler = require('./modules/ConfigHandler');
+const TripsHandler = require('./modules/TripsHandler');
 
 const { DEFAULT_PORT, DEFAULT_SCAN_PATH } = require('./constants');
 
@@ -14,6 +15,8 @@ const SCAN_PATH = process.env.SCAN_PATH || DEFAULT_SCAN_PATH;
 
 let handlerInstance = new FileHandler(SCAN_PATH, true);
 let configInstance = new ConfigHandler();
+let tripInstance = new TripsHandler();
+let db = require('./Objects/Database');
 
 const staticPath = path.resolve(__dirname + '/public'); 
 app.use(minify());
@@ -81,9 +84,14 @@ app.get('/mapbox-key', (req, res) => {
     res.send(process.env.MAPBOX_KEY);
 });
 
+app.get('/trips', (req, res) => tripInstance.handleRequest('GET', req, res));
+app.post('/trips', (req, res) => tripInstance.handleRequest('POST', req, res));
+
 const init = async () => {
     try {
+        db.init();
         await configInstance.load();
+        await tripInstance.load();
         const config = configInstance.getConfig();
         /* Maybe we want to just pass a reference to the config? */
         if (config.scanPath) handlerInstance.setNewScanPath(config.scanPath);

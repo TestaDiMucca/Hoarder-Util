@@ -8,3 +8,5 @@ junk2/
 Photos/
 shuffle.json
 config.json
+trips.json
+*.db
