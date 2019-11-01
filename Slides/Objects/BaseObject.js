@@ -13,8 +13,11 @@ class BaseObject {
     async save () {
         if (this.id) {
             return await this.update();
+
         } else {
-            return await this.create();
+            let res = await this.create();
+            if (res) this.id = res;
+            return res;
         }
     }
 

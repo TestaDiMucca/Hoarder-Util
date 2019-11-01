@@ -1,6 +1,7 @@
 const express = require('express');
 const minify = require('express-minify');
 const path = require('path');
+const bodyParser = require('body-parser');
 const app = express();
 require('dotenv').config();
 
@@ -21,6 +22,8 @@ let tripInstance = new TripsHandler();
 const staticPath = path.resolve(__dirname + '/public'); 
 app.use(minify());
 app.use(express.static(staticPath));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.get('/list', async (req, res) => {
     const { shuffled, newShuffle } = req.query;
@@ -84,8 +87,10 @@ app.get('/mapbox-key', (req, res) => {
     res.send(process.env.MAPBOX_KEY);
 });
 
-app.get('/trips', (req, res) => tripInstance.handleRequest('GET', req, res));
-app.post('/trips', (req, res) => tripInstance.handleRequest('POST', req, res));
+app.get('/trips*?', (req, res) => tripInstance.handleRequest('GET', req, res));
+app.post('/trips*?', (req, res) => tripInstance.handleRequest('POST', req, res));
+app.put('/trips*?', (req, res) => tripInstance.handleRequest('PUT', req, res));
+app.delete('/trips*?', (req, res) => tripInstance.handleRequest('DELETE', req, res));
 
 const init = async () => {
     try {

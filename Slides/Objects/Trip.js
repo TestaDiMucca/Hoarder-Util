@@ -47,12 +47,23 @@ class Trip extends BaseObject {
     static async loadTrips () {
         let rows = await db.all(`SELECT * FROM ${Trip.dbTable}`);
 
-        return rows.map(async row => {
-            let newTrip = new Trip(row.id);
-            newTrip.setProperties(row);
+        for (let i = 0; i < rows.length; i++) {
+            let newTrip = new Trip(rows[i].id);
+            newTrip.setProperties(rows[i]);
             await newTrip.loadDays();
-            return newTrip;
-        });
+            newTrip.loaded = true;
+            rows[i] = newTrip;
+        }
+
+        return rows;
+
+        // return rows.map(async row => {
+        //     let newTrip = new Trip(row.id);
+        //     newTrip.setProperties(row);
+        //     await newTrip.loadDays();
+        //     console.log(newTrip)
+        //     return newTrip;
+        // });
     }
 }
 

@@ -1,6 +1,8 @@
 const fs = require('fs');
 const { promisify } = require('util');
-const { resolve: pathResolve } = require('path');
+
+const Trip = require('../Objects/Trip');
+const TripDay = require('../Objects/TripDay');
 
 const { TRIPS_JSON } = require('../constants');
 
@@ -42,12 +44,86 @@ class TripHandler {
 
     /**
      * 
-     * @param {'POST' | 'GET'} method
+     * @param {'POST' | 'GET' | 'PUT' | 'DELETE'} method
      * @param {Request} req 
      * @param {Response} res 
      */
     async handleRequest (method, req, res) {
+        try {
+            const argsString = req.params[0] ? req.params[0] : '';
+            const args = argsString.length ? argsString.split('/').slice(1) : [];
+            const params = req.body;
+            const data = await this[method.toLowerCase()](args, params);
+            res.send(data);
+        } catch (e) {
+            res.status(500).send('Trip API error: ' + e.message);
+        }
+    }
 
+    async post (args, params) {
+        const arg1 = args ? args[0] : null;
+        let trip;
+        switch (arg1) {
+            case 'days':
+                trip = new TripDay();
+                trip.setProperties(params);
+                await trip.save();
+                return trip;
+            default:
+                trip = new Trip();
+                trip.setProperties(params);
+                await trip.save();
+                return trip;
+        }
+    }
+
+    async get (args, params) {
+        const arg1 = args ? args[0] : null;
+        switch (arg1) {
+            default:
+                if (!arg1) {
+                    /* Load all trips */
+                    return await Trip.loadTrips();
+                } else {
+                    /* Load one trip */
+                    let data = new Trip(+arg1);
+                    await data.load();
+                    return data;
+                }
+                
+        }
+    }
+
+    async put (args, params) {
+        const arg1 = args ? args[0] : null;
+        switch (arg1) {
+            case 'days':
+                let trip = new TripDay();
+                trip.setProperties(params);
+                await trip.save();
+                return trip;
+            default:
+                let trip = new Trip();
+                trip.setProperties(params);
+                await trip.save();
+                return trip;
+        }
+    }
+
+    async delete (args, params) {
+        const arg1 = args ? args[0] : null;
+        switch (arg1) {
+            case 'days':
+                const arg2 = args ? args[1] : null;
+                let trip = new TripDay(+arg2);
+                let data = await trip.delete();
+                return data;
+                break;
+            default:
+                let trip = new Trip(+arg1);
+                let data = await trip.delete();
+                return data;
+        }
     }
 
     async load () {
