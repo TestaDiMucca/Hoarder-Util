@@ -34,7 +34,7 @@ const ENCODING = 'utf8';
  * Manual for now, as many DSLR photos lack GPS data
  * and not useful enough to spend much time on
  * 
- * Also this is probably better served in a DB, relational
+ * Main methods for this can probably be an API base
  */
 class TripHandler {
     constructor () {
