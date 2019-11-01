@@ -28,6 +28,7 @@ class Trip extends BaseObject {
     }
 
     async delete () {
+        await TripDay.removeAssociatedDays(this.id);
         return await super.delete(Trip.dbTable);
     }
 
@@ -37,13 +38,16 @@ class Trip extends BaseObject {
     }
 
     evaluateStartEnd () {
-        
+        const sorted = [...this.days].sort((a, b) => Date.parse(a) > Date.parse(b));
+        if (sorted.length <= 0) return;
+        this.startDate = sorted[0].date;
+        this.endDate = sorted[sorted.length - 1].date;
     }
 
     static async loadTrips () {
         let rows = await db.all(`SELECT * FROM ${Trip.dbTable}`);
 
-        return rows.map(row => {
+        return rows.map(async row => {
             let newTrip = new Trip(row.id);
             newTrip.setProperties(row);
             await newTrip.loadDays();

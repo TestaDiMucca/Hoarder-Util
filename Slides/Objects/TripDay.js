@@ -5,6 +5,7 @@ class TripDay extends BaseObject {
     constructor (id) {
         super(id);
         this.tripID = 0;
+        /** We want to store in a YYYY-MM-DD format */
         this.date = '';
         this.description = '';
     }
@@ -41,6 +42,14 @@ class TripDay extends BaseObject {
             newTripDay.setProperties(row);
             return newTripDay;
         });
+    }
+
+    /**
+     * 
+     * @param {number} tripID 
+     */
+    static async removeAssociatedDays (tripID) {
+        return await db.run(`DELETE FROM ${TripDay.dbTable} WHERE trip_id = ?`, [tripID])
     }
 }
 
