@@ -16,7 +16,8 @@ class Database {
         if (this.initiated) return;
         this.initiated = true;
         this.db.serialize(() => {
-            this.db.run('CREATE TABLE if not exists trips (id INTEGER PRIMARY KEY, title TEXT)');
+            // this.db.run('ALTER TABLE trips ADD COLUMN directory TEXT');
+            this.db.run('CREATE TABLE if not exists trips (id INTEGER PRIMARY KEY, title TEXT, directory TEXT)');
             this.db.run('CREATE TABLE if not exists trip_days (id INTEGER PRIMARY KEY, trip_id INTEGER, description TEXT, date TEXT)');
         });
     }

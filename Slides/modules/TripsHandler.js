@@ -54,7 +54,7 @@ class TripHandler {
             const args = argsString.length ? argsString.split('/').slice(1) : [];
             const params = req.body;
             const data = await this[method.toLowerCase()](args, params);
-            res.send(data);
+            res.status(200).send(data);
         } catch (e) {
             res.status(500).send('Trip API error: ' + e.message);
         }
@@ -96,14 +96,16 @@ class TripHandler {
 
     async put (args, params) {
         const arg1 = args ? args[0] : null;
+        let trip;
+        console.log('put', params)
         switch (arg1) {
             case 'days':
-                let trip = new TripDay();
+                trip = new TripDay(params.id);
                 trip.setProperties(params);
                 await trip.save();
                 return trip;
             default:
-                let trip = new Trip();
+                trip = new Trip(params.id);
                 trip.setProperties(params);
                 await trip.save();
                 return trip;
@@ -112,16 +114,17 @@ class TripHandler {
 
     async delete (args, params) {
         const arg1 = args ? args[0] : null;
+        let trip, data;
         switch (arg1) {
             case 'days':
                 const arg2 = args ? args[1] : null;
-                let trip = new TripDay(+arg2);
-                let data = await trip.delete();
+                trip = new TripDay(+arg2);
+                data = await trip.delete();
                 return data;
                 break;
             default:
-                let trip = new Trip(+arg1);
-                let data = await trip.delete();
+                trip = new Trip(+arg1);
+                data = await trip.delete();
                 return data;
         }
     }

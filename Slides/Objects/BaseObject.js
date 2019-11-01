@@ -12,8 +12,8 @@ class BaseObject {
      */
     async save () {
         if (this.id) {
+            
             return await this.update();
-
         } else {
             let res = await this.create();
             if (res) this.id = res;

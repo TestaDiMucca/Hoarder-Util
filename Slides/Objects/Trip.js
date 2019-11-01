@@ -8,18 +8,19 @@ class Trip extends BaseObject {
         this.startDate = '';
         this.endDate = '';
         this.title = '';
+        this.directory = '';
         /** @type TripDay[] */
         this.days = [];
     }
 
     async create () {
-        const sql = `INSERT INTO ${Trip.dbTable} (title) VALUES (?)`;
+        const sql = `INSERT INTO ${Trip.dbTable} (title, directory) VALUES (?, ?)`;
         return await db.run(sql, [this.title]);
     }
 
     async update () {
-        const sql = `UPDATE ${Trip.dbTable} SET title = ? WHERE id = ?`;
-        return await db.run(sql, [this.title, this.id]);
+        const sql = `UPDATE ${Trip.dbTable} SET title = ?, directory = ? WHERE id = ?`;
+        return await db.run(sql, [this.title, this.directory, this.id]);
     }
 
     async load () {
@@ -38,7 +39,7 @@ class Trip extends BaseObject {
     }
 
     evaluateStartEnd () {
-        const sorted = [...this.days].sort((a, b) => Date.parse(a) > Date.parse(b));
+        const sorted = this.days.sort((a, b) => Date.parse(a) > Date.parse(b));
         if (sorted.length <= 0) return;
         this.startDate = sorted[0].date;
         this.endDate = sorted[sorted.length - 1].date;
@@ -56,14 +57,6 @@ class Trip extends BaseObject {
         }
 
         return rows;
-
-        // return rows.map(async row => {
-        //     let newTrip = new Trip(row.id);
-        //     newTrip.setProperties(row);
-        //     await newTrip.loadDays();
-        //     console.log(newTrip)
-        //     return newTrip;
-        // });
     }
 }
 
