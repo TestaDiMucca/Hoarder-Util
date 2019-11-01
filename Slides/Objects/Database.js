@@ -1,5 +1,6 @@
 const sqlite = require('sqlite3').verbose();
 const { SQLITE_DB } = require('../constants');
+const Tools = require('./Tools');
 
 /**
  * Singleton class
@@ -39,7 +40,7 @@ class Database {
         return new Promise((resolve, reject) => {
             this.db.get(sql, params, (err, row) => {
                 if (err) return this.handleError(sql, err, reject);
-                resolve(row);
+                resolve(Tools.processRow(row));
             });
         });
     }
@@ -48,7 +49,7 @@ class Database {
         return new Promise((resolve, reject) => {
             this.db.all(sql, params, (err, rows) => {
                 if (err) return this.handleError(sql, err, reject);
-                resolve(rows);
+                resolve(rows.map(row => Tools.processRow(row)));
             });
         });
     }

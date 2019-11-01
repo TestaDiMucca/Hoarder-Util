@@ -4,16 +4,16 @@ const db = require('./Database');
 class TripDay extends BaseObject {
     constructor (id) {
         super(id);
-        this.tripID = 0;
+        this.tripId = 0;
         /** We want to store in a YYYY-MM-DD format */
         this.date = '';
         this.description = '';
     }
 
     async create() {
-        if (!this.tripID) return;
+        if (!this.tripId) return;
         const sql = `INSERT INTO ${TripDay.dbTable} (description, date, trip_id) VALUES (?, ?, ?)`;
-        return await db.run(sql, [this.description, this.date, this.tripID]);
+        return await db.run(sql, [this.description, this.date, this.tripId]);
     }
 
     async update() {
