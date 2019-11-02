@@ -160,15 +160,17 @@ body {
 }
 
 .fav-bar {
-    position: absolute;
-    color: white;
     width: 20em;
     height: 100%;
     right: 0;
+    z-index: 99;
+}
+
+.side-bar {
+    position: absolute;
     top: 0;
     opacity: 0;
-    z-index: 99;
-
+    color: white;
     background-color: rgba(0, 0, 0, 0.7);
     padding: 1em;
     font-size: 0.9em;
@@ -176,6 +178,13 @@ body {
     transition-duration: 0.5s;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+
+.trips-bar {
+    width: 20em;
+    height: 100%;
+    left: 0;
+    z-index: 98;   
 }
 
 .toolbar i {

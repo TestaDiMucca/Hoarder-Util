@@ -45,6 +45,9 @@ class Trip extends BaseObject {
         this.endDate = sorted[sorted.length - 1].date;
     }
 
+    /**
+     * @returns {Trip[]}
+     */
     static async loadTrips () {
         let rows = await db.all(`SELECT * FROM ${Trip.dbTable}`);
 

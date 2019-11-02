@@ -1,3 +1,7 @@
+/**
+ * @file Main behaviours for the slideshow page. Handle most elements
+ */
+
 /* For caching the lists */
 let list;
 let shuffledList;
@@ -37,6 +41,7 @@ const LS_KEYS = {
 };
 const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
+const BAR_HOVER_TIME = 1000;
 
 const LOADER_IMG = '<img class="loader info-loader" src="loading.svg" />';
 const CLOCK_IMG = '<img class="paused-bit" src="clock.svg" />'
@@ -394,12 +399,18 @@ const showFavbar = (show) => {
     if (show) renderStarredList();
 };
 
+const showTripsbar = (show) => {
+    $('.trips-bar').toggleClass('control-bar-hover', show);
+    state.tripsOpen = show;
+    const currFile = selectList()[state.currIndex];
+    if (show && handleTripPanel) handleTripPanel(currFile);
+};
+
 const constructInfoArea = async () => {
     $('.info-area').append(LOADER_IMG);
     const res = await fetch('config');
     const json = await res.json();
     const exif = await getExif();
-    console.log(exif)
     const gps = exif.gps ? processGPSExif(exif.gps) : null;
     const exifInsert = constructExifInfo(exif, gps);
     const { basePath, exclude, version } = json;
@@ -644,12 +655,23 @@ const addListeners = () => {
     let favBarTimeout;
     $('.fav-bar').hover(
         () => {
-            favBarTimeout = setTimeout(() => showFavbar(true), 1000);
+            favBarTimeout = setTimeout(() => showFavbar(true), BAR_HOVER_TIME);
         },
         () => showFavbar(false)
     );
     $('.fav-bar').mouseleave(() => {
         if (!!favBarTimeout) clearTimeout(favBarTimeout);
+    });
+
+    let tripBarTimeout;
+    $('.trips-bar').hover(
+        () => {
+            tripBarTimeout = setTimeout(() => showTripsbar(true), BAR_HOVER_TIME);
+        },
+        () => showTripsbar(false)
+    );
+    $('.trips-bar').mouseleave(() => {
+        if (!!tripBarTimeout) clearTimeout(tripBarTimeout);
     });
 
     document.addEventListener('keydown', (e) => {

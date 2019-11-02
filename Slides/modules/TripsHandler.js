@@ -97,7 +97,7 @@ class TripHandler {
     async put (args, params) {
         const arg1 = args ? args[0] : null;
         let trip;
-        console.log('put', params)
+        // console.log('put', params)
         switch (arg1) {
             case 'days':
                 trip = new TripDay(params.id);
