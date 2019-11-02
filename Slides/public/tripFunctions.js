@@ -64,16 +64,17 @@ const renderTrip = (trip) => {
     const dateBit = [trip.startDate, trip.endDate].filter(bit => !!bit && bit !== '').join(' - ');
     const element = `
         <h3>${trip.title}</h3>
-        <h4 class="trip-directory">${trip.directory}</h4>
+        <h4 class="trip-directory"><i class="material-icons">folder</i>${trip.directory}</h4>
         <h4>${dateBit}</h4>
-        ${
-            trip.days.map(day => (`
-                <div class="trip-day">
-                    <h4>${day.date}</h4>
-                    <p>${day.description}</p>
-                </div>
-            `)).join('')
-        }
+        <div class="day-list">
+            ${trip.days.map(day => (`
+                    <div class="trip-day">
+                        <h4>${day.date}</h4>
+                        <p>${day.description}</p>
+                    </div>
+                `)).join('')
+            }
+        </div>
     `;
 
     $('.trips-bar').append(element);

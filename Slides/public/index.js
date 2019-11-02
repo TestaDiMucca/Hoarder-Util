@@ -43,8 +43,8 @@ const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
 const BAR_HOVER_TIME = 1000;
 
-const LOADER_IMG = '<img class="loader info-loader" src="loading.svg" />';
-const CLOCK_IMG = '<img class="paused-bit" src="clock.svg" />'
+const LOADER_IMG = '<img class="loader info-loader" src="img/loading.svg" />';
+const CLOCK_IMG = '<img class="paused-bit" src="img/clock.svg" />'
 
 const reset = async () => {
     state.currIndex = 0;
@@ -488,7 +488,7 @@ const placeMap = (gps) => {
     map.on('styledata', function () {
         if (imgLoaded) return;
         imgLoaded = true;
-        map.loadImage('cat.gif', function (error, image) {
+        map.loadImage('img/cat.gif', function (error, image) {
             if (error) throw error;
             map.addImage('cat', image);
             map.addLayer({
