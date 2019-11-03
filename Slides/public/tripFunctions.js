@@ -65,7 +65,7 @@ const renderTrip = (trip) => {
     const element = `
         <h3>${trip.title}</h3>
         <h4 class="trip-directory"><i class="material-icons">folder</i>${trip.directory}</h4>
-        <h4>${dateBit}</h4>
+        <h4 class="trip-dates">${dateBit}</h4>
         <div class="day-list">
             ${trip.days.map(day => (`
                     <div class="trip-day">

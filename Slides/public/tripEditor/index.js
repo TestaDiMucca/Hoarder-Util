@@ -40,7 +40,7 @@ const tripList = (list) => {
             ${list.map(trip => oneTrip(trip)).join('')}
         </div>
         <div id="trip-${LAST_DUMMY_ID}"></div>
-        <div class="add-button" onclick="handleEditTrip()">Add Trip</div>
+        <span class="add-button" onclick="handleEditTrip()">Add Trip</span>
     `;
 };
 
@@ -51,21 +51,23 @@ const oneTrip = (trip) => {
     const tag = `trip-${trip.id}`;
     return `
         <div class="trip" id="${tag}">
-            <h2>${trip.title}</h2>
-            <h3>${trip.directory ? trip.directory : ''}</h3>
-            <div class="controls">
-                <i class="material-icons option" onclick="handleEditTrip('${tag}', '${trip.id}')">
-                    create
-                </i>
-                <i class="material-icons option" onclick="removeTrip('${trip.id}')">
-                    delete
-                </i>
-            </div>
+            <span class="title-bar">
+                <h2>${trip.title}</h2>
+                <h3>${trip.directory ? trip.directory : ''}</h3>
+                <div class="controls">
+                    <i class="material-icons option" onclick="handleEditTrip('${tag}', '${trip.id}')">
+                        create
+                    </i>
+                    <i class="material-icons option" onclick="removeTrip('${trip.id}')">
+                        delete
+                    </i>
+                </div>
+            </span>
             <div class="trip-day-list">
                 ${trip.days.map((day, i) => oneTripDay(day, i)).join('')}
                 <div id="trip-day-${trip.id}-${LAST_DUMMY_ID}"></div>
             </div>
-            <div class="add-button" onclick="handleEditDay('${trip.id}')">Add Day</div>
+            <span class="add-button" onclick="handleEditDay('${trip.id}')">Add Day</span>
         </div>
     `;
 };

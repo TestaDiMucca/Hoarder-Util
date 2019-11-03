@@ -1,5 +1,5 @@
 const express = require('express');
-const minify = require('express-minify');
+// const minify = require('express-minify');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
@@ -20,7 +20,8 @@ let configInstance = new ConfigHandler();
 let tripInstance = new TripsHandler();
 
 const staticPath = path.resolve(__dirname + '/public'); 
-app.use(minify());
+/* Looks like minify doesn't support ES6+.. lame */
+// app.use(minify({ cache: __dirname + '/cache' }));
 app.use(express.static(staticPath));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
