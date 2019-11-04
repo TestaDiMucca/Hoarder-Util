@@ -37,7 +37,8 @@ const nosleep = new NoSleep();
 const LS_KEYS = {
     POS: 'pos',
     TIMER: 'timer',
-    SHOW_NAME: 'showName'
+    SHOW_NAME: 'showName',
+    FAVS: 'favs'
 };
 const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
@@ -374,6 +375,10 @@ const checkIndex = () => {
     if (lTimer !== undefined) {
         state.timer = Math.max(+lTimer, 3);
     }
+    const lFavs = localStorage.getItem(LS_KEYS.FAVS);
+    if (lFavs !== undefined) {
+        starred = JSON.parse(lFavs);
+    }
     const lShowName = localStorage.getItem(LS_KEYS.SHOW_NAME);
     console.log(lShowName)
     if (lShowName !== undefined) {
@@ -381,6 +386,8 @@ const checkIndex = () => {
         $('#filepath-toggle').prop('checked', state.filepathActive);
         toggleBottomName(state.filepathActive);
     }
+
+
 };
 
 /**
@@ -636,6 +643,8 @@ const addListeners = () => {
         localStorage.setItem(LS_KEYS.POS, state.currIndex);
         localStorage.setItem(LS_KEYS.TIMER, state.timer);
         localStorage.setItem(LS_KEYS.SHOW_NAME, state.filepathActive);
+        localStorage.setItem(LS_KEYS.FAVS, JSON.stringify(starred));
+
     };
 
     let specifiedElement = document.querySelector('.toolbar');

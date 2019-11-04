@@ -90,7 +90,7 @@ class FileHandler {
     async initWithStarterShuffle (list, preShuffle) {
         let merged = await this.useWorker(ACTIONS.MERGE, { list, preShuffle });
         merged = await this.useWorker(ACTIONS.FILTER, { paths: merged, formats: SUPPORTED_FORMATS });
-        merged = await this.useWorker(ACTIONS.VERIFY, merged);
+        // merged = await this.useWorker(ACTIONS.VERIFY, merged);
         // we should have a shuffled list now
         return merged;
     }
