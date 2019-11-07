@@ -1,0 +1,163 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Directory</title>
+    <meta name="description" content="Directory">
+    <meta name="author" content="Directory">
+    <script src="jquery.min.js"></script>
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .section {
+            width: 90%;
+            margin: 1em auto;
+            border: 1px solid gray;
+            padding: 1em;
+        }
+
+        .header {
+            text-align: center;
+            user-select: none;
+        }
+
+        .note {
+            color: darkgrey;
+            user-select: none;
+        }
+
+        i {
+            color: #66BCD2;
+        }
+
+        .title {
+            padding: 0.4em;
+            background-color: #66BCD2;
+            color: white;
+        }
+
+        .data {
+            max-height: 200px;
+            overflow-y: scroll;
+            background-color: #eee;
+        }
+
+        .hook-from {
+            font-size: 0.5em;
+        }
+
+        .key-name {
+            font-weight: 400;
+            color: gray;
+        }
+
+        #hostname {
+            font-family: serif;
+        }
+
+        .menu-item {
+            padding: 1em;
+            box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition-property: all;
+            transition-duration: 1s;
+            user-select: none;
+        }
+
+        .menu-item:hover {
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        a:visited {
+            color: #1c5370;
+        }
+    </style>
+
+    <script>
+        const NODE_SERVER = (() => {
+            const DELIMITER = '/';
+            let start = window.location.href.split(DELIMITER).slice(0, 3);
+            const bit = start[2];
+            return bit;
+        })();
+
+        const IP_ADDRESS = (() => {
+            return 'http://' + NODE_SERVER.split(':')[0];
+        })();
+
+        const PAGES_URL = '/directory-list';
+
+        /** Helper functions */
+        const constructItem = (item) => {
+            return `
+                <div class="menu-item">
+                    <h2><i class="material-icons">${item.icon}</i> <a href="${IP_ADDRESS+item.url}">${item.name}</a></h2>
+                    <span>${item.description}</span>
+                </div>
+            `;
+        };
+
+        const renderMenu = async () => {
+            const res = await faxios.get(PAGES_URL);
+            console.log(res);
+
+            // const testPages = Object.keys(res.data).map(key => {
+            //     let item = res.data[key];
+            //     if (!!item.html) item.url = `${NODE_SERVER}${item.url}`;
+            //     return item;
+            // });
+            const testPages = res;
+
+            console.log(res);
+            testPages.forEach(item => {
+                $('.list').append(constructItem(item));
+            });
+        };
+
+        const faxios = {
+            handleRes: async (res) => {
+                return new Promise(async resolve => {
+                    const text = await res.text();
+                    try {
+                        resolve(JSON.parse(text));
+                    } catch (e) {
+                        resolve(text);
+                    }
+                });
+            },
+            get: async (url) => {
+                return new Promise(async resolve => {
+                    const res = await fetch(url);
+                    resolve(await faxios.handleRes(res));
+                });
+            },
+        };
+
+
+        /** Main function */
+        const main = () => {
+            renderMenu();
+        };
+
+        $(document).ready(main);
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Directory</h1>
+    </div>
+    <div class="list section">
+
+    </div>
+</body>
+
+</html>

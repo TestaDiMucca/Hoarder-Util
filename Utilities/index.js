@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const app = express();
+const { DIRECORY_LIST } = require('./constants');
 
 const Logger = require('./modules/Logger');
 
@@ -47,6 +48,13 @@ app.get('/test', (req, res) => {
 });
 app.get('/barebones', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public/barebones.html'));
+});
+
+app.get('/directory', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public/directory.html'));
+});
+app.get('/directory-list', (req, res) => {
+    res.status(200).send(DIRECORY_LIST);
 });
 
 app.post('/test', (req, res) => {

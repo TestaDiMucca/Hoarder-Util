@@ -22,11 +22,34 @@ const DEFAULT_FORMAT = 'YYYY[-]MM[-]DD[-]HH[-]mm';
 /** Main file that logs will go to */
 const MAIN_LOGFILE = 'log.txt';
 
+const SLIDE_PORT = 4001;
+const DIRECORY_LIST = [
+    {
+        name: 'Barebones Utility Operator',
+        description: '...',
+        icon: 'local_drink',
+        url: `:${PORT}/barebones`
+    },
+    {
+        name: 'Slideshow',
+        description: '...',
+        icon: 'local_bar',
+        url: `:${SLIDE_PORT}/`
+    },
+    {
+        name: 'Slideshow Trip Editor',
+        description: '...',
+        icon: 'local_cafe',
+        url: `:${SLIDE_PORT}/tripEditor`
+    },
+];
+
 module.exports = {
     DEFAULT_TITLING,
     DEFAULT_FORMAT,
     MAIN_LOGFILE,
     SUPPORTED_OPTIONS,
     PLATFORMS,
-    PORT
+    PORT,
+    DIRECORY_LIST
 };
