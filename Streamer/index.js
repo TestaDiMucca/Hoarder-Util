@@ -7,6 +7,9 @@ const app = express();
 const {
     PORT
 } = require('./constants');
+const {
+    scanLibrary
+} = require('./Handlers/LibraryHandler');
 
 if (loadResult.error) {
     Logger.error(`Error with loading config: ${loadResult.error.message ? loadResult.error.message : loadResult.error}`);
@@ -29,6 +32,20 @@ app.use((req, res, next) => {
 
 app.get('/test', (req, res) => {
     res.send('こんにちは, 「ZA WARUDO」!')
+});
+
+app.get('/library/:show?', async (req, res) => {
+    const show = req.params.show;
+    let data = await scanLibrary(show);
+    res.status(200).send(data);
+});
+
+app.get('/player', (req, res) => {
+
+});
+
+app.post('/login/:name', (req, res) => {
+    const name = req.params.name;
 });
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}!`));
