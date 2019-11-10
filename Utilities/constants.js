@@ -23,6 +23,7 @@ const DEFAULT_FORMAT = 'YYYY[-]MM[-]DD[-]HH[-]mm';
 const MAIN_LOGFILE = 'log.txt';
 
 const SLIDE_PORT = 4001;
+const WIKI_PORT = 5002;
 const DIRECORY_LIST = [
     {
         name: 'Barebones Utility Operator',
@@ -42,6 +43,12 @@ const DIRECORY_LIST = [
         icon: 'local_cafe',
         url: `:${SLIDE_PORT}/tripEditor`
     },
+    {
+        name: 'Tiddly Valkawiki',
+        description: '...',
+        icon: 'local_florist',
+        url: `${WIKI_PORT}/`
+    }
 ];
 
 module.exports = {
