@@ -8,6 +8,7 @@ const {
     PORT
 } = require('./constants');
 const {
+    getThumbPath,
     scanLibrary
 } = require('./Handlers/LibraryHandler');
 
@@ -47,6 +48,11 @@ app.get('/library/:show?', async (req, res) => {
 
 app.get('/player', (req, res) => {
 
+});
+
+app.get('/thumb/:name', async (req, res) => {
+    const name = req.params.name;
+    res.status(200).sendFile(await getThumbPath(name));
 });
 
 app.post('/login/:name', (req, res) => {

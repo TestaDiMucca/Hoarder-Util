@@ -1,10 +1,10 @@
 import { Component } from 'preact';
-import { route } from 'preact-router';
 import axios from 'axios';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
 import style from './style';
 
+import ShowCard from '../../components/showCard';
 import { SERVER } from '../../helpers/constants';
 
 export default class Home extends Component {
@@ -15,18 +15,20 @@ export default class Home extends Component {
 	componentWillMount () {
 		axios.get(`${SERVER}/library`).then(res => {
 			console.log('data', res.data);
+			this.setState({ shows: res.data });
 		}).catch(err => console.log(err));
 	}
 
-	gotoShow = (show) => {
-		route(`/show/${show}`);
-	};
-
 	render() {
+		const { shows } = this.state;
 		return (
 			<div class={`${style.home} page`}>
-				<h1>Vlablalbla</h1>
-				<h1 onClick={this.gotoShow}>Home route</h1>
+				<h1>Shows</h1>
+				<section class={style.showsList}>
+					{shows.map(show => (
+						<ShowCard name={show.filePath} />
+					))}
+				</section>
 			</div>
 		);
 	}

@@ -54,6 +54,28 @@ const buildSub = async (basePath, show) => {
     return result;
 };
 
+const getThumbPath = async (name) => {
+    const target = path.resolve(basePath, name, 'thumb.jpg');
+    if (await checkAccess(target)) {
+        return target;
+    }
+    const aquas = await fsp.readdir(path.resolve(__dirname, '/public/aquas'));
+
+    return path.resolve(__dirname, aquas[Math.floor(Math.random() * aquas.length)]);
+};
+
+const checkAccess = async (path) => {
+    return new Promise(resolve => {
+        fs.access(path, fs.constants.R_OK, err => {
+            if (err) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+}
+
 /**
  * Get only the dirs
  * @param {string[]} input 
@@ -80,5 +102,6 @@ const isDirectory = (filePath) => {
 };
 
 module.exports = {
+    getThumbPath,
     scanLibrary
 };

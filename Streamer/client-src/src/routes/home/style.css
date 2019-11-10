@@ -11,3 +11,11 @@
 .cardBody {
   padding: 16px;
 }
+
+.showsList {
+	width: 90vw;
+	margin: auto;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 1em;
+}
