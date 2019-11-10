@@ -11,6 +11,10 @@ html, body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --mdc-theme-primary: #7bc5e0;
+}
+
 /* fallback */
 @font-face {
   font-family: 'Material Icons';
@@ -31,6 +35,7 @@ html, body {
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
+  font-feature-settings: "liga";
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }

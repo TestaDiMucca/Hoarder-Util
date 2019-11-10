@@ -16,8 +16,8 @@ class Database {
         if (this.initiated) return;
         this.initiated = true;
         this.db.serialize(() => {
-            this.db.run('CREATE TABLE if not exists trips (id INTEGER PRIMARY KEY, title TEXT, directory TEXT)');
-            this.db.run('CREATE TABLE if not exists trip_days (id INTEGER PRIMARY KEY, trip_id INTEGER, description TEXT, date TEXT)');
+            this.db.run('CREATE TABLE if not exists users (id INTEGER PRIMARY KEY, name TEXT)');
+            this.db.run('CREATE TABLE if not exists users_watched (id INTEGER PRIMARY KEY, user_id INTEGER, path TEXT, date TEXT)');
         });
     }
 
