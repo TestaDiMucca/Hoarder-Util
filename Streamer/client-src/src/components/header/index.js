@@ -12,6 +12,7 @@ import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
 // import style from './style';
 
+const DARKMODE_KEY = 'darkMode';
 export default class Header extends Component {
 	closeDrawer() {
 		this.drawer.MDComponent.open = false;
@@ -51,6 +52,17 @@ export default class Header extends Component {
 		);
 	}
 
+	componentDidMount () {
+		const lDMode = localStorage.getItem(DARKMODE_KEY);
+		if (!!lDMode) {
+			this.setState({  darkThemeEnabled: lDMode === 'true' });
+		}
+	}
+
+	componentWillUnmount () {
+		localStorage.setItem(DARKMODE_KEY, this.state.darkThemeEnabled);
+	}
+
 	render(props) {
 		console.log(props.selectedRoute);
 		return (
@@ -61,7 +73,7 @@ export default class Header extends Component {
 							<TopAppBar.Icon menu onClick={this.openDrawer}>
 								menu
 							</TopAppBar.Icon>
-							<TopAppBar.Title>Preact app</TopAppBar.Title>
+							<TopAppBar.Title>Agua+</TopAppBar.Title>
 						</TopAppBar.Section>
 						<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>
 							<TopAppBar.Icon>settings</TopAppBar.Icon>

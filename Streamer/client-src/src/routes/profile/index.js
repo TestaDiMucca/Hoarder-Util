@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import Card from 'preact-material-components/Card';
 import Button from 'preact-material-components/Button';
 import 'preact-material-components/Button/style.css';
 import style from './style';
@@ -32,18 +33,20 @@ export default class Profile extends Component {
 	// Note: `user` comes from the URL, courtesy of our router
 	render({ user }, { time, count }) {
 		return (
-			<div class={`${style.profile} page`}>
-				<h1>Profile: {user}</h1>
-				<p>This is the user profile for a user named { user }.</p>
+			<Card>
+				<div class={`${style.profile} page`}>
+					<h1>Profile: {user}</h1>
+					<p>This is the user profile for a user named {user}.</p>
 
-				<div>Current time: {new Date(time).toLocaleString()}</div>
+					<div>Current time: {new Date(time).toLocaleString()}</div>
 
-				<p>
-					<Button raised ripple onClick={this.increment}>Click Me</Button>
-					{' '}
-					Clicked {count} times.
+					<p>
+						<Button raised ripple onClick={this.increment}>Click Me</Button>
+						{' '}
+						Clicked {count} times.
 				</p>
-			</div>
+				</div>
+			</Card>
 		);
 	}
 }

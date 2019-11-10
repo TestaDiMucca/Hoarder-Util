@@ -24,6 +24,11 @@ if (!!process.env.SAVE_PATH && !fs.existsSync(process.env.SAVE_PATH)) {
 
 /* Configure Middleware */
 app.use(express.static(staticPath));
+app.all('*', (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE');
+    next();
+});
 
 app.use((req, res, next) => {
     console.log(`[index] ${req.method} to ${req.originalUrl}`);

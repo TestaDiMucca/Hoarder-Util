@@ -61,7 +61,7 @@ const buildSub = async (basePath, show) => {
 const filterDirectories = async (basePath, input) => {
     let result = [];
     for (let i = 0; i < input.length; i++) {
-        if (await isDirectory(path.resolve(basePath, input[i])))
+        if (await isDirectory(path.resolve(basePath, input[i])) && input[i][0] !== '.')
             result.push({
                 filePath: input[i],
                 thumb: input[i] + THUMB_PATH
