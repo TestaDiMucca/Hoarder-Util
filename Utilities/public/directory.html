@@ -108,12 +108,6 @@
         const renderMenu = async () => {
             const res = await faxios.get(PAGES_URL);
             console.log(res);
-
-            // const testPages = Object.keys(res.data).map(key => {
-            //     let item = res.data[key];
-            //     if (!!item.html) item.url = `${NODE_SERVER}${item.url}`;
-            //     return item;
-            // });
             const testPages = res;
 
             console.log(res);
