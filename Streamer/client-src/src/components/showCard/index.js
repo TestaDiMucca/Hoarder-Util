@@ -11,7 +11,7 @@ export default class ShowCard extends Component {
     render() {
         const { name } = this.props;
         return (
-            <div class={style['show-card']}>
+            <div onClick={() => this.gotoShow(name)} class={style['show-card']}>
                 <img src={`${SERVER}/thumb/${name}`} class={style.showImage} />
                 <h2 class={style.showTitle}>{name}</h2>
             </div>

@@ -15,13 +15,6 @@ const THUMB_PATH = '/thumb.jpg';
  * @param {string} show 
  */
 const scanLibrary = async (show) => {
-    // if (!show) {
-    //     const usePath = basePath;
-    //     let list = await fsp.readdir(usePath);
-    // } else {
-    //     const usePath = path.resolve(basePath, show);
-    //     let list = await fsp.readdir(usePath);
-    // }
     const usePath = show ? path.resolve(basePath, show) : basePath;
     let list = await fsp.readdir(usePath);
 
@@ -45,6 +38,7 @@ const buildSub = async (basePath, show) => {
             result.push(...dirContents);
         } else {
             if (input[i].indexOf('mp4') === -1 && input[i].indexOf('m4v') === -1) continue;
+            if (input[i][0] === '.') continue;
             result.push({
                 file: input[i],
                 season: show

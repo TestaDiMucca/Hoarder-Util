@@ -10,7 +10,9 @@ import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Drawer/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
-// import style from './style';
+import style from './style';
+
+const smolThing = require('../../img/smol.png');
 
 const DARKMODE_KEY = 'darkMode';
 export default class Header extends Component {
@@ -41,30 +43,29 @@ export default class Header extends Component {
 			{
 				darkThemeEnabled: !this.state.darkThemeEnabled
 			},
-			() => {
-				if (this.state.darkThemeEnabled) {
-					document.body.classList.add('mdc-theme--dark');
-				}
-				else {
-					document.body.classList.remove('mdc-theme--dark');
-				}
-			}
+			this.handleDarkTheme
 		);
 	}
 
+	handleDarkTheme = () => {
+		if (this.state.darkThemeEnabled) {
+			document.body.classList.add('mdc-theme--dark');
+		} else {
+			document.body.classList.remove('mdc-theme--dark');
+		}
+		localStorage.setItem(DARKMODE_KEY, this.state.darkThemeEnabled);
+	};
+
 	componentDidMount () {
 		const lDMode = localStorage.getItem(DARKMODE_KEY);
+		console.log(lDMode);
 		if (!!lDMode) {
-			this.setState({  darkThemeEnabled: lDMode === 'true' });
+			this.setState({  darkThemeEnabled: lDMode === 'true' }, this.handleDarkTheme);
 		}
 	}
 
-	componentWillUnmount () {
-		localStorage.setItem(DARKMODE_KEY, this.state.darkThemeEnabled);
-	}
 
 	render(props) {
-		console.log(props.selectedRoute);
 		return (
 			<div>
 				<TopAppBar className="topappbar">
@@ -73,7 +74,7 @@ export default class Header extends Component {
 							<TopAppBar.Icon menu onClick={this.openDrawer}>
 								menu
 							</TopAppBar.Icon>
-							<TopAppBar.Title>Agua+</TopAppBar.Title>
+							<TopAppBar.Title style={{ cursor: 'pointer' }} onClick={this.goHome}><img class={style.smolIcon} src={smolThing} />Agua+</TopAppBar.Title>
 						</TopAppBar.Section>
 						<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>
 							<TopAppBar.Icon>settings</TopAppBar.Icon>
@@ -96,7 +97,7 @@ export default class Header extends Component {
 					<Dialog.Header>Settings</Dialog.Header>
 					<Dialog.Body>
 						<div>
-							Enable dark theme <Switch onClick={this.toggleDarkTheme} />
+							Enable dark theme <Switch checked={this.state.darkThemeEnabled} onClick={this.toggleDarkTheme} />
 						</div>
 					</Dialog.Body>
 					<Dialog.Footer>

@@ -4,12 +4,38 @@
 	width: 100%;
 }
 
+.plus {
+	color: #649cf5;
+}
+
+.titleHeader {
+	width: 90vw;
+	margin:auto;
+	text-align: center;
+	user-select: none;
+	position: relative;
+	height: 10em;
+	overflow: hidden;
+}
+
+.titleHeader p {
+	z-index: 1;
+}
+
+.titleHeader h1 {
+	z-index: 1;
+}
+
 .cardHeader {
   padding: 16px;
 }
 
 .cardBody {
   padding: 16px;
+}
+
+.bannerImage {
+	position: absolute;
 }
 
 .showsList {
