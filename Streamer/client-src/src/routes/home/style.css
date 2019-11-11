@@ -39,9 +39,19 @@
 }
 
 .showsList {
-	width: 90vw;
+	width: 95vw;
+	height: 75vh;
 	margin: auto;
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	grid-gap: 1em;
+	/* display: grid; */
+	/* grid-template-columns: repeat(3, 1fr); */
+	/* grid-template-columns: repeat(auto-fit, minmax(200px, 500px)); */
+	/* grid-gap: 1em; */
+	/* justify-items: center; */
+
+	display: flex;
+	flex-flow: wrap;
+	justify-content: space-between;
+
+	overflow-x: hidden;
+	overflow-y: scroll;
 }

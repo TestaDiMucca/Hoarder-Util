@@ -62,7 +62,7 @@ export default class Show extends Component {
                 <section class={style.episodeList}>
                     {Object.keys(episodes).map(seasonSet => (
                         <div class={style.seasonSet}>
-                        {(seasonSet !== show) && <h2>{seasonSet}</h2>}
+                            <h2>{seasonSet !== show ? seasonSet : 'No Season'}</h2>
                             {episodes[seasonSet].map(episode => (
                                 <div class={style.episode} onClick={() => this.launchViewer(episode)}>
                                     {episode.file}

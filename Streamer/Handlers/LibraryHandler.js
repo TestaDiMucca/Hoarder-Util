@@ -10,6 +10,7 @@ const fsp = {
 
 const basePath = process.env.SCAN_PATH || './';
 const THUMB_PATH = '/thumb.jpg';
+const AQUAS_PATH = '../public/aquas';
 
 /**
  * Scan library. If no show is detected then just get root dir and their thumbnails
@@ -54,9 +55,10 @@ const getThumbPath = async (name) => {
     if (await checkAccess(target)) {
         return target;
     }
-    const aquas = await fsp.readdir(path.resolve(__dirname, '/public/aquas'));
 
-    return path.resolve(__dirname, aquas[Math.floor(Math.random() * aquas.length)]);
+    const aquas = (await fsp.readdir(path.resolve(__dirname, AQUAS_PATH))).filter(f => f[0] !== '.');
+
+    return path.resolve(__dirname, AQUAS_PATH, aquas[Math.floor(Math.random() * aquas.length)]);
 };
 
 const checkAccess = async (path) => {
