@@ -44,7 +44,7 @@ export default class App extends Component {
 				<Header selectedRoute={this.state.currentUrl} />
 				<Router onChange={this.handleRoute}>
 					<Home path="/" />
-					<Show path="/show/:show" />
+					<Show path="/show/:show" user={this.state.user} />
 					<Profile path="/profile/" user={this.state.user} prop="foo" />
 					<Profile path="/profile/:user" />
 					<NotFound default />

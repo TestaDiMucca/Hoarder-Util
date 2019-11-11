@@ -60,3 +60,7 @@
 .cardButton {
     width: 20em;
 }
+
+.watched {
+    font-size: 1em !important;
+}

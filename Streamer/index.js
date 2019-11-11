@@ -45,7 +45,7 @@ app.get('/test', (req, res) => {
 app.get('/library/:show?', async (req, res) => {
     const show = req.params.show;
     const username = req.query.user;
-    let data = await scanLibrary(show, username);
+    let data = await scanLibrary(show, username ? decodeURIComponent(username) : null);
     res.status(200).send(data);
 });
 
@@ -68,6 +68,8 @@ app.post('/login/:name', async (req, res) => {
 
 app.post('/watched/:name/:file', (req, res) => {
     const { file, name } = req.params;
+    markWatchedForUser(decodeURIComponent(name), decodeURIComponent(file));
+    res.end();
 });
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}!`));

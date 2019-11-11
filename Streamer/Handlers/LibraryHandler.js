@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
+const db = require('../Objects/Database');
 
 const fsp = {
     readdir: promisify(fs.readdir),
@@ -32,24 +33,33 @@ const scanLibrary = async (show, username) => {
  * @param {string[]} input List of files in the directory
  * @param {string} username
  */
-const buildSub = async (basePath, show, username) => {
+const buildSub = async (basePath, show, username = null, initShowName = null) => {
+    initShowName = initShowName || show;
     const showPath = path.resolve(basePath, show);
     const input = await fsp.readdir(showPath);
     let result = [];
     for (let i = 0; i < input.length; i++) {
         if (await isDirectory(path.resolve(showPath, input[i]))) {
-            let dirContents = await buildSub(showPath, input[i], username);
+            let dirContents = await buildSub(showPath, input[i], username, initShowName);
             result.push(...dirContents);
         } else {
-            if (input[i].indexOf('mp4') === -1 && input[i].indexOf('m4v') === -1) continue;
+            if (input[i].indexOf('mp4') === -1 && input[i].indexOf('m4v') === -1 && input[i].indexOf('webm') === -1) continue;
             if (input[i][0] === '.') continue;
             result.push({
                 file: input[i],
-                season: show
+                watched: username ? await checkWatched(username, `${initShowName}/${show}/${input[i]}`) : false,
+                season: show,
+                show: initShowName
             });
         }
     }
     return result;
+};
+
+const checkWatched = async (user, path) => {
+    const sql = 'SELECT id FROM users_watched WHERE user_id=(SELECT id FROM users WHERE name = ?) AND path = ?';
+    const rows = await db.get(sql, [user, path]);
+    return !!rows;
 };
 
 const getThumbPath = async (name) => {

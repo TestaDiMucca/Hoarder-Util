@@ -2,18 +2,21 @@ import { Component } from 'preact';
 import axios from 'axios';
 import Card from 'preact-material-components/Card';
 import Button from 'preact-material-components/Button';
+import List from 'preact-material-components/List';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
+import 'preact-material-components/List/style.css';
 import style from './style';
 
 import Viewer from '../../components/viewer';
 import { SERVER } from '../../helpers/constants';
-import { isFirefox } from '../../helpers/helpers';
+import { isFirefox, isMP4 } from '../../helpers/helpers';
 
 /**
  * @typedef Episode
  * @property {string} file
  * @property {string} season
+ * @property {string} show
  * @property {string} [watched=]
  */
 export default class Show extends Component {
@@ -25,7 +28,9 @@ export default class Show extends Component {
     };
 
     componentWillMount () {
-        axios.get(`${SERVER}/library/${this.props.show}`).then(res => {
+        const query = this.props.user ? `?user=${encodeURIComponent(this.props.user)}` : '';
+        axios.get(`${SERVER}/library/${this.props.show}${query}`).then(res => {
+            // console.log(res.data)
             if (isFirefox()) this.detectMp4(res.data);
             this.setState({ episodes: this.processSeasons(res.data) });
         }).catch(err => console.log(err));
@@ -36,7 +41,7 @@ export default class Show extends Component {
      */
     detectMp4 = (data) => {
         for (let i = 0; i < data.length; i++) {
-            if (data[i].file.indexOf('mp4') !== -1 || data[i].file.indexOf('m4v') !== -1) {
+            if (isMP4(data[i].file)) {
                 this.setState({ showWarning: 'These files are mp4s which are not supported by Firefox. The server will live transcode to webm, so seeking will be disabled and more time is needed to buffer.' });
                 return true;
             }
@@ -81,19 +86,19 @@ export default class Show extends Component {
                     <img src={`${SERVER}/thumb/${show}`} class={style.showImage} />
                     <h1 class={style.titleText}>{show}</h1>
                 </header>
-                {showWarning &&
-                    <Card class={style.warningCard}>
-                        <p>{showWarning}</p>
-                        <Button raised ripple class={style.cardButton} onClick={this.clearWarning}>Dismiss</Button>
-                    </Card>
-                }
                 <section class={style.episodeList}>
+                    {showWarning &&
+                        <Card class={style.warningCard}>
+                            <p>{showWarning}</p>
+                            <Button raised ripple class={style.cardButton} onClick={this.clearWarning}>Dismiss</Button>
+                        </Card>
+                    }
                     {Object.keys(episodes).map(seasonSet => (
                         <div class={style.seasonSet}>
                             <h2>{seasonSet !== show ? seasonSet : 'No Season'}</h2>
                             {episodes[seasonSet].map(episode => (
                                 <div class={style.episode} onClick={() => this.launchViewer(episode)}>
-                                    {episode.file}
+                                    {episode.file} {episode.watched && <List.ItemGraphic class={style.watched}>check_circle_outline</List.ItemGraphic>}
                                 </div>
                             ))}
                         </div>
@@ -105,6 +110,7 @@ export default class Show extends Component {
                         show={show}
                         filename={selectedFile}
                         onClose={this.closeViewer}
+                        user={this.props.user}
                     />
                 )}
             </div>
