@@ -1,11 +1,14 @@
 import { Component } from 'preact';
 import axios from 'axios';
+import Card from 'preact-material-components/Card';
+import Button from 'preact-material-components/Button';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
 import style from './style';
 
 import Viewer from '../../components/viewer';
 import { SERVER } from '../../helpers/constants';
+import { isFirefox } from '../../helpers/helpers';
 
 /**
  * @typedef Episode
@@ -17,17 +20,32 @@ export default class Show extends Component {
     state = {
         episodes: {},
         viewerOpen: false,
-        selectedFile: null
+        selectedFile: null,
+        showWarning: null
     };
 
     componentWillMount () {
         axios.get(`${SERVER}/library/${this.props.show}`).then(res => {
+            if (isFirefox()) this.detectMp4(res.data);
             this.setState({ episodes: this.processSeasons(res.data) });
         }).catch(err => console.log(err));
     }
 
     /**
-     * @param {Episode} data 
+     * @param {Episode[]} data
+     */
+    detectMp4 = (data) => {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].file.indexOf('mp4') !== -1 || data[i].file.indexOf('m4v') !== -1) {
+                this.setState({ showWarning: 'These files are mp4s which are not supported by Firefox. The server will live transcode to webm, so seeking will be disabled and more time is needed to buffer.' });
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+     * @param {Episode[]} data 
      */
     processSeasons (data) {
         return data.reduce((acc, item) => ((acc[item['season']] = [...(acc[item['season']] || []), item]), acc), {});
@@ -51,14 +69,24 @@ export default class Show extends Component {
         })
     }
 
+    clearWarning = () => {
+        this.setState({ showWarning: null });
+    }
+
     render({ show }) {
-        const { episodes, viewerOpen, selectedFile } = this.state;
+        const { episodes, viewerOpen, selectedFile, showWarning } = this.state;
         return (
             <div class={`${style.home} page`}>
                 <header class={style.headerTitle}>
                     <img src={`${SERVER}/thumb/${show}`} class={style.showImage} />
                     <h1 class={style.titleText}>{show}</h1>
                 </header>
+                {showWarning &&
+                    <Card class={style.warningCard}>
+                        <p>{showWarning}</p>
+                        <Button raised ripple class={style.cardButton} onClick={this.clearWarning}>Dismiss</Button>
+                    </Card>
+                }
                 <section class={style.episodeList}>
                     {Object.keys(episodes).map(seasonSet => (
                         <div class={style.seasonSet}>

@@ -15,12 +15,13 @@ const AQUAS_PATH = '../public/aquas';
 /**
  * Scan library. If no show is detected then just get root dir and their thumbnails
  * @param {string} show 
+ * @param {string} username
  */
-const scanLibrary = async (show) => {
+const scanLibrary = async (show, username) => {
     const usePath = show ? path.resolve(basePath, show) : basePath;
     let list = await fsp.readdir(usePath);
 
-    list = !!show ? await buildSub(basePath, show) : await filterDirectories(usePath, list);
+    list = !!show ? await buildSub(basePath, show, username) : await filterDirectories(usePath, list);
     
     return list;
 };
@@ -29,14 +30,15 @@ const scanLibrary = async (show) => {
  * 
  * @param {string} basePath Root path to construct abs path from
  * @param {string[]} input List of files in the directory
+ * @param {string} username
  */
-const buildSub = async (basePath, show) => {
+const buildSub = async (basePath, show, username) => {
     const showPath = path.resolve(basePath, show);
     const input = await fsp.readdir(showPath);
     let result = [];
     for (let i = 0; i < input.length; i++) {
         if (await isDirectory(path.resolve(showPath, input[i]))) {
-            let dirContents = await buildSub(showPath, input[i]);
+            let dirContents = await buildSub(showPath, input[i], username);
             result.push(...dirContents);
         } else {
             if (input[i].indexOf('mp4') === -1 && input[i].indexOf('m4v') === -1) continue;
@@ -110,6 +112,7 @@ const isDirectory = (filePath) => {
 const streamFile = (show, filename, req, res) => {
     let file = path.resolve(basePath, show, filename);
     const isFirefox = !!req.query.browser && req.query.browser === 'firefox';
+    const isWebm = filename.indexOf('webm') !== - 1;
     console.log(`[streamFile] Access ${file}. Is Firefox? ${isFirefox}`);
     fs.stat(file, (err, stats) => {
         if (err) {
@@ -136,10 +139,10 @@ const streamFile = (show, filename, req, res) => {
             'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
             'Accept-Ranges': 'bytes',
             'Content-Length': chunksize,
-            'Content-Type': 'video/webm'
+            'Content-Type': isWebm ? 'video/webm' : 'video/mp4'
         });
 
-        if (isFirefox) {
+        if (isFirefox && !isWebm) {
             /* We really don't wanna live transcode tho */
             let proc = ffmpeg({ source: file })
                 .withVideoBitrate(2048)
@@ -163,32 +166,6 @@ const streamFile = (show, filename, req, res) => {
                     res.end(err);
                 });
         }
-        
-        // var stream = fs.createReadStream(file, { start: start, end: end })
-        //     .on('open', function () {
-        //         // stream.pipe(res);
-        //         // const ffmpegCommand = ffmpeg()
-        //         //     .input(stream)
-        //         //     .inputFormat('mp4')
-        //         //     .outputFormat('webm')
-        //         //     .outputOptions(['-movflags faststart', '-frag_size 4096', '-cpu-used 2', '-deadline realtime', '-threads 4'])
-        //         //     .stream()
-        //         //     .pipe(res, {end: true});
-        //         const ffmpegCommand = ffmpeg()
-        //             .input(stream)
-        //             .inputFormat('mp4')
-        //             .outputFormat('mp4')
-        //             .outputOptions(['-movflags faststart', '-frag_size 4096', '-cpu-used 2', '-deadline realtime', '-threads 4'])
-        //             .videoBitrate(640, true)
-        //             .audioBitrate(128)
-        //             .audioCodec('aac')
-        //             .videoCodec('libx264')
-        //             .stream()
-        //             .pipe(res, {end: true});
-        //     }).on('error', function (err, stdout, stderr) {
-        //         console.error('[streamFile] error in read stream', err, stderr);
-        //         res.end(err);
-        //     });
     });
 };
 

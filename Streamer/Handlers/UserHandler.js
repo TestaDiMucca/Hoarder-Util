@@ -1,5 +1,5 @@
 /**
- * 
+ * Make sure this user has an entry in the db.
  * @param {string} name 
  */
 const registerUser = async (name) => {

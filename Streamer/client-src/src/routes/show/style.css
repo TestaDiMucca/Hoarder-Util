@@ -50,3 +50,13 @@
 .episode:hover {
     left: 1em;
 }
+
+.warningCard {
+    width: 70%;
+    margin: auto;
+    padding: 1em;
+}
+
+.cardButton {
+    width: 20em;
+}
