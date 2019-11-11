@@ -1,9 +1,9 @@
 const loadResult = require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const app = express();
 
+const db = require('./Objects/Database');
 const {
     PORT
 } = require('./constants');
@@ -12,10 +12,16 @@ const {
     scanLibrary,
     streamFile
 } = require('./Handlers/LibraryHandler');
+const {
+    markWatchedForUser,
+    registerUser
+} = require('./Handlers/UserHandler');
 
 if (loadResult.error) {
     Logger.error(`Error with loading config: ${loadResult.error.message ? loadResult.error.message : loadResult.error}`);
 }
+
+if (!db.initiated) db.init();
 
 const staticPath = path.resolve(__dirname + '/public');
 
@@ -53,8 +59,11 @@ app.get('/thumb/:name', async (req, res) => {
     res.status(200).sendFile(await getThumbPath(name));
 });
 
-app.post('/login/:name', (req, res) => {
+app.post('/login/:name', async (req, res) => {
     const name = req.params.name;
+    const id = await registerUser(name);
+    console.log(`[login] ${name} -> id ${id}`);
+    res.status(200).send({id});
 });
 
 app.post('/watched/:name/:file', (req, res) => {

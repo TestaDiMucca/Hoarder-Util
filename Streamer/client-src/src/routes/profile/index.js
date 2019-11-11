@@ -12,6 +12,7 @@ export default class Profile extends Component {
 
 	// gets called when this route is navigated to
 	componentDidMount() {
+		console.log(this.props)
 		// start a timer for the clock:
 		this.timer = setInterval(this.updateTime, 1000);
 	}
