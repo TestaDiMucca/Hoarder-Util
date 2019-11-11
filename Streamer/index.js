@@ -9,7 +9,8 @@ const {
 } = require('./constants');
 const {
     getThumbPath,
-    scanLibrary
+    scanLibrary,
+    streamFile
 } = require('./Handlers/LibraryHandler');
 
 if (loadResult.error) {
@@ -46,8 +47,9 @@ app.get('/library/:show?', async (req, res) => {
     res.status(200).send(data);
 });
 
-app.get('/player', (req, res) => {
-
+app.get('/player/:show/:filename', (req, res) => {
+    const { filename, show } = req.params;
+    streamFile(decodeURIComponent(show), decodeURIComponent(filename), req, res);
 });
 
 app.get('/thumb/:name', async (req, res) => {

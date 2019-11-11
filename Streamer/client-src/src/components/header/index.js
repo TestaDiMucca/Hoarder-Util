@@ -58,7 +58,6 @@ export default class Header extends Component {
 
 	componentDidMount () {
 		const lDMode = localStorage.getItem(DARKMODE_KEY);
-		console.log(lDMode);
 		if (!!lDMode) {
 			this.setState({  darkThemeEnabled: lDMode === 'true' }, this.handleDarkTheme);
 		}

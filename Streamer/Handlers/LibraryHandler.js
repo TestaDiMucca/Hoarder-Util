@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 
 const fsp = {
@@ -95,7 +96,102 @@ const isDirectory = (filePath) => {
     });
 };
 
+/**
+ * 
+ * @param {string} show 
+ * @param {string} filename 
+ * @param {Request} req
+ * @param {Response} res 
+ * 
+ * https://stackoverflow.com/questions/24976123/streaming-a-video-file-to-an-html5-video-player-with-node-js-so-that-the-video-c
+ */
+const streamFile = (show, filename, req, res) => {
+    let file = path.resolve(basePath, show, filename);
+    const isFirefox = !!req.query.browser && req.query.browser === 'firefox';
+    console.log(`[streamFile] Access ${file}. Is Firefox? ${isFirefox}`);
+    fs.stat(file, (err, stats) => {
+        if (err) {
+            console.error('[streamFile] error', err);
+            if (err.code === 'ENOENT') {
+                // 404 Error if file not found
+                return res.sendStatus(404);
+            }
+            res.end(err);
+        }
+        var range = req.headers.range;
+        if (!range) {
+            console.error('[streamFile] missing range');
+            // 416 Wrong range
+            return res.sendStatus(416);
+        }
+        var positions = range.replace(/bytes=/, '').split('-');
+        var start = parseInt(positions[0], 10);
+        var total = stats.size;
+        var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+        var chunksize = (end - start) + 1;
+
+        res.writeHead(206, {
+            'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': 'video/webm'
+        });
+
+        if (isFirefox) {
+            /* We really don't wanna live transcode tho */
+            let proc = ffmpeg({ source: file })
+                .withVideoBitrate(2048)
+                .outputOptions(['-movflags faststart', '-frag_size 4096', '-cpu-used 3', '-deadline realtime', '-threads 8'])
+                .withVideoCodec('libvpx')
+                .withAudioBitrate('128k')
+                .withAudioCodec('vorbis')
+                .toFormat('webm')
+                .on('error', (err, stdout, stderr) => {
+                    console.log(err, stderr);
+                    res.end(err);
+                })
+                .stream()
+                .pipe(res, { end: true });
+        } else {
+            let stream = fs.createReadStream(file, { start, end })
+                .on('open', () => {
+                    stream.pipe(res);
+                }).on('error', err => {
+                    console.error('[streamFile] Error streaming file', err);
+                    res.end(err);
+                });
+        }
+        
+        // var stream = fs.createReadStream(file, { start: start, end: end })
+        //     .on('open', function () {
+        //         // stream.pipe(res);
+        //         // const ffmpegCommand = ffmpeg()
+        //         //     .input(stream)
+        //         //     .inputFormat('mp4')
+        //         //     .outputFormat('webm')
+        //         //     .outputOptions(['-movflags faststart', '-frag_size 4096', '-cpu-used 2', '-deadline realtime', '-threads 4'])
+        //         //     .stream()
+        //         //     .pipe(res, {end: true});
+        //         const ffmpegCommand = ffmpeg()
+        //             .input(stream)
+        //             .inputFormat('mp4')
+        //             .outputFormat('mp4')
+        //             .outputOptions(['-movflags faststart', '-frag_size 4096', '-cpu-used 2', '-deadline realtime', '-threads 4'])
+        //             .videoBitrate(640, true)
+        //             .audioBitrate(128)
+        //             .audioCodec('aac')
+        //             .videoCodec('libx264')
+        //             .stream()
+        //             .pipe(res, {end: true});
+        //     }).on('error', function (err, stdout, stderr) {
+        //         console.error('[streamFile] error in read stream', err, stderr);
+        //         res.end(err);
+        //     });
+    });
+};
+
 module.exports = {
     getThumbPath,
-    scanLibrary
+    scanLibrary,
+    streamFile
 };

@@ -3,6 +3,8 @@ import axios from 'axios';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
 import style from './style';
+
+import Viewer from '../../components/viewer';
 import { SERVER } from '../../helpers/constants';
 
 /**
@@ -14,7 +16,8 @@ import { SERVER } from '../../helpers/constants';
 export default class Show extends Component {
     state = {
         episodes: {},
-        viewerOpen: false
+        viewerOpen: false,
+        selectedFile: null
     };
 
     componentWillMount () {
@@ -30,12 +33,26 @@ export default class Show extends Component {
         return data.reduce((acc, item) => ((acc[item['season']] = [...(acc[item['season']] || []), item]), acc), {});
     }
 
-    launchViewer = () => {
+    /**
+     * @param {Episode} selectedFile
+     */
+    launchViewer = (selectedFile) => {
+        selectedFile = selectedFile.season === this.props.show ? selectedFile.file : `${selectedFile.season}/${selectedFile.file}`;
+        this.setState({
+            selectedFile,
+            viewerOpen: true
+        })
+    }
 
+    closeViewer = () => {
+        this.setState({
+            selectedFile: null,
+            viewerOpen: false
+        })
     }
 
     render({ show }) {
-        const { episodes } = this.state;
+        const { episodes, viewerOpen, selectedFile } = this.state;
         return (
             <div class={`${style.home} page`}>
                 <header class={style.headerTitle}>
@@ -47,13 +64,21 @@ export default class Show extends Component {
                         <div class={style.seasonSet}>
                         {(seasonSet !== show) && <h2>{seasonSet}</h2>}
                             {episodes[seasonSet].map(episode => (
-                                <div class={style.episode}>
+                                <div class={style.episode} onClick={() => this.launchViewer(episode)}>
                                     {episode.file}
                                 </div>
                             ))}
                         </div>
                     ))}
                 </section>
+
+                {viewerOpen && (
+                    <Viewer
+                        show={show}
+                        filename={selectedFile}
+                        onClose={this.closeViewer}
+                    />
+                )}
             </div>
         );
     }
