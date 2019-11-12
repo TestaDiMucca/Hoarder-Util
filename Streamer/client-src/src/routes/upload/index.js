@@ -53,6 +53,7 @@ export default class Upload extends Component {
                     <Card class={style.uploadCard}>
                         <h1>Uploader</h1>
                         <p>You can upload mp4s and determine what show/season they belong to. Leave the season as 0 if it is not applicable.</p>
+                        <p>By the generosity of the Axis Church you can upload a season at a time.</p>
 
                         <TextField
                             class={style.inputField}

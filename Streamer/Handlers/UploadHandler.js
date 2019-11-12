@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
 const socketStreamer = require('socket.io-stream');
+const diskusage = require('diskusage');
+
 socketStreamer.forceBase64 = true;
 
 const { THUMB_PATH } = require('../constants');
@@ -18,7 +20,6 @@ class UploadHandler {
     }
 
     /**
-     * 
      * @param {import('http').Server} server 
      */
     addListeners (server) {
@@ -32,34 +33,78 @@ class UploadHandler {
                 season: '',
                 banner: '',
                 directory: '',
-                files: []
+                files: [],
+                options: null /* Support ffmpeg to webm in future */
             };
 
-            socket.on('init', params => {
-                const { show, season } = params;
+            socket.on('init', async params => {
+                const { show, season, options } = params;
                 console.log(`[UploadHandler] Ready to write ${show}, ${season}`);
                 job.show = show;
                 job.season = season;
                 job.directory = path.resolve(basePath, job.show);
+                job.options = options;
+                await this.prepareDirsForJob(job.directory, job.season);
                 socket.emit('ready');
+
+                socket.on('chunk', async params => {
+                    const { chunk, name, packetNo, type } = params;
+                    let filepath;
+                    switch (type) {
+                        case 'thumb':
+                            filepath = path.resolve(job.directory, THUMB_PATH.substr(1));
+                            break;
+                        case 'media':
+                            const subDir = job.season || '.';
+                            filepath = path.resolve(job.directory, subDir, name);
+                            break;
+                    }
+                    // console.log('Got chubk write to', type, filepath)
+                    if (!filepath) return;
+                    
+
+                    // if (first) await this.unlinkIfNeeded(filepath);
+                    // console.log('writing chunk', packetNo)
+                    const data = new Buffer(new Uint8Array(chunk));
+
+                    fs.appendFile(filepath, data, () => { });
+                });
             });
 
-            socketStreamer(socket)
-                .on('thumb', async (stream, data) => {
-                    const filename = path.basename(THUMB_PATH);
-                    const finalPath = path.resolve(job.directory, filename);
-                    await this.createDirIfNotExists(job.directory);
-                    stream.pipe(fs.createWriteStream(finalPath));
-                });
+            // was not working with the media, only images. No data event fired
+            // socketStreamer(socket)
+            //     .on('thumb', async (stream, data) => {
+            //         console.log('[UploadHandler] on write thumbnail banner');
+            //         const filename = path.basename(THUMB_PATH);
+            //         const finalPath = path.resolve(job.directory, filename);
+            //         await this.createDirIfNotExists(job.directory);
+            //         stream.pipe(fs.createWriteStream(finalPath));
+            //     })
+            //     .on('media', async (stream, data) => {
+            //         const filename = path.basename(data.name || 'media');
+            //         console.log('[UploadHandler] on write', filename);
+            //         const subDir = job.season || '.';
+            //         const finalPath = path.resolve(job.directory, subDir, filename);
+            //         await this.createDirIfNotExists(path.resolve(job.directory, subDir));
+            //         stream.pipe(fs.createWriteStream(finalPath));
+            //     });
 
             socket.on('disconnect', () => {
-
+                socket.removeAllListeners();
             });
+        });
+    }
 
-            // ss(socket).on('profile-image', function (stream, data) {
-            //     var filename = path.basename(data.name);
-            //     stream.pipe(fs.createWriteStream(filename));
-            // });
+    async prepareDirsForJob (directory, season) {
+        const subDir = season || '.';
+        await this.createDirIfNotExists(directory);
+        await this.createDirIfNotExists(path.resolve(directory, subDir));
+    }
+
+    unlinkIfNeeded (path) {
+        console.log('unlinking', path);
+        return new Promise(resolve => {
+            fs.unlink(path, resolve);
         });
     }
 
@@ -77,19 +122,18 @@ class UploadHandler {
             });
         });
     }
-}
 
-function checkDirectory(directory, callback) {
-    fs.stat(directory, function (err, stats) {
-        //Check if error defined and the error code is "not exists"
-        if (err && err.errno === 34) {
-            //Create the directory, call the callback.
-            fs.mkdir(directory, callback);
-        } else {
-            //just in case there was a different error:
-            callback(err)
+    async checkDiskUsage () {
+        try {
+            const result = await diskusage.check(basePath);
+            return result;
+        } catch (e) {
+            return {
+                free: 0,
+                total: 0
+            };
         }
-    });
+    }
 }
 
 module.exports = new UploadHandler();

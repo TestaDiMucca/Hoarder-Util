@@ -1,5 +1,7 @@
 import { Component } from 'preact';
 import { route } from 'preact-router';
+import axios from 'axios';
+
 import TopAppBar from 'preact-material-components/TopAppBar';
 import Drawer from 'preact-material-components/Drawer';
 import List from 'preact-material-components/List';
@@ -11,6 +13,8 @@ import 'preact-material-components/Drawer/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
 import style from './style';
+
+import { SERVER } from '../../helpers/constants';
 
 const smolThing = require('../../img/smol.png');
 
@@ -60,10 +64,19 @@ export default class Header extends Component {
 	componentDidMount () {
 		const lDMode = localStorage.getItem(DARKMODE_KEY);
 		if (!!lDMode) {
-			this.setState({  darkThemeEnabled: lDMode === 'true' }, this.handleDarkTheme);
+			this.setState({ darkThemeEnabled: lDMode === 'true' }, this.handleDarkTheme);
 		}
+		this.getDiskData();
 	}
 
+	getDiskData = () => {
+		axios.get(`${SERVER}/usage`).then(res => {
+			const { available, total } = res.data;
+			const percentUsed = Math.floor((total - available) / total * 100);
+			const toGb = n => Math.floor(n / 1024 / 1024 / 1024);
+			console.log(toGb(available), toGb(total), percentUsed)
+		});
+	}
 
 	render(props) {
 		return (

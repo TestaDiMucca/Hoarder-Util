@@ -46,6 +46,11 @@ app.get('/test', (req, res) => {
     res.send('こんにちは, 「ZA WARUDO」!');
 });
 
+app.get('/usage', async (req, res) => {
+    const data = await UploadHandler.checkDiskUsage();
+    res.send(data);
+});
+
 app.get('/library/:show?', async (req, res) => {
     const show = req.params.show;
     const username = req.query.user;
