@@ -1,26 +1,50 @@
 import { Component } from 'preact';
-import { Card, Checkbox, TextField } from 'preact-material-components';
+import { Card, Checkbox, Button, TextField } from 'preact-material-components';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Checkbox/style.css';
 import 'preact-material-components/TextField/style.css';
+import 'preact-material-components/Button/style.css';
 import style from './style';
+
+import UploadService from '../../services/UploadService';
 
 export default class Upload extends Component {
     state = {
         season: 0,
-        show: ''
+        show: '',
+        showingProgress: false,
+        progress: 0,
+        progressText: ''
     };
 
     bannerFile = null;
     mediaFiles = null;
 
+    uploader = null;
+
     handleBannerChange = (file) => {
-        console.log(file)
+        this.bannerFile = file;
     }
 
     handleFiles = (files) => {
-        console.log(files)
+        this.mediaFiles = files;
     }
+
+    handleUpload = () => {
+        const { season, show } = this.state;
+        UploadService.newJob(season, show, this.bannerFile, this.mediaFiles)
+            .onProgress(this.updateStatus)
+            .upload();
+        // this.uploader = uploader;
+    }
+
+    updateStatus = (status, percent) => {
+        console.log(status, percent + '%')
+    };
+
+    // componentWillUnmount () {
+    //     if (this.uploader) this.uploader.cancel();
+    // }
 
     render() {
         return (
@@ -65,6 +89,7 @@ export default class Upload extends Component {
                             onChange={e => this.handleFiles(e.target.files)}
                             helperTextPersistent={true}
                         />
+                        <Button raised ripple class={style.cardButton} onClick={this.handleUpload}>Upload</Button>
                     </Card>
                 </section>
                 

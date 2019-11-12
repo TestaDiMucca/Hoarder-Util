@@ -3,6 +3,7 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const db = require('../Objects/Database');
+const { THUMB_PATH } = require('../constants');
 
 const fsp = {
     readdir: promisify(fs.readdir),
@@ -10,7 +11,6 @@ const fsp = {
 };
 
 const basePath = process.env.SCAN_PATH || './';
-const THUMB_PATH = '/thumb.jpg';
 const AQUAS_PATH = '../public/aquas';
 
 /**

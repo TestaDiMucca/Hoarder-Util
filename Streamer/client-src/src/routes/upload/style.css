@@ -20,6 +20,10 @@
     width: 100%;
 }
 
+.cardButton {
+    width: 20em;
+}
+
 .fileUpload {
     height: 5em;
 }

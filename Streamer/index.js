@@ -76,4 +76,4 @@ app.post('/watched/:name/:file', (req, res) => {
     res.end();
 });
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}!`));
+server.listen(PORT, () => console.log(`Listening on port ${PORT}!`));
