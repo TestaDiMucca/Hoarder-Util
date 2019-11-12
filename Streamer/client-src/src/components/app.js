@@ -36,7 +36,7 @@ export default class App extends Component {
 	 */
 	setUser = (user) => {
 		this.setState({ user });
-		axios.post(`${SERVER}/login/${user}`);
+		axios.post(`${SERVER}/login/${user}`).catch(err => window.alert('Error caught:', err.message));
 	};
 
 	render() {
