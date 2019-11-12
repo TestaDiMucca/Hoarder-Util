@@ -3,10 +3,13 @@ import { Card, Checkbox, Button, TextField } from 'preact-material-components';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Checkbox/style.css';
 import 'preact-material-components/TextField/style.css';
+// import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Button/style.css';
 import style from './style';
 
 import UploadService from '../../services/UploadService';
+
+const loader = require('../../img/loader.svg');
 
 export default class Upload extends Component {
     state = {
@@ -14,33 +17,70 @@ export default class Upload extends Component {
         show: '',
         showingProgress: false,
         progress: 0,
-        progressText: ''
+        progressText: '',
+        bannerFilename: '',
+        selectedFilenames: []
     };
 
     bannerFile = null;
     mediaFiles = null;
 
-    uploader = null;
+    // dialogRef = dialog => (this.dialog = dialog);
+    // openLoader = () => this.dialog.MDComponent.show();
+    // closeLoader = () => this.dialog.MDComponent.hide();
 
-    handleBannerChange = (file) => {
-        this.bannerFile = file;
-    }
+    // uploader = null;
 
+    /**
+     * @param {FileList} files
+     */
+    handleBannerChange = (files) => {
+        this.bannerFile = files;
+        this.setState({ bannerFilename: files ? files[0].name : null });
+    };
+
+    /**
+     * @param {FileList} files
+     */
     handleFiles = (files) => {
         this.mediaFiles = files;
-    }
+        const keys = files ? Object.keys(files).map(f => files[f].name) : [];
+        this.setState({ selectedFilenames: keys });
+    };
 
     handleUpload = () => {
         const { season, show } = this.state;
         UploadService.newJob(season, show, this.bannerFile, this.mediaFiles)
             .onProgress(this.updateStatus)
-            .upload();
+            .upload()
+            .then(this.doneUpload);
         // this.uploader = uploader;
+        // this.setState({ showingProgress: true });
+        this.setState({ showingProgress: true });
+    };
+
+    doneUpload = () => {
+        this.setState({ showingProgress: false });
+    };
+
+    updateStatus = (progressText, progress) => {
+        // console.log(status, percent + '%')
+        this.setState({ progress, progressText });
+    };
+
+    handleCancel = () => {
+        const actually = window.confirm('Really cancel?');
+
+        if (actually) {
+            this.doneUpload();
+            UploadService.cancel(true);
+        }
+        // this.uploader.cancel(true);
     }
 
-    updateStatus = (status, percent) => {
-        console.log(status, percent + '%')
-    };
+    componentDidMount () {
+        // this.openLoader()
+    }
 
     // componentWillUnmount () {
     //     if (this.uploader) this.uploader.cancel();
@@ -49,6 +89,21 @@ export default class Upload extends Component {
     render() {
         return (
             <div class={`${style.home} page`}>
+                {this.state.showingProgress && (
+                    <section>
+                        <Card class={style.progressCard}>
+                            Uploading..
+                            <img src={loader} />
+                            <span class={style.loaderInfo}>{this.state.progressText}<br /><b>{this.state.progress}%</b></span>
+                            <Button raised ripple class={style.cardButton} onClick={this.handleCancel}>Cancel</Button>
+                        </Card>
+                        <div class={style.backing}>
+
+                        </div>
+                    </section>
+                    
+                )}
+
                 <section>
                     <Card class={style.uploadCard}>
                         <h1>Uploader</h1>
@@ -71,25 +126,42 @@ export default class Upload extends Component {
                             onInput={e => this.setState({ season: e.target.value.replace(/[^\d]+/g, '') })}
                             value={this.state.season}
                         />
-                        <TextField
-                            class={style.inputField}
-                            type="file"
-                            class={style.fileUpload}
-                            helperText="Banner Image in Jpg"
-                            accept="image/jpg, image/jpeg"
-                            onChange={e => this.handleBannerChange(e.target.files)}
-                            helperTextPersistent={true}
-                        />
-                        <TextField
-                            class={style.inputField}
-                            type="file"
-                            multiple
-                            class={style.fileUpload}
-                            helperText="Media files in mp4"
-                            accept="video/mp4"
-                            onChange={e => this.handleFiles(e.target.files)}
-                            helperTextPersistent={true}
-                        />
+                        
+                        
+                        <section className="mdc-text-field mdc-text-field--upgraded mdc-ripple-upgraded">
+                            <TextField
+                                type="file"
+                                class={style.fileUpload}
+                                helperText="Banner Image in Jpg"
+                                accept="image/jpg, image/jpeg"
+                                onChange={e => this.handleBannerChange(e.target.files)}
+                                helperTextPersistent={true}
+                            />
+                            <div class={style.browseFile}>
+                                Browse Files
+                            </div>
+                            {!!this.state.bannerFilename && this.state.bannerFilename !== '' && <ul>
+                                <li>{this.state.bannerFilename}</li>
+                            </ul>}
+                            
+                        </section>
+                        <section className="mdc-text-field mdc-text-field--upgraded mdc-ripple-upgraded">
+                            <TextField
+                                type="file"
+                                multiple
+                                class={style.fileUpload}
+                                helperText="Media files in mp4"
+                                accept="video/mp4, video/m4v"
+                                onChange={e => this.handleFiles(e.target.files)}
+                                helperTextPersistent={true}
+                            />
+                            <div class={style.browseFile}>
+                                Browse Files
+                            </div>
+                            <ul>
+                                {this.state.selectedFilenames.map(n => <li>{n}</li>)}
+                            </ul>
+                        </section>
                         <Button raised ripple class={style.cardButton} onClick={this.handleUpload}>Upload</Button>
                     </Card>
                 </section>

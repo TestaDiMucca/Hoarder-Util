@@ -47,10 +47,13 @@ class UploadService {
                     season: this.season
                 });
             });
+            let jobGoing = false;
 
             socket.on('ready', async () => {
+                if (jobGoing) return;
                 console.log('[UploadService] Server ready to receive data');
                 try {
+                    jobGoing = true;
                     await this.uploadToServer(this.bannerFile, 'thumb', 'thumbnail banner image');
                     for (let i = 0; i < this.mediaFiles.length; i++) {
                         await this.uploadToServer(this.mediaFiles[i], 'media', `(${i + 1}/${this.mediaFiles.length}): ${this.mediaFiles[i].name}`);
@@ -71,26 +74,37 @@ class UploadService {
      * @param {string} partname For display purposes on progress update
      */
     uploadToServer (file, type, partname) {
-        return new Promise(resolve => {
-            if (!file) resolve();
+        return new Promise(async resolve => {
+            if (!file) return resolve();
 
             console.log('[UploadService] Uploading', file.name);
             const name = file.name;
             let packetNo = 0;
-
+            await this.prepareServer(name, type);
             let self = this;
+            let complete = false;
 
             // let readStream = fileReaderStream(file);
             parseFile(file, chunk => {
-                console.log('on chunk', packetNo);
+                // console.log('on chunk', packetNo);
+                if (!self.socket) return;
                 self.socket.emit('chunk', { chunk, name, packetNo, type });
-                packetNo ++;
+                packetNo++;
             }, progress => {
-                    if (self.callback) self.callback(`Uploading ${partname}.`, progress);
+                if (self.callback && !complete) self.callback(`Uploading ${partname}.`, progress);
             }, () => {
-                console.log('done');
-                resolve();
+                // console.log('done');
+                self.socket.on('doneWriting', no => {
+                    if (no + 1 >= packetNo) {
+                        complete = true;
+                        self.socket.off('doneWriting');
+                        resolve();
+                    }
+                });
+                
             });
+
+            
 
             // readStream.on(data => console.log('on data'));
 
@@ -117,10 +131,32 @@ class UploadService {
         });
     }
 
-    cancel () {
-        console.log('[UploadHandler] Clearing jobs');
-        if (this.socket) this.socket.close();
-        this.emptyKeys();
+    /**
+     * Get the server ready to write the file
+     * @param {string} name 
+     * @param {string} type 
+     */
+    prepareServer (name, type) {
+        return new Promise(resolve => {
+            this.socket.emit('prepare', { name, type });
+            this.socket.on('prepared', () => {
+                this.socket.off('prepared');
+                resolve();
+            });
+        });
+    }
+
+    /**
+     * 
+     * @param {boolean} [sendToServer=false]
+     */
+    cancel (sendToServer = false) {
+        setTimeout(() => {
+            if (sendToServer && this.socket) this.socket.emit('cancel', {});
+            console.log('[UploadHandler] Clearing jobs');
+            if (this.socket) this.socket.close();
+            this.emptyKeys();
+        }, 5000);   
     }
 
     /**
@@ -162,7 +198,7 @@ function parseFile(file, callback, onProgress, onDone) {
         }
         if (offset >= fileSize) {
             // callback(buff);
-            console.log("Done reading file");
+            // console.log("Done reading file");
             if (onDone) onDone();
             return;
         }
