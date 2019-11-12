@@ -1,6 +1,7 @@
 const loadResult = require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const http = require('http');
 const app = express();
 
 const db = require('./Objects/Database');
@@ -16,12 +17,15 @@ const {
     markWatchedForUser,
     registerUser
 } = require('./Handlers/UserHandler');
+const UploadHandler = require('./Handlers/UploadHandler');
 
 if (loadResult.error) {
     Logger.error(`Error with loading config: ${loadResult.error.message ? loadResult.error.message : loadResult.error}`);
 }
 
 if (!db.initiated) db.init();
+let server = http.createServer(app);
+UploadHandler.addListeners(server);
 
 const staticPath = path.resolve(__dirname + '/public');
 

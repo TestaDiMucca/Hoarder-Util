@@ -37,6 +37,7 @@ export default class Header extends Component {
 
 	goHome = this.linkTo('/');
 	goToMyProfile = this.linkTo('/profile');
+	goToUpload = this.linkTo('/upload');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -85,6 +86,10 @@ export default class Header extends Component {
 						<Drawer.DrawerItem selected={props.selectedRoute === '/'} onClick={this.goHome}>
 							<List.ItemGraphic>home</List.ItemGraphic>
 							Home
+						</Drawer.DrawerItem>
+						<Drawer.DrawerItem selected={props.selectedRoute === '/upload'} onClick={this.goToUpload}>
+							<List.ItemGraphic>cloud_upload</List.ItemGraphic>
+							Upload
 						</Drawer.DrawerItem>
 						<Drawer.DrawerItem selected={props.selectedRoute === '/profile'} onClick={this.goToMyProfile}>
 							<List.ItemGraphic>account_circle</List.ItemGraphic>

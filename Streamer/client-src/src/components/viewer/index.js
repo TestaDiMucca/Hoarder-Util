@@ -13,7 +13,7 @@ export default class ShowCard extends Component {
             /* use encode */
             const useName = `${show}/${filename}`;
             const url = `${SERVER}/watched/${encodeURIComponent(user)}/${encodeURIComponent(useName)}`;
-            axios.post(url, {});
+            axios.post(url, {}).catch(err => {});
         }
     }
 

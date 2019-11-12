@@ -1,0 +1,25 @@
+.home {
+	padding: 20px;
+	min-height: 100%;
+	width: 100%;
+}
+
+.uploadCard {
+    width: 90vw;
+    margin: auto;
+    padding: 1em;
+    height: 80vh;
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: relative;
+    top: 2em;
+}
+
+.inputField {
+    width: 100%;
+}
+
+.fileUpload {
+    height: 5em;
+}

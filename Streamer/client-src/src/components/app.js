@@ -7,6 +7,7 @@ import Home from '../routes/home';
 import Profile from '../routes/profile';
 import Show from '../routes/show';
 import NotFound from '../routes/404';
+import Upload from '../routes/upload';
 
 import { DEFAULT_USER, SERVER } from '../helpers/constants';
 
@@ -45,8 +46,9 @@ export default class App extends Component {
 				<Router onChange={this.handleRoute}>
 					<Home path="/" />
 					<Show path="/show/:show" user={this.state.user} />
-					<Profile path="/profile/" user={this.state.user} prop="foo" />
+					<Profile path="/profile/" user={this.state.user} />
 					<Profile path="/profile/:user" />
+					<Upload path="/upload" />
 					<NotFound default />
 				</Router>
 			</div>
