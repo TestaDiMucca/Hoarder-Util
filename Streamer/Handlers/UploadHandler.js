@@ -1,18 +1,31 @@
 const io = require('socket.io');
 const path = require('path');
 const fs = require('fs');
+const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
-const socketStreamer = require('socket.io-stream');
 const diskusage = require('diskusage');
 
-socketStreamer.forceBase64 = true;
-
-const { THUMB_PATH } = require('../constants');
+const { CODEC_CHOICES, THUMB_PATH } = require('../constants');
 
 const fsp = {
     mkdir: promisify(fs.mkdir)
 };
 const basePath = process.env.SCAN_PATH || './';
+const UPLOAD_TYPES = {
+    THUMB: 'thumb',
+    MEDIA: 'media'
+}
+
+const replaceExtension = (path, newExt) => {
+    let split = path.split('.');
+    split[split.length - 1] = newExt;
+    return split.join('.');
+};
+
+const getExtension = (path) => {
+    const split = path.split('.');
+    return split[split.length - 1];
+};
 
 class UploadHandler {
     constructor () {
@@ -66,6 +79,37 @@ class UploadHandler {
                     });
                 });
 
+                socket.on('convert', async params => {
+                    try {
+                        const { name, target } = params;
+                        const filepath = this.getPath(job.directory, job.season, UPLOAD_TYPES.MEDIA, name);
+                        const convertedPath = replaceExtension(filepath, target);
+
+                        const currExt = getExtension(filepath);
+
+                        if (currExt.toLowerCase() === target.toLowerCase()) return socket.emit('convertDone', null);
+                        console.log(`[UploadHandler] convert call for ${name} to ${target}`);
+                        if (currExt === 'mkv') return this.doMKV(filepath, convertedPath, socket, target);
+
+                        ffmpeg(filepath)
+                            .output(convertedPath)
+                            .audioCodec(CODEC_CHOICES[target].audio)
+                            .videoCodec(CODEC_CHOICES[target].video)
+                            // .outputOptions(currExt === 'mkv' ? `-vf subtitles=${filepath}` : '')
+                            .on('end', () => {
+                                socket.emit('convertDone', null);
+                                this.unlinkIfNeeded(filepath);
+                            })
+                            .on('progress', progress => {
+                                const { timemark } = progress;
+                                socket.emit('converting', { timemark });
+                            })
+                            .run();
+                    } catch (e) {
+                        socket.emit('convertDone', e.message);
+                    }
+                });
+
                 socket.on('cancel', () => {
                     /* Cancel jobs and remove */
                 });
@@ -77,11 +121,28 @@ class UploadHandler {
         });
     }
 
+    doMKV (filepath, convertedPath, socket, target) {
+        ffmpeg(filepath)
+            .output(convertedPath)
+            .audioCodec(CODEC_CHOICES[target].audio)
+            .videoCodec(CODEC_CHOICES[target].video)
+            // .outputOptions(currExt === 'mkv' ? `-vf subtitles=${filepath}` : '')
+            .on('end', () => {
+                socket.emit('convertDone', null);
+                this.unlinkIfNeeded(filepath);
+            })
+            .on('progress', progress => {
+                const { timemark } = progress;
+                socket.emit('converting', { timemark });
+            })
+            .run();
+    }
+
     getPath (directory, season, type, filename) {
         switch (type) {
-            case 'thumb':
+            case UPLOAD_TYPES.THUMB:
                 return path.resolve(directory, THUMB_PATH.substr(1));
-            case 'media':
+            case UPLOAD_TYPES.MEDIA:
                 const subDir = season || '.';
                 return path.resolve(directory, subDir, filename);
         }

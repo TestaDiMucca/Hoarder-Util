@@ -32,7 +32,10 @@ class UploadService {
         return this;
     }
 
-    upload () {
+    /**
+     * @param {'mp4' | 'webm'} convert 
+     */
+    upload (convert) {
         return new Promise((resolve, reject) => {
             if (!!socket) return reject(new Error('Upload already in progress'));
             let socket = io.connect(SERVER);
@@ -53,7 +56,9 @@ class UploadService {
                     jobGoing = true;
                     await this.uploadToServer(this.bannerFile, 'thumb', 'thumbnail banner image');
                     for (let i = 0; i < this.mediaFiles.length; i++) {
-                        await this.uploadToServer(this.mediaFiles[i], 'media', `(${i + 1}/${this.mediaFiles.length}): ${this.mediaFiles[i].name}`);
+                        const partname = `(${i + 1}/${this.mediaFiles.length}): ${this.mediaFiles[i].name}`;
+                        await this.uploadToServer(this.mediaFiles[i], 'media', partname);
+                        if (!!convert) await this.callConvert(this.mediaFiles[i].name, convert, partname);
                     }
                     this.cancel();
                     resolve();
@@ -64,6 +69,24 @@ class UploadService {
             });
         });
     }   
+
+    callConvert (name, target = 'mp4', partname) {
+        return new Promise(resolve => {
+            console.log(`[UploadService] Requestion convert to ${target} for ${name}`);
+            this.socket.emit('convert', { name, target });
+
+            this.socket.on('converting', res => {
+                if (this.callback) this.callback(`Converting ${partname}.`, '@' + res.timemark);
+            });
+
+            this.socket.on('convertDone', err => {
+                if (err) console.log(`[UploadService] Server sent a convert error`, err);
+                this.socket.off('converting');
+                this.socket.off('convertDone');
+                resolve();
+            })
+        });
+    }
 
     /**
      * @param {File} file 
@@ -129,7 +152,7 @@ class UploadService {
     }
 
     /**
-     * @param {function(string, number)} callback Return curr progress and %
+     * @param {function(string, string | number)} callback Return curr progress and %
      */
     onProgress (callback) {
         if (callback instanceof Function) this.callback = callback;
