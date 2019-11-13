@@ -1,10 +1,7 @@
 import io from 'socket.io-client';
-import socketStream from 'socket.io-stream/socket.io-stream';
-// import fileReaderStream from 'filereader-stream';
 
 import { SERVER } from '../helpers/constants';
 
-socketStream.forceBase64 = true;
 class UploadService {
     constructor () {
         this.emptyKeys();
@@ -84,16 +81,13 @@ class UploadService {
             let self = this;
             let complete = false;
 
-            // let readStream = fileReaderStream(file);
             parseFile(file, chunk => {
-                // console.log('on chunk', packetNo);
                 if (!self.socket) return;
                 self.socket.emit('chunk', { chunk, name, packetNo, type });
                 packetNo++;
             }, progress => {
                 if (self.callback && !complete) self.callback(`Uploading ${partname}.`, progress);
             }, () => {
-                // console.log('done');
                 self.socket.on('doneWriting', no => {
                     if (no + 1 >= packetNo) {
                         complete = true;
@@ -103,31 +97,6 @@ class UploadService {
                 });
                 
             });
-
-            
-
-            // readStream.on(data => console.log('on data'));
-
-            // let stream = socketStream.createStream();
-            // let size = 0;
-            // socketStream(this.socket).emit(type, stream, { size: file.size, name: file.name });
-            
-            // let blobStream = socketStream.createBlobReadStream(file, { objectMode: true, highWaterMark: 1024 * 1024 });
-
-            // blobStream.on('data', chunk => {
-            //     size += chunk.length;
-            //     if (this.callback) this.callback(`Uploading ${partname}.`, Math.floor(size / file.size * 100));
-            // }).on('end', () => {
-            //     console.log('stream end')
-            //     resolve();
-            // }).on('close', () => {
-            //     console.log('stream close')
-            // }).on('pause', () => {
-            //     console.log('stream paus')
-            // }).on('resume', () => {
-            //     console.log('stream resume')
-            // }).on('error', err => console.log(err));
-            // blobStream.pipe(stream);
         });
     }
 
@@ -183,13 +152,10 @@ function parseFile(file, callback, onProgress, onDone) {
     var self = this; // we need a reference to the current object
     var chunkReaderBlock = null;
 
-    // let buff;
     var readEventHandler = function (evt) {
         if (evt.target.error == null) {
             offset += chunkSize;
             callback(evt.target.result); // callback for handling read chunk
-            // buff.push(evt.target.result);
-            // buff = buff ? _appendBuffer(buff, evt.target.result) : evt.target.result;
             if (onProgress) onProgress(Math.floor((offset / fileSize) * 100));
         } else {
             
@@ -197,8 +163,6 @@ function parseFile(file, callback, onProgress, onDone) {
             return;
         }
         if (offset >= fileSize) {
-            // callback(buff);
-            // console.log("Done reading file");
             if (onDone) onDone();
             return;
         }

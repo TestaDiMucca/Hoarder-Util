@@ -3,7 +3,6 @@ import { Card, Checkbox, Button, TextField } from 'preact-material-components';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Checkbox/style.css';
 import 'preact-material-components/TextField/style.css';
-// import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Button/style.css';
 import style from './style';
 
@@ -24,12 +23,6 @@ export default class Upload extends Component {
 
     bannerFile = null;
     mediaFiles = null;
-
-    // dialogRef = dialog => (this.dialog = dialog);
-    // openLoader = () => this.dialog.MDComponent.show();
-    // closeLoader = () => this.dialog.MDComponent.hide();
-
-    // uploader = null;
 
     /**
      * @param {FileList} files
@@ -54,8 +47,6 @@ export default class Upload extends Component {
             .onProgress(this.updateStatus)
             .upload()
             .then(this.doneUpload);
-        // this.uploader = uploader;
-        // this.setState({ showingProgress: true });
         this.setState({ showingProgress: true });
     };
 
@@ -64,7 +55,6 @@ export default class Upload extends Component {
     };
 
     updateStatus = (progressText, progress) => {
-        // console.log(status, percent + '%')
         this.setState({ progress, progressText });
     };
 
@@ -75,16 +65,7 @@ export default class Upload extends Component {
             this.doneUpload();
             UploadService.cancel(true);
         }
-        // this.uploader.cancel(true);
     }
-
-    componentDidMount () {
-        // this.openLoader()
-    }
-
-    // componentWillUnmount () {
-    //     if (this.uploader) this.uploader.cancel();
-    // }
 
     render() {
         return (

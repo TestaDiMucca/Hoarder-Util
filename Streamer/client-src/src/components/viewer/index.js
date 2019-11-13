@@ -9,8 +9,6 @@ export default class ShowCard extends Component {
     componentWillUnmount () {
         const { user, show, filename } = this.props;
         if (user && this.isViewedEnough()) {
-            /* format for watchedlog is base show / season / filename. filename is season/filename already */
-            /* use encode */
             const useName = `${show}/${filename}`;
             const url = `${SERVER}/watched/${encodeURIComponent(user)}/${encodeURIComponent(useName)}`;
             axios.post(url, {}).catch(err => {});

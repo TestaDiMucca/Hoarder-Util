@@ -57,20 +57,8 @@ class UploadHandler {
                 socket.on('chunk', async params => {
                     const { chunk, name, packetNo, type } = params;
                     let filepath = this.getPath(job.directory, job.season, type, name);
-                    // switch (type) {
-                    //     case 'thumb':
-                    //         filepath = path.resolve(job.directory, THUMB_PATH.substr(1));
-                    //         break;
-                    //     case 'media':
-                    //         const subDir = job.season || '.';
-                    //         filepath = path.resolve(job.directory, subDir, name);
-                    //         break;
-                    // }
-                    // // console.log('Got chubk write to', type, filepath)
-                    // if (!filepath) return;
                     
                     if (packetNo === 0) console.log('[UploadHandler] Successfully received first packet');
-                    // console.log('writing chunk', packetNo)
                     const data = new Buffer(new Uint8Array(chunk));
 
                     fs.appendFile(filepath, data, () => {
@@ -82,24 +70,6 @@ class UploadHandler {
                     /* Cancel jobs and remove */
                 });
             });
-
-            // was not working with the media, only images. No data event fired
-            // socketStreamer(socket)
-            //     .on('thumb', async (stream, data) => {
-            //         console.log('[UploadHandler] on write thumbnail banner');
-            //         const filename = path.basename(THUMB_PATH);
-            //         const finalPath = path.resolve(job.directory, filename);
-            //         await this.createDirIfNotExists(job.directory);
-            //         stream.pipe(fs.createWriteStream(finalPath));
-            //     })
-            //     .on('media', async (stream, data) => {
-            //         const filename = path.basename(data.name || 'media');
-            //         console.log('[UploadHandler] on write', filename);
-            //         const subDir = job.season || '.';
-            //         const finalPath = path.resolve(job.directory, subDir, filename);
-            //         await this.createDirIfNotExists(path.resolve(job.directory, subDir));
-            //         stream.pipe(fs.createWriteStream(finalPath));
-            //     });
 
             socket.on('disconnect', () => {
                 socket.removeAllListeners();
