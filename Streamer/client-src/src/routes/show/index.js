@@ -28,6 +28,10 @@ export default class Show extends Component {
     };
 
     componentWillMount () {
+        this.getEpisodes();
+    }
+
+    getEpisodes = () => {
         const query = this.props.user ? `?user=${encodeURIComponent(this.props.user)}` : '';
         axios.get(`${SERVER}/library/${this.props.show}${query}`).then(res => {
             // console.log(res.data)
@@ -71,7 +75,8 @@ export default class Show extends Component {
         this.setState({
             selectedFile: null,
             viewerOpen: false
-        })
+        });
+        this.getEpisodes();
     }
 
     clearWarning = () => {

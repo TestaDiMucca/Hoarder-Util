@@ -37,7 +37,7 @@ class UploadService {
      */
     upload (convert) {
         return new Promise((resolve, reject) => {
-            if (!!socket) return reject(new Error('Upload already in progress'));
+            if (!!socket) return reject(new Error('Job already in progress'));
             let socket = io.connect(SERVER);
             this.socket = socket;
             socket.on('connect', () => {

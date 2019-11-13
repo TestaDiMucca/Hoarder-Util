@@ -10,3 +10,4 @@ shuffle.json
 config.json
 trips.json
 *.db
+build/

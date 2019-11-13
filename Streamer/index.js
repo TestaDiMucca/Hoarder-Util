@@ -46,6 +46,10 @@ app.get('/test', (req, res) => {
     res.send('こんにちは, 「ZA WARUDO」!');
 });
 
+app.get('/', (req, res) => {
+    res.sendFile('./public/index.html');
+});
+
 app.get('/usage', async (req, res) => {
     const data = await UploadHandler.checkDiskUsage();
     res.send(data);
