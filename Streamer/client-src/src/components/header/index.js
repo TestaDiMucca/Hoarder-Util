@@ -1,6 +1,5 @@
 import { Component } from 'preact';
 import { route } from 'preact-router';
-import axios from 'axios';
 
 import TopAppBar from 'preact-material-components/TopAppBar';
 import Drawer from 'preact-material-components/Drawer';
@@ -14,7 +13,7 @@ import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
 import style from './style';
 
-import { SERVER } from '../../helpers/constants';
+import SpaceMeter from '../spaceMeter';
 
 const smolThing = require('../../img/smol.png');
 
@@ -66,16 +65,6 @@ export default class Header extends Component {
 		if (!!lDMode) {
 			this.setState({ darkThemeEnabled: lDMode === 'true' }, this.handleDarkTheme);
 		}
-		this.getDiskData();
-	}
-
-	getDiskData = () => {
-		axios.get(`${SERVER}/usage`).then(res => {
-			const { available, total } = res.data;
-			const percentUsed = Math.floor((total - available) / total * 100);
-			const toGb = n => Math.floor(n / 1024 / 1024 / 1024);
-			console.log(toGb(available), toGb(total), percentUsed)
-		});
 	}
 
 	render(props) {
@@ -89,8 +78,9 @@ export default class Header extends Component {
 							</TopAppBar.Icon>
 							<TopAppBar.Title style={{ cursor: 'pointer' }} onClick={this.goHome}><img class={style.smolIcon} src={smolThing} />Agua+</TopAppBar.Title>
 						</TopAppBar.Section>
-						<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>
-							<TopAppBar.Icon>settings</TopAppBar.Icon>
+						<TopAppBar.Section align-end shrink-to-fit>
+							<SpaceMeter />
+							<TopAppBar.Icon onClick={this.openSettings}>settings</TopAppBar.Icon>
 						</TopAppBar.Section>
 					</TopAppBar.Row>
 				</TopAppBar>
