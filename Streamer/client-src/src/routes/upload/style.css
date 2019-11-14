@@ -51,6 +51,11 @@
     text-align: center;
 }
 
+.uploadPop {
+    display: flex;
+    flex-direction: column;
+}
+
 .loaderInfo {
     width: 100%;
     text-align: center;

@@ -14,6 +14,7 @@ import 'preact-material-components/FormField/style.css';
 import 'preact-material-components/List/style.css';
 import style from './style';
 
+import Dialog from '../../components/dialog';
 import UploadService from '../../services/UploadService';
 
 const loader = require('../../img/loader.svg');
@@ -95,17 +96,25 @@ export default class Upload extends Component {
         return (
             <div class={`${style.home} page`}>
                 {this.state.showingProgress && (
-                    <section>
-                        <Card class={style.progressCard}>
+                    <Dialog>
+                        <section class={style.uploadPop}>
                             Uploading..
                             <img src={loader} />
                             <span class={style.loaderInfo}>{this.state.progressText}<br /><b>{this.state.progress}{typeof this.state.progress === 'number' ? '%' : ''}</b></span>
                             <Button raised ripple class={style.cardButton} onClick={this.handleCancel}>Cancel</Button>
-                        </Card>
-                        <div class={style.backing}>
+                        </section>
+                    </Dialog>
+                    // <section>
+                    //     <Card class={style.progressCard}>
+                    //         Uploading..
+                    //         <img src={loader} />
+                    //         <span class={style.loaderInfo}>{this.state.progressText}<br /><b>{this.state.progress}{typeof this.state.progress === 'number' ? '%' : ''}</b></span>
+                    //         <Button raised ripple class={style.cardButton} onClick={this.handleCancel}>Cancel</Button>
+                    //     </Card>
+                    //     <div class={style.backing}>
 
-                        </div>
-                    </section>
+                    //     </div>
+                    // </section>
                     
                 )}
 
