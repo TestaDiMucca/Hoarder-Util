@@ -24,6 +24,8 @@ const MAIN_LOGFILE = 'log.txt';
 
 const SLIDE_PORT = 4001;
 const WIKI_PORT = 5002;
+const AGUA_PORT = 5003;
+
 const DIRECORY_LIST = [
     {
         name: 'Barebones Utility Operator',
@@ -48,6 +50,12 @@ const DIRECORY_LIST = [
         description: '...',
         icon: 'local_florist',
         url: `${WIKI_PORT}/`
+    },
+    {
+        name: 'Agua+',
+        description: '...',
+        icon: 'local_activity',
+        url: `${AGUA_PORT}/`
     }
 ];
 

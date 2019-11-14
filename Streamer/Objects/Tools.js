@@ -36,6 +36,26 @@ class Tools {
     isObject(o) {
         return o === Object(o) && !Array.isArray(o) && typeof o !== 'function';
     };
+
+    /**
+     * 
+     * @param {*} path 
+     * @param {*} newExt 
+     */
+    replaceExtension (path, newExt) {
+        let split = path.split('.');
+        split[split.length - 1] = newExt;
+        return split.join('.');
+    };
+
+    /**
+     * 
+     * @param {*} path 
+     */
+    getExtension (path) {
+        const split = path.split('.');
+        return split[split.length - 1];
+    };
 }
 
 module.exports = new Tools();

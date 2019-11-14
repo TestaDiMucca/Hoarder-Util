@@ -47,7 +47,7 @@ app.get('/test', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile('./public/index.html');
+    res.sendFile(path.resolve(__dirname, 'public/index.html'));
 });
 
 app.get('/usage', async (req, res) => {

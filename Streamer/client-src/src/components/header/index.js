@@ -15,7 +15,7 @@ import style from './style';
 
 import SpaceMeter from '../spaceMeter';
 
-const smolThing = require('../../img/smol.png');
+const smolThing = require('../../img/aguaPlus_smol.png');
 
 const DARKMODE_KEY = 'darkMode';
 export default class Header extends Component {
@@ -41,6 +41,7 @@ export default class Header extends Component {
 	goHome = this.linkTo('/');
 	goToMyProfile = this.linkTo('/profile');
 	goToUpload = this.linkTo('/upload');
+	goToBugs = this.linkTo('/bugs');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -93,6 +94,10 @@ export default class Header extends Component {
 						<Drawer.DrawerItem selected={props.selectedRoute === '/upload'} onClick={this.goToUpload}>
 							<List.ItemGraphic>cloud_upload</List.ItemGraphic>
 							Upload
+						</Drawer.DrawerItem>
+						<Drawer.DrawerItem selected={props.selectedRoute === '/bugs'} onClick={this.goToBugs}>
+							<List.ItemGraphic>bug_report</List.ItemGraphic>
+							Bug Reporting
 						</Drawer.DrawerItem>
 						<Drawer.DrawerItem selected={props.selectedRoute === '/profile'} onClick={this.goToMyProfile}>
 							<List.ItemGraphic>account_circle</List.ItemGraphic>

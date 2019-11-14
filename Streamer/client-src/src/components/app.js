@@ -8,6 +8,7 @@ import Profile from '../routes/profile';
 import Show from '../routes/show';
 import NotFound from '../routes/404';
 import Upload from '../routes/upload';
+import BugReport from '../routes/bugReport';
 
 import { DEFAULT_USER, SERVER } from '../helpers/constants';
 
@@ -49,6 +50,7 @@ export default class App extends Component {
 					<Profile path="/profile/" user={this.state.user} />
 					<Profile path="/profile/:user" />
 					<Upload path="/upload" />
+					<BugReport path="/bugs" />
 					<NotFound default />
 				</Router>
 			</div>

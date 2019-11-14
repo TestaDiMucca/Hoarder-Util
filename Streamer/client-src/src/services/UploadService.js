@@ -109,7 +109,7 @@ class UploadService {
                 self.socket.emit('chunk', { chunk, name, packetNo, type });
                 packetNo++;
             }, progress => {
-                if (self.callback && !complete) self.callback(`Uploading ${partname}.`, progress);
+                if (self.callback && !complete) self.callback(`Uploading ${partname}.`, Math.min(100, progress));
             }, () => {
                 self.socket.on('doneWriting', no => {
                     if (no + 1 >= packetNo) {

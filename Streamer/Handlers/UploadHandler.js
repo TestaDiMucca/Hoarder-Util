@@ -6,6 +6,7 @@ const { promisify } = require('util');
 const diskusage = require('diskusage');
 
 const { CODEC_CHOICES, THUMB_PATH } = require('../constants');
+const Tools = require('../Objects/Tools');
 
 const fsp = {
     mkdir: promisify(fs.mkdir)
@@ -15,17 +16,6 @@ const UPLOAD_TYPES = {
     THUMB: 'thumb',
     MEDIA: 'media'
 }
-
-const replaceExtension = (path, newExt) => {
-    let split = path.split('.');
-    split[split.length - 1] = newExt;
-    return split.join('.');
-};
-
-const getExtension = (path) => {
-    const split = path.split('.');
-    return split[split.length - 1];
-};
 
 class UploadHandler {
     constructor () {
@@ -83,13 +73,15 @@ class UploadHandler {
                     try {
                         const { name, target } = params;
                         const filepath = this.getPath(job.directory, job.season, UPLOAD_TYPES.MEDIA, name);
-                        const convertedPath = replaceExtension(filepath, target);
+                        const convertedPath = Tools.replaceExtension(filepath, target);
 
-                        const currExt = getExtension(filepath);
+                        const currExt = Tools.getExtension(filepath);
 
                         if (currExt.toLowerCase() === target.toLowerCase()) return socket.emit('convertDone', null);
                         console.log(`[UploadHandler] convert call for ${name} to ${target}`);
                         if (currExt === 'mkv') return this.doMKV(filepath, convertedPath, socket, target);
+
+                        let p = 0;
 
                         ffmpeg(filepath)
                             .output(convertedPath)
@@ -101,7 +93,9 @@ class UploadHandler {
                                 this.unlinkIfNeeded(filepath);
                             })
                             .on('progress', progress => {
-                                const { timemark } = progress;
+                                p++;
+                                const { currentFps, timemark } = progress;
+                                if (p % 10 === 0) console.log(`[UploadHandler] Processed ${timemark}, at ${currentFps} fps`);
                                 socket.emit('converting', { timemark });
                             })
                             .run();
