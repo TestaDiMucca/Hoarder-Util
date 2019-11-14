@@ -18,10 +18,19 @@ export default class Home extends Component {
 		}).catch(err => console.log(err));
 	}
 
+	componentDidMount () {
+		const eles = document.querySelectorAll('#home');
+		const arrOf = [...eles];
+		if (arrOf.length > 1) {
+			arrOf.shift();
+			arrOf.forEach(e => e.remove());
+		}
+	}
+
 	render() {
 		const { shows } = this.state;
 		return (
-			<div class={`${style.home} page`}>
+			<div class={`${style.home} page`} id="home">
 				<header class={style.titleHeader}>
 					<h1>Agua <span class={style.plus}>Plus</span></h1>
 					<p>The most useless weeb streamer known to Belzerg.</p>

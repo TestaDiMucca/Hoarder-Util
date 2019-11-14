@@ -63,5 +63,6 @@
 
 .watched {
     /* font-size: 1em !important; */
-    transform: scale(0.5) translateY(70%);
+    transform: scale(0.5) translateY(1em);
+    height: 0em;
 }
