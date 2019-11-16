@@ -194,6 +194,7 @@ const updateFavIcon = () => {
 };
 
 const updateCaption = () => {
+    console.log('update')
     const useList = selectList();
     const item = useList[state.currIndex];
     $('#mini-filename').text(`(${state.currIndex + 1}/${list.length}) - ${item.add}/${item.item}`);
@@ -220,8 +221,8 @@ const loadNext = (skipCurrent = false) => {
     loadOne(state.currIndex + 2, false, false, false);
     slideChangedActions();
 
-    if (state.panelOpen) updateCaption();
-    if (state.filepathActive) updateBottomName();
+    if (!$('#mini-filename').hasClass('hidden')) updateCaption();
+    if (!$('.bottom-name').hasClass('hidden')) updateBottomName();
 };
 
 const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
@@ -376,8 +377,9 @@ const checkIndex = () => {
         state.timer = Math.max(+lTimer, 3);
     }
     const lFavs = localStorage.getItem(LS_KEYS.FAVS);
-    if (lFavs !== undefined) {
-        starred = JSON.parse(lFavs);
+    if (lFavs !== undefined && lFavs !== '') {
+        starred = JSON.parse(lFavs) || {};
+        // console.log(starred, lFavs)
     }
     const lShowName = localStorage.getItem(LS_KEYS.SHOW_NAME);
     console.log(lShowName)
