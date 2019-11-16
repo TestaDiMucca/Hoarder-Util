@@ -23,7 +23,7 @@ const {
 } = require('./modules/migrationHandler');
 
 if (loadResult.error) {
-    Logger.error(`Error with loading config: ${loadResult.error.message ? loadResult.error.message : loadResult.error}`);
+    console.error(`Error with loading config: ${loadResult.error.message ? loadResult.error.message : loadResult.error}`);
 }
 
 const staticPath = path.resolve(__dirname + '/public'); 
