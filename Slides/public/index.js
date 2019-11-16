@@ -604,6 +604,9 @@ const shuffleAfter = async () => {
     loadNext();
 };
 
+const dumpShuffle = async () => {
+    await postRequest('/dump-shuffle', {});
+};
 
 const postRequest = async (url, params) => {
     return new Promise(async resolve => {

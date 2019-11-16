@@ -74,6 +74,7 @@ app.post('/rescan', (req, res) => {
 });
 
 app.post('/dump-shuffle', async (req, res) => {
+    console.log('[dumpShuffle]');
     await handlerInstance.dumpShuffle();
     res.end();
 });
