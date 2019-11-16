@@ -103,19 +103,7 @@ export default class Upload extends Component {
                             <span class={style.loaderInfo}>{this.state.progressText}<br /><b>{this.state.progress}{typeof this.state.progress === 'number' ? '%' : ''}</b></span>
                             <Button raised ripple class={style.cardButton} onClick={this.handleCancel}>Cancel</Button>
                         </section>
-                    </Dialog>
-                    // <section>
-                    //     <Card class={style.progressCard}>
-                    //         Uploading..
-                    //         <img src={loader} />
-                    //         <span class={style.loaderInfo}>{this.state.progressText}<br /><b>{this.state.progress}{typeof this.state.progress === 'number' ? '%' : ''}</b></span>
-                    //         <Button raised ripple class={style.cardButton} onClick={this.handleCancel}>Cancel</Button>
-                    //     </Card>
-                    //     <div class={style.backing}>
-
-                    //     </div>
-                    // </section>
-                    
+                    </Dialog>                    
                 )}
 
                 <section>

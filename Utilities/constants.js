@@ -49,13 +49,13 @@ const DIRECORY_LIST = [
         name: 'Tiddly Valkawiki',
         description: '...',
         icon: 'local_florist',
-        url: `${WIKI_PORT}/`
+        url: `:${WIKI_PORT}/`
     },
     {
         name: 'Agua+',
         description: '...',
         icon: 'local_activity',
-        url: `${AGUA_PORT}/`
+        url: `:${AGUA_PORT}/`
     }
 ];
 
