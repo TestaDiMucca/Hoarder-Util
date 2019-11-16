@@ -41,6 +41,14 @@ export default class Upload extends Component {
     bannerFile = null;
     mediaFiles = null;
 
+    componentDidMount () {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const show = decodeURIComponent(urlParams.get('show'));
+            if (!!show && show !== '') this.setState({ show });
+        } catch (e) {}
+    }
+
     /**
      * @param {FileList} files
      */

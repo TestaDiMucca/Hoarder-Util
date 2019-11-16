@@ -66,3 +66,24 @@
     transform: scale(0.5) translateY(1em);
     height: 0em;
 }
+
+.actionBar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 0.5em;
+    display: flex;
+
+    background-color: rgba(0,0,0,0.3);
+}
+
+.action {
+    color: white;
+    transition-duration: 0.5s;
+    transition-property: all;
+    cursor: pointer;
+}
+
+.action:hover {
+    color: #7bc5e0;
+}

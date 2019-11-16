@@ -1,4 +1,5 @@
 import { Component } from 'preact';
+import { route } from 'preact-router';
 import axios from 'axios';
 import Card from 'preact-material-components/Card';
 import Button from 'preact-material-components/Button';
@@ -83,6 +84,10 @@ export default class Show extends Component {
         this.setState({ showWarning: null });
     }
 
+    uploadToShow = () => {
+        route(`/upload?show=${encodeURIComponent(this.props.show)}`);
+    }
+
     render({ show }) {
         const { episodes, viewerOpen, selectedFile, showWarning } = this.state;
         return (
@@ -90,6 +95,9 @@ export default class Show extends Component {
                 <header class={style.headerTitle}>
                     <img src={`${SERVER}/thumb/${show}`} class={style.showImage} />
                     <h1 class={style.titleText}>{show}</h1>
+                    <section class={style.actionBar}>
+                        <span class={style.action} onClick={this.uploadToShow}>Upload to Show</span>
+                    </section>
                 </header>
                 <section class={style.episodeList}>
                     {showWarning &&
