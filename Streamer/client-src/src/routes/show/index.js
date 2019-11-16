@@ -9,6 +9,7 @@ import 'preact-material-components/Button/style.css';
 import 'preact-material-components/List/style.css';
 import style from './style';
 
+import ConfirmationDialog from '../../components/confirmationDialog';
 import Viewer from '../../components/viewer';
 import { SERVER } from '../../helpers/constants';
 import { isFirefox, isMP4 } from '../../helpers/helpers';
@@ -25,12 +26,18 @@ export default class Show extends Component {
         episodes: {},
         viewerOpen: false,
         selectedFile: null,
-        showWarning: null
+        showWarning: null,
+        dialogShowing: null
     };
 
     componentWillMount () {
         this.getEpisodes();
     }
+
+    setDialogShowing = (text, onConfirm, onReject) => {
+        if (!text && !onConfirm && !onReject) return this.setState({ dialogShowing: null });
+        this.setState({ dialogShowing: { text, onConfirm, onReject }});
+    };
 
     getEpisodes = () => {
         const query = this.props.user ? `?user=${encodeURIComponent(this.props.user)}` : '';
@@ -84,19 +91,40 @@ export default class Show extends Component {
         this.setState({ showWarning: null });
     }
 
-    uploadToShow = () => {
+    handleUploadToShow = () => {
         route(`/upload?show=${encodeURIComponent(this.props.show)}`);
     }
 
+    handleDeleteShow = () => {
+        this.setDialogShowing('Are you sure you want to delete this show?', this.onDeleteShow, () => {
+            this.setDialogShowing(null);
+        });
+    }
+
+    onDeleteShow = () => {
+        (async () => {
+            await axios.delete(`${SERVER}/library/${this.props.show}`);
+            route('/');
+        })();
+    }
+
     render({ show }) {
-        const { episodes, viewerOpen, selectedFile, showWarning } = this.state;
+        const { episodes, viewerOpen, selectedFile, showWarning, dialogShowing } = this.state;
         return (
             <div class={`${style.home} page`}>
+                {dialogShowing && (
+                    <ConfirmationDialog
+                        text={dialogShowing.text}
+                        onConfirm={dialogShowing.onConfirm}
+                        onReject={dialogShowing.onReject}
+                    />
+                )}
                 <header class={style.headerTitle}>
                     <img src={`${SERVER}/thumb/${show}`} class={style.showImage} />
                     <h1 class={style.titleText}>{show}</h1>
                     <section class={style.actionBar}>
-                        <span class={style.action} onClick={this.uploadToShow}>Upload to Show</span>
+                        <span class={style.action} onClick={this.handleUploadToShow}>Upload to Show</span>
+                        <span class={style.action} onClick={this.handleDeleteShow}>Delete Show</span>
                     </section>
                 </header>
                 <section class={style.episodeList}>

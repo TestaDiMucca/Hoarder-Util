@@ -4,6 +4,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const db = require('../Objects/Database');
 const { THUMB_PATH } = require('../constants');
+const Tools = require('../Objects/Tools');
 
 const fsp = {
     readdir: promisify(fs.readdir),
@@ -12,6 +13,34 @@ const fsp = {
 
 const basePath = process.env.SCAN_PATH || './';
 const AQUAS_PATH = '../public/aquas';
+
+/**
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+const handleRequest = async (req, res) => {
+    const show = req.params.show;
+    const username = req.query.user;
+    const method = req.method;
+    console.log('method', method)
+    switch (method) {
+        case 'DELETE':
+            return await removeShow(show);
+        case 'GET':
+        default:
+            return await scanLibrary(show, username ? decodeURIComponent(username) : null);
+    }
+};
+
+/**
+ * Remove a show directory by removing the files
+ * @param {string} show 
+ */
+const removeShow = async (show) => {
+    console.log(`[removeShow] Remove show called on ${show}`);
+    const pathToShow = path.resolve(basePath, show);
+    return { deleted: await Tools.removeDirectory(pathToShow)};
+};
 
 /**
  * Scan library. If no show is detected then just get root dir and their thumbnails
@@ -180,6 +209,7 @@ const streamFile = (show, filename, req, res) => {
 };
 
 module.exports = {
+    handleRequest,
     getThumbPath,
     scanLibrary,
     streamFile

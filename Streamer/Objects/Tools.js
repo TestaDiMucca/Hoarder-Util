@@ -1,3 +1,13 @@
+const fs = require('fs');
+const { promisify } = require('util');
+
+const fsp = {
+    readdir: promisify(fs.readdir),
+    lstat: promisify(fs.lstat),
+    unlink: promisify(fs.unlink),
+    rmdir: promisify(fs.rmdir)
+};
+
 /**
  * A toolbox
  * We can memoize in the future as this is a singleton
@@ -56,6 +66,27 @@ class Tools {
         const split = path.split('.');
         return split[split.length - 1];
     };
+
+    /**
+     * Remove a directory recursively
+     * @param {string} path 
+     */
+    async removeDirectory (path) {
+        let deleted = 0;
+        if (fs.existsSync(path)) {
+            for (let entry of await fsp.readdir(path)) {
+                const curPath = path + "/" + entry;
+                if ((await fsp.lstat(curPath)).isDirectory())
+                    deleted += await this.removeDirectory(curPath);
+                else {
+                    await fsp.unlink(curPath);
+                    deleted++;
+                }
+            }
+            await fsp.rmdir(path);
+        }
+        return deleted;
+    }
 }
 
 module.exports = new Tools();

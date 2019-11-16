@@ -10,7 +10,7 @@ const {
 } = require('./constants');
 const {
     getThumbPath,
-    scanLibrary,
+    handleRequest,
     streamFile
 } = require('./Handlers/LibraryHandler');
 const {
@@ -46,7 +46,9 @@ app.get('/test', (req, res) => {
     res.send('こんにちは, 「ZA WARUDO」!');
 });
 
-app.get('/', (req, res) => {
+/* Supported routes on the router */
+/* May be better just to place the client under /ui route */
+app.get(['/', '/upload', '/show/*?', '/upload'], (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public/index.html'));
 });
 
@@ -55,10 +57,11 @@ app.get('/usage', async (req, res) => {
     res.send(data);
 });
 
-app.get('/library/:show?', async (req, res) => {
-    const show = req.params.show;
-    const username = req.query.user;
-    let data = await scanLibrary(show, username ? decodeURIComponent(username) : null);
+app.all('/library/:show?', async (req, res) => {
+    // const show = req.params.show;
+    // const username = req.query.user;
+    // let data = await scanLibrary(show, username ? decodeURIComponent(username) : null);
+    const data = await handleRequest(req, res);
     res.status(200).send(data);
 });
 
@@ -84,5 +87,10 @@ app.post('/watched/:name/:file', (req, res) => {
     markWatchedForUser(decodeURIComponent(name), decodeURIComponent(file));
     res.end();
 });
+
+// app.all('/testAll', (req, res) => {
+//     console.log(req.method);
+//     res.end();
+// });
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}!`));
