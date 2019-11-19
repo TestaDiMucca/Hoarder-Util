@@ -48,6 +48,7 @@ const DIRECORY_LIST = [
     {
         name: 'Tiddly Valkawiki',
         description: '...',
+        https: 1,
         icon: 'local_florist',
         url: `:${WIKI_PORT}/`
     },

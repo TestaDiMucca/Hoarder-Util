@@ -95,11 +95,17 @@
 
         const PAGES_URL = '/directory-list';
 
+        /**
+         * @param {string} url
+         **/
+        const makeS = (url) => url.replace('http', 'https');
+
         /** Helper functions */
         const constructItem = (item) => {
+            const useIP = item.https ? makeS(IP_ADDRESS) : IP_ADDRESS;
             return `
                 <div class="menu-item">
-                    <h2><i class="material-icons">${item.icon}</i> <a href="${IP_ADDRESS+item.url}">${item.name}</a></h2>
+                    <h2><i class="material-icons">${item.icon}</i> <a href="${useIP + item.url}">${item.name}</a></h2>
                     <span>${item.description}</span>
                 </div>
             `;
