@@ -15,8 +15,5 @@
         "ecmaVersion": 2018
     },
     "rules": {
-        "indent": ["warn", "tab"],
-        "no-tabs": "off",
-        "no-console": "off"
     }
 }

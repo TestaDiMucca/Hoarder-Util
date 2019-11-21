@@ -21,11 +21,5 @@
         "react"
     ],
     "rules": {
-        "indent": [
-            "warn",
-            "tab"
-        ],
-        "no-tabs": "off",
-        "no-console": "off"
     }
 }
