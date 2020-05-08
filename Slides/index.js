@@ -42,9 +42,12 @@ app.get('/list', async (req, res) => {
 app.get('/image', (req, res) => {
     const { path } = req.query;
     const usePath = decodeURIComponent(path);
-    if (handlerInstance.validatePath(usePath)) {
+    try {
+        if (!handlerInstance.validatePath(usePath)) {
+            throw new Error('Invalid path!');
+        }
         res.sendFile(usePath);
-    } else {
+    } catch (e) {
         res.status(400).send({ message: 'Invalid path' });
     }
 });

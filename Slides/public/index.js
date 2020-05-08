@@ -796,6 +796,10 @@ const addListeners = () => {
 
     };
 
+    window.onblur = () => {
+        if (state.playing) clearShow();
+    };
+
     let specifiedElement = document.querySelector('.toolbar');
     document.addEventListener('click', (event) => {
         let isClickInside = specifiedElement.contains(event.target);
