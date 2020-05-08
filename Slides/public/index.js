@@ -27,7 +27,8 @@ let state = {
     filepathActive: false,
     playing: true,
     favsOpen: false,
-    actionDisabled: false
+    actionDisabled: false,
+    direction: 1,
 };
 
 /* Hide mouse variables */
@@ -45,7 +46,7 @@ const LS_KEYS = {
 };
 
 /** Keep images until they're i + n slots away from us */
-const CACHE_KEEP_RANGE = 3;
+const CACHE_KEEP_RANGE = 2;
 const MIN_TIME = 3;
 const BAR_HOVER_TIME = 1000;
 
@@ -152,6 +153,7 @@ const clearShow = () => {
 const advanceSlide = () => {
     if (state.actionDisabled) return;
     state.currIndex++;
+    state.direction = 1;
     if (state.currIndex >= list.length) state.currIndex = 0;
     loadNext();
 };
@@ -162,6 +164,7 @@ const advanceSlide = () => {
 const backSlide = () => {
     if (state.actionDisabled) return;
     state.currIndex--;
+    state.direction = -1;
     if (state.currIndex < 0) state.currIndex = list.length - 1;
     loadNext();
 }
@@ -217,8 +220,31 @@ const slideChangedActions = () => {
     $(currEle).addClass('middle-slide');
     $(nextEle).addClass('top-slide');
 
+    currSlideCheckForError(currEle);
+    removeErrorChecks(state.direction === 1 ? prevEle : nextEle);
+
     updateFavIcon();
     $('.progress.front').width(`${ Math.round((state.currIndex / list.length) * 100 ) }%`)
+};
+
+/**
+ * Perform an action if a slide load errored
+ */
+const handleLoadError = () => {
+    if (state.direction === 1) {
+        advanceSlide();
+    } else {
+        backSlide();
+    }
+    showNotifier('call_missed_outgoing');    
+};
+
+const currSlideCheckForError = (slot) => {
+    $(slot).bind('error', handleLoadError);
+};
+
+const removeErrorChecks = (slot) => {
+    $(slot).unbind('error', handleLoadError);
 };
 
 const updateFavIcon = () => {
@@ -231,7 +257,6 @@ const updateFavIcon = () => {
 };
 
 const updateCaption = () => {
-    console.log('update')
     const useList = selectList();
     const item = useList[state.currIndex];
     $('#mini-filename').text(`(${state.currIndex + 1}/${list.length}) - ${item.add}/${item.item}`);
