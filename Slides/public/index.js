@@ -15,6 +15,9 @@ let starred = {};
 let playCache;
 let map;
 
+/**
+ * Current state object
+ */
 let state = {
     currIndex: 0,
     timer: 5,
@@ -40,6 +43,8 @@ const LS_KEYS = {
     SHOW_NAME: 'showName',
     FAVS: 'favs'
 };
+
+/** Keep images until they're i + n slots away from us */
 const CACHE_KEEP_RANGE = 3;
 const MIN_TIME = 3;
 const BAR_HOVER_TIME = 1000;
@@ -47,12 +52,18 @@ const BAR_HOVER_TIME = 1000;
 const LOADER_IMG = '<img class="loader info-loader" src="img/loading.svg" />';
 const CLOCK_IMG = '<img class="paused-bit" src="img/clock.svg" />'
 
+/**
+ * Reset the slide show
+ */
 const reset = async () => {
     state.currIndex = 0;
     clearCache();
     main();
 }
 
+/**
+ * Toggle shuffling on and off
+ */
 const toggleShuffle = () => {
     state.shuffle = !state.shuffle;
     $('#shuffle-option').toggleClass('active', state.shuffle);
@@ -60,6 +71,9 @@ const toggleShuffle = () => {
     loadNext(true);
 };
 
+/**
+ * Toggle whether or not the file name shows at bottom
+ */
 const toggleBottomName = () => {
     const active = $('#filepath-toggle').prop('checked');
     state.filepathActive = active;
@@ -71,12 +85,19 @@ const toggleBottomName = () => {
     }
 };
 
+/**
+ * Clear all cached image data
+ */
 const clearCache = () => {
     Object.keys(cache).forEach(key => {
         delete cache[key];
     });
 };
 
+/**
+ * Shuffle the list locally
+ * @param {*} list 
+ */
 const shuffleList = (list) => {
     for (let i = list.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -125,6 +146,9 @@ const clearShow = () => {
     if (state.filepathActive) $('.bottom-name').append(CLOCK_IMG);
 };
 
+/**
+ * Go forward one slide
+ */
 const advanceSlide = () => {
     if (state.actionDisabled) return;
     state.currIndex++;
@@ -132,6 +156,9 @@ const advanceSlide = () => {
     loadNext();
 };
 
+/**
+ * Go back one slide
+ */
 const backSlide = () => {
     if (state.actionDisabled) return;
     state.currIndex--;
@@ -139,6 +166,9 @@ const backSlide = () => {
     loadNext();
 }
 
+/**
+ * Toggle play and pause
+ */
 const handlePlayPause = () => {
     if (state.playing) {
         clearShow();
@@ -166,10 +196,17 @@ const getNewShuffleList = async () => {
     return;
 }
 
+/**
+ * Get the class name of the object representing a certain slot
+ * @param {number} i 
+ */
 const getSlotForIndex = (i) => {
     return `#slot-${ i % 3 }`;
 };
 
+/**
+ * Other stuff that needs to be done when a slide is changed
+ */
 const slideChangedActions = () => {
     const prevEle = getSlotForIndex(state.currIndex - 1);
     const currEle = getSlotForIndex(state.currIndex);
@@ -225,6 +262,13 @@ const loadNext = (skipCurrent = false) => {
     if (!$('.bottom-name').hasClass('hidden')) updateBottomName();
 };
 
+/**
+ * Load one image to the stage
+ * @param {number} i 
+ * @param {*} onStage 
+ * @param {*} shouldWipe 
+ * @param {*} loadDom 
+ */
 const loadOne = async (i, onStage, shouldWipe = false, loadDom = true) => {
     const useList = selectList();
     if (!useList[i]) return;
@@ -249,11 +293,19 @@ const brieflyHideLoader = () => {
     setTimeout(() => $('#main-loader').removeClass('hidden'), 1000);
 };
 
+/**
+ * Clear cached data if it's too far away from current index
+ * @param {number} currentIndex 
+ */
 const cleanCaches = (currentIndex) => {
     if (cache[currentIndex - CACHE_KEEP_RANGE]) delete cache[currentIndex - CACHE_KEEP_RANGE];
     if (cache[currentIndex + CACHE_KEEP_RANGE]) delete cache[currentIndex + CACHE_KEEP_RANGE];
 };
 
+/**
+ * Get the data for an image from the backend service
+ * @param {*} requestedPath 
+ */
 const fetchImage = async (requestedPath) => {
     const encoded = encodeURIComponent(requestedPath);
     const res = await fetch(`image?path=${encoded}`);
@@ -284,6 +336,9 @@ const selectList = () => {
     return useList = state.shuffle ? shuffledList : list;
 };
 
+/**
+ * Rotate an image, handling the UI and calling server
+ */
 const rotateImage = async () => {
     if (state.actionDisabled) return;
     state.actionDisabled = true;
@@ -329,6 +384,9 @@ const closeOptions = () => {
     if (playCache) startShow();
 };
 
+/**
+ * Try all the methods to trigger fullscreen
+ */
 const handleFullscreen = () => {
     const element = document.body;
     const doc = document;
@@ -393,7 +451,7 @@ const checkIndex = () => {
 };
 
 /**
- * 
+ * Show the control bar
  * @param {boolean} show 
  */
 const showControl = (show) => {
@@ -415,6 +473,9 @@ const showTripsbar = (show) => {
     if (show && handleTripPanel) handleTripPanel(currFile);
 };
 
+/**
+ * Construct info area to place into the DOM
+ */
 const constructInfoArea = async () => {
     $('.info-area').append(LOADER_IMG);
     const res = await fetch('config');
@@ -436,6 +497,10 @@ const constructInfoArea = async () => {
     $('.info-area').append(contents);
 };
 
+/**
+ * Process GPS data
+ * @param {*} info 
+ */
 const processGPSExif = (info) => {
     const { GPSLatitude, GPSLatitudeRef, GPSLongitude, GPSLongitudeRef } = info;
     return {
@@ -444,6 +509,11 @@ const processGPSExif = (info) => {
     }
 };
 
+/**
+ * Parse GPS data
+ * @param {*} dms 
+ * @param {*} ref 
+ */
 const singleGPSParse = (dms, ref) => {
     try {
         let dd = dms[0] + dms[1] / 60 + dms[2] / (60 * 60);
@@ -454,6 +524,11 @@ const singleGPSParse = (dms, ref) => {
     }
 };
 
+/**
+ * Construct the display for exif data
+ * @param {*} info 
+ * @param {{ long: number, lat: number }} gps 
+ */
 const constructExifInfo = (info, gps) => {
     if (info.message) {
         return '<li>Could not read Exif data</li>';
@@ -482,6 +557,10 @@ const constructExifInfo = (info, gps) => {
     `;
 };
 
+/**
+ * Place the Mapbox map onto the DOM
+ * @param {*} gps 
+ */
 const placeMap = (gps) => {
     const { long, lat } = gps;
     if (!long || !lat) return;
@@ -525,11 +604,17 @@ const placeMap = (gps) => {
     });
 };
 
+/**
+ * Erase info area
+ */
 const emptyInfoArea = () => {
     map = null;
     $('.info-area').empty();
 }; 
 
+/**
+ * Fetch exif data for an image
+ */
 const getExif = async () => {
     try {
         const encoded = encodeURIComponent(selectList()[state.currIndex].fullPath);
@@ -541,12 +626,20 @@ const getExif = async () => {
     }
 };
 
+/**
+ * Add to favs
+ * @param {string} pathName 
+ */
 const addFav = (pathName) => {
     showNotifier('favorite');
     starred[pathName] = 1;
     renderStarredList();
 };
 
+/**
+ * Remove favs
+ * @param {string} pathName 
+ */
 const removeFav = (pathName) => {
     if (!starred[pathName]) return;
     delete starred[pathName];
@@ -563,6 +656,9 @@ const handleFav = () => {
     updateFavIcon();
 };
 
+/**
+ * Render the list of starredd items
+ */
 const renderStarredList = () => {
     if (!state.favsOpen) return;
     // cache saved pos to reinstate after rendering
@@ -578,11 +674,18 @@ const renderStarredList = () => {
     $('.fav-bar').append(addition);
 };
 
+/**
+ * Copy favs list to clipboard
+ */
 const copyFavs = () => {
     const string = JSON.stringify(Object.keys(starred));
     copyToClipboard(string);
 };
 
+/**
+ * Show the favs bar
+ * @param {string} path 
+ */
 const showFav = (path) => {
     if (state.playing) clearShow();
     console.log('showfav', path);
@@ -592,11 +695,17 @@ const showFav = (path) => {
     loadNext();
 };
 
+/**
+ * Copy the shuffle data to clipboard
+ */
 const copyShuffle = () => {
     const json = JSON.stringify(shuffledList);
     copyToClipboard(json);
 };
 
+/**
+ * Shuffle everything after the current position
+ */
 const shuffleAfter = async () => {
     const newList = await postRequest(`/shuffle-after?index=${state.currIndex + 1}`);
     shuffledList = newList;
@@ -604,10 +713,18 @@ const shuffleAfter = async () => {
     loadNext();
 };
 
+/**
+ * Tell backend service to generate the JSON to preserve shuffle
+ */
 const dumpShuffle = async () => {
     await postRequest('/dump-shuffle', {});
 };
 
+/**
+ * Generic post request helper
+ * @param {string} url 
+ * @param {*} params 
+ */
 const postRequest = async (url, params) => {
     return new Promise(async resolve => {
         const options = {
@@ -640,7 +757,9 @@ const copyToClipboard = (text) => {
     body.removeChild($tempInput);
 };
 
-
+/**
+ * Add all the listeners for user events
+ */
 const addListeners = () => {
     $('body').css('cursor', 'none');
 
@@ -722,6 +841,9 @@ const addListeners = () => {
     });
 };
 
+/**
+ * Get the mapbox API key
+ */
 const getMapbox = async () => {
     try {
         const res = await fetch('mapbox-key');
@@ -731,7 +853,10 @@ const getMapbox = async () => {
         console.error('Failed to get mapbox key.', e);
     }
 }
-                          
+ 
+/**
+ * Kick everything off
+ */
 const main = async () => {
     await getFileList();
     checkIndex();

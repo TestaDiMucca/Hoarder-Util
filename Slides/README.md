@@ -22,3 +22,9 @@ This exists to give the Pi-Hole Pi an additional purpose besides blocking mobile
 Accepted keys:
 - `exclude`: An arrayof directory names that if the file scanner encounters, will not scan
 - `scanPath`: Override the .env scan path with this scan path. Kinda pointless huh
+
+# Improvements
+
+- Scanning and preserving shuffle is not a thing
+- It's very memory intensive since the shuffle list is forwarded to the client
+- Not really designed as a photo viewer as much as a passive slideshow, but was added to in that direction
