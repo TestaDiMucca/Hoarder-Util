@@ -8,3 +8,7 @@ export const DATETAG_SUPPORTED_EXTENSIONS: Record<'img' | 'mov', string[]> = {
  * Default match pattern to use for file -> tag
  */
 export const DEFAULT_TAGGING_PATTERN = '%artist% - %title%';
+
+export const APP_NAME = 'h-util';
+
+export const APP_VER = '0.0.1';

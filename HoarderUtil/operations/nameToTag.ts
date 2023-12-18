@@ -6,7 +6,7 @@ import {
   parseStringToTags,
   removeExt,
 } from '../util/helpers';
-import { TerminalArgs } from '../util/types';
+import { FileOpFlags } from '../util/types';
 import output from '../util/output';
 import { DEFAULT_TAGGING_PATTERN } from '../util/constants';
 import { writeTags } from '../util/ffMeta';
@@ -21,7 +21,7 @@ type ProcessedFile = {
   tags: Record<string, string>;
 };
 
-const nameToTag = async (options: TerminalArgs) => {
+const nameToTag = async (options: FileOpFlags) => {
   const pattern = options.format ?? DEFAULT_TAGGING_PATTERN;
 
   await withFileListHandling<ProcessedFile, NameToTagCtx>({
@@ -32,7 +32,7 @@ const nameToTag = async (options: TerminalArgs) => {
 
       const validMedia = checkSupportedExt(ext, ['mov']);
 
-      output.log(`Scanning ${fileName}, valid media: ${validMedia}`);
+      output.log(`Scanning "${fileName}", valid media: ${validMedia}`);
 
       /** Not supported type that we want to process */
       if (!validMedia) return;

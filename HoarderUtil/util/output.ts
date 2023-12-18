@@ -1,6 +1,7 @@
 import * as colors from 'colors';
+import { APP_NAME } from './constants';
 
-const OUT_TAG = 'h-util';
+const OUT_TAG = APP_NAME;
 
 /**
  * Handles most the app stdout so we can append tags and

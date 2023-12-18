@@ -8,6 +8,7 @@ type ReadTags = {
   date?: string;
   genre?: string;
   comment?: string;
+  track?: number;
 };
 
 export const readTags = (filePath: string): Promise<null | ReadTags> =>

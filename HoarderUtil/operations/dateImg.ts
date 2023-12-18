@@ -2,7 +2,7 @@ import * as path from 'path';
 import { rename as fsRename } from 'fs/promises';
 import * as colors from 'colors/safe';
 
-import { TerminalArgs } from '../util/types';
+import { FileOpFlags } from '../util/types';
 import {
   checkSupportedExt,
   getDateCreated,
@@ -19,7 +19,7 @@ type ProcessedFile = {
   newFileName: string;
 };
 
-const dateImg = async (options: TerminalArgs) => {
+const dateImg = async (options: FileOpFlags) => {
   await withFileListHandling<ProcessedFile, {}>({
     options,
     prepReducer: async (fileName, { rootDir }, { add }) => {
@@ -29,7 +29,7 @@ const dateImg = async (options: TerminalArgs) => {
       const validOther = validImg || checkSupportedExt(ext, ['mov']);
 
       output.log(
-        `Scanning ${fileName}, valid img/other: ${validImg}/${validOther}`
+        `Scanning "${fileName}", valid img/other: ${validImg}/${validOther}`
       );
 
       /** Not supported type that we want to process */

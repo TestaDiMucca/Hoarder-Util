@@ -116,7 +116,7 @@ export const getFileList = (dir: string) => fs.readdir(dir);
 
 export const getFileListWithExcludes = async (
   dir: string,
-  excludes?: TerminalArgs['excludes']
+  excludes?: string
 ) => {
   let excludeList: string[] | null;
 
@@ -173,7 +173,7 @@ export const validatePath = async (inputPath = '.', quit = true) => {
 
   const validPath = validDirectoryPath(absPath);
 
-  output.log(`Scanning for path ${absPath} ; valid ${validPath}`);
+  output.log(`Scanning for path "${absPath}" ; valid ${!!validPath}`);
 
   if (validPath) return absPath;
 
@@ -201,7 +201,7 @@ export const parseStringToTags = (
   );
   const extractedMatches = input.match(inputMatcherRegExp)?.slice(1);
 
-  if (!extractedMatches) output.log(`Skipping ${input} - no tags found`);
+  if (!extractedMatches) output.log(`Skipping "${input}" - no tags found`);
   if (!extractedMatches) return null;
 
   return tagNames.reduce<Record<string, string>>((tags, tagName, i) => {
@@ -216,3 +216,18 @@ export const checkSupportedExt = (
   ext: string,
   categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>
 ) => categories.some((cat) => DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext));
+
+export const withTimer = async <T>(
+  cb: () => Promise<T>,
+  onDone: (time: number) => void
+) => {
+  const start = Date.now();
+
+  const result = await cb();
+
+  const time = Date.now() - start;
+
+  onDone(time);
+
+  return result;
+};

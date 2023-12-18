@@ -3,11 +3,11 @@
  */
 
 import * as figlet from 'figlet';
-import * as colors from 'colors/safe';
 import umuAscii from '../fun/umuAscii';
 import output from '../util/output';
 import { getSplashText } from '../fun/splash';
-import { ColorsWithTheme } from '../util/types';
+import { randomFromArray } from '../util/helpers';
+import colors from '../util/colors';
 
 export const header = () => {
   console.log(
@@ -20,12 +20,8 @@ export const header = () => {
   output.utils.newLine();
 };
 
-colors.setTheme({
-  roma: ['bgRed', 'yellow'],
-});
-
 export const umu = () => {
-  console.log((colors as ColorsWithTheme<'roma'>).roma(umuAscii));
+  console.log(colors.roma(randomFromArray(umuAscii)));
 
   console.log(colors.yellow(figlet.textSync('Umu umu')));
 };

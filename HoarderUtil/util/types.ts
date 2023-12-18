@@ -12,24 +12,39 @@ export enum Operations {
   nihao = 'nihao',
   /** Prints an umu */
   umu = 'umu',
-  /** List operations and what they do */
-  describe = 'describe',
+  directoryTree = 'dir-tree',
 }
-
-export type TerminalArgs = {
-  operation: Operations;
-  path?: string;
-  verbose?: boolean;
-  /** For renaming/tagging options */
-  format?: string;
-  /** Specify dry run where no changes are made */
-  commit?: boolean;
-  excludes?: string;
-};
-
-export type OperationHandler = (opts?: TerminalArgs) => void | Promise<void>;
 
 /** A custom theme was applied */
 export type ColorsWithTheme<T extends string> = typeof colors & {
   [key in T]: (i: string) => void;
 };
+
+/*
+ * === Options Payloads ===
+ */
+
+type UniversalFlags = {
+  verbose?: boolean;
+};
+
+export type FileOpFlags = {
+  operation: Operations.nameToTag | Operations.dateTag;
+  path?: string;
+  excludes?: string;
+  commit?: boolean;
+  format?: string;
+} & UniversalFlags;
+
+export type NiHaoTestFlags = {
+  operation: Operations.nihao;
+  quick?: boolean;
+} & UniversalFlags;
+
+export type BasicFlags = {
+  operation: Operations.umu;
+} & UniversalFlags;
+
+export type TerminalArgs = UniversalFlags | FileOpFlags;
+
+export type OperationHandler = (opts?: TerminalArgs) => void | Promise<void>;

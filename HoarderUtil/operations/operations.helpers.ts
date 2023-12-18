@@ -5,10 +5,11 @@ import {
   getUserConfirmation,
   msgShortcuts,
   validatePath,
+  withTimer,
 } from '../util/helpers';
 import output from '../util/output';
 import promises from '../util/promises';
-import { TerminalArgs } from '../util/types';
+import { FileOpFlags } from '../util/types';
 
 export type EnhancedContext<C> = C & {
   rootDir: string;
@@ -25,7 +26,7 @@ type BaseFile = {
 };
 
 type WithFileListHandlingArgs<T extends BaseFile, C extends object> = {
-  options: TerminalArgs;
+  options: FileOpFlags;
   prepReducer: (
     fileName: string,
     ctx: EnhancedContext<C>,
@@ -60,29 +61,33 @@ export const withFileListHandling = async <
   const absPath = await validatePath(options.path);
   const fileList = await getFileListWithExcludes(absPath, options.excludes);
 
-  const proposed = await promises.reduce<string, Array<T>>(
-    fileList,
-    async (list, fileName, i) => {
-      try {
-        await prepReducer(
-          fileName,
-          {
-            ...context,
-            index: i,
-            rootDir: absPath,
-          },
-          {
-            add: (v) => list.push(v),
-            curr: () => list,
+  const proposed = await withTimer(
+    () =>
+      promises.reduce<string, Array<T>>(
+        fileList,
+        async (list, fileName, i) => {
+          try {
+            await prepReducer(
+              fileName,
+              {
+                ...context,
+                index: i,
+                rootDir: absPath,
+              },
+              {
+                add: (v) => list.push(v),
+                curr: () => list,
+              }
+            );
+          } catch (e: any) {
+            output.queueError(`Error reducing "${fileName}": ${e.message}`);
+          } finally {
+            return list;
           }
-        );
-      } catch (e: any) {
-        output.queueError(`Error reducing "${fileName}": ${e.message}`);
-      } finally {
-        return list;
-      }
-    },
-    []
+        },
+        []
+      ),
+    (time) => output.log(`Time to scan: ${time} ms`)
   );
 
   /**
@@ -112,23 +117,30 @@ export const withFileListHandling = async <
   }
 
   let processedCount = 0;
-  await promises.map(
-    proposed,
-    async (item, i) => {
-      try {
-        await commitItem(item, {
-          ...context,
-          index: i,
-          rootDir: absPath,
-        });
-        processedCount++;
-      } catch (e: any) {
-        output.queueError(`Error processing "${item.fileName}": ${e.message}`);
-      }
-    },
-    {
-      concurrency: commitConcurrency,
-    }
+
+  await withTimer(
+    () =>
+      promises.map(
+        proposed,
+        async (item, i) => {
+          try {
+            await commitItem(item, {
+              ...context,
+              index: i,
+              rootDir: absPath,
+            });
+            processedCount++;
+          } catch (e: any) {
+            output.queueError(
+              `Error processing "${item.fileName}": ${e.message}`
+            );
+          }
+        },
+        {
+          concurrency: commitConcurrency,
+        }
+      ),
+    (time) => output.log(`Time to process: ${time} ms`)
   );
 
   return processedCount;
