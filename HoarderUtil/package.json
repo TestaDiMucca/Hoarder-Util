@@ -4,13 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./node_modules/ts-node/dist/bin.js index.ts"
+    "test": "npm run update && h-util -o nihao",
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' index.ts",
+    "build": "tsc -p .",
+    "local": "npm i -g",
+    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
+    "update": "npm run build && npm run local"
+  },
+  "bin": {
+    "h-util": "./lib/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "colors": "^1.4.0",
+    "commander": "^11.1.0",
+    "conf": "^12.0.0",
+    "figlet": "^1.7.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },

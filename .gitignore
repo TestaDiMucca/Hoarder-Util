@@ -11,3 +11,4 @@ config.json
 trips.json
 *.db
 build/
+lib/
