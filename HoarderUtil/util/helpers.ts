@@ -6,6 +6,7 @@ import output from './output';
 import * as prompt from 'prompt-sync';
 import { TerminalArgs } from './types';
 import { exifToJsDate } from './dateUtils';
+import { DATETAG_SUPPORTED_EXTENSIONS } from './constants';
 
 const ExifImage = require('exif').ExifImage;
 
@@ -144,7 +145,7 @@ export const getFileListWithExcludes = async (
 };
 
 export const getExt = (fileName: string) =>
-  path.extname(fileName).replace(/\./g, '');
+  path.extname(fileName).replace(/\./g, '').toLowerCase();
 
 export const getDateCreated = async (filePath: string) => {
   const stat = await fs.stat(filePath);
@@ -183,6 +184,10 @@ export const validatePath = async (inputPath = '.', quit = true) => {
 export const patternToTags = (pattern: string): string[] | null =>
   pattern.match(/%(.*?)%/g)?.map((s) => s.replace(/%/g, ''));
 
+/**
+ * Does weird reg-ex-y matching stuff
+ * Returns null if it fails
+ */
 export const parseStringToTags = (
   pattern: string,
   input: string
@@ -197,7 +202,6 @@ export const parseStringToTags = (
   const extractedMatches = input.match(inputMatcherRegExp)?.slice(1);
 
   if (!extractedMatches) output.log(`Skipping ${input} - no tags found`);
-
   if (!extractedMatches) return null;
 
   return tagNames.reduce<Record<string, string>>((tags, tagName, i) => {
@@ -207,3 +211,8 @@ export const parseStringToTags = (
 };
 
 export const removeExt = (s: string) => s.replace(/\.[^/.]+$/, '');
+
+export const checkSupportedExt = (
+  ext: string,
+  categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>
+) => categories.some((cat) => DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext));
