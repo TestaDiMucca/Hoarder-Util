@@ -3,7 +3,7 @@ import { Command, Option } from 'commander';
 
 import { header } from './operations/global';
 import { Operations, TerminalArgs } from './util/types';
-import nihao from './operations/nihao';
+import { operationMap } from './operations/operationMap';
 
 const program = new Command();
 
@@ -25,10 +25,14 @@ const main = () => {
   const { operation } = options;
 
   switch (operation) {
-    case Operations.nihao:
-      nihao();
-      break;
     default:
+      {
+        const opHandler = operationMap[operation];
+        if (opHandler) {
+          opHandler(options);
+          return;
+        }
+      }
       console.log('Oops, forgot to implement. Coming soon maybe.');
   }
 };
