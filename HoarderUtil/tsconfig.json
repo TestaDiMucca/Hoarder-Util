@@ -2,5 +2,10 @@
      "compilerOptions": {
           "typeRoots": ["node_modules/@types"],
           "outDir": "lib"
-     }    
+     },
+     "rootDir": "./",
+     "baseUrl": "./",
+     "paths": {
+          "*": ["./*"]
+     },
 }

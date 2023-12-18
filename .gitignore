@@ -9,6 +9,7 @@ Photos/
 shuffle.json
 config.json
 trips.json
+testData/
 *.db
 build/
 lib/
