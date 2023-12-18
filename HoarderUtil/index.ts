@@ -28,6 +28,10 @@ program
     'No dry runs, no prompts, just commit any changes because yolo.'
   )
   .option(
+    '-f, --format <format>',
+    'Used to defined the pattern for tagging/renaming options.'
+  )
+  .option(
     '-e, --excludes <csv>',
     'CSV string of partial filenames to exclude. Applies to file operations.'
   )

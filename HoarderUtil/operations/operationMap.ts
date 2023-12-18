@@ -2,6 +2,7 @@ import { OperationHandler, Operations } from '../util/types';
 import dateImg from './dateImg';
 import describeHUtils from './describe';
 import { umu } from './global';
+import nameToTag from './nameToTag';
 import nihao from './nihao';
 
 type AnyFnc = (...args: any[]) => any;
@@ -19,5 +20,6 @@ export const operationMap: OpMap<OperationHandler> = {
   [Operations.nihao]: nihao,
   [Operations.umu]: umu,
   [Operations.dateTag]: dateImg,
+  [Operations.nameToTag]: nameToTag,
   [Operations.describe]: describeHUtils,
 };

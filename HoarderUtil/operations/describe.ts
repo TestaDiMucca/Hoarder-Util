@@ -6,6 +6,7 @@ import { Operations, TerminalArgs } from '../util/types';
 const DESCRIPTIONS: Record<Operations, string> = {
   [Operations.dateTag]:
     "Adds date to supported file types' filenames for sorting purposes. Uses EXIF, and creation date if no EXIF.",
+  [Operations.nameToTag]: 'Parse media file names into tags',
   [Operations.describe]: 'You are looking at it now.',
   [Operations.nihao]: 'Test method to confirm build works.',
   [Operations.umu]:

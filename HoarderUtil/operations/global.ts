@@ -4,7 +4,7 @@
 
 import * as figlet from 'figlet';
 import * as colors from 'colors/safe';
-import umuAscii from './umuAscii';
+import umuAscii from '../fun/umuAscii';
 import output from '../util/output';
 import { getSplashText } from '../fun/splash';
 import { ColorsWithTheme } from '../util/types';
@@ -14,10 +14,10 @@ export const header = () => {
     colors.cyan(figlet.textSync('H-util-cli', { horizontalLayout: 'full' }))
   );
   const { len, render } = getSplashText();
-  output.line('=', len);
+  output.utils.line('=', len);
   render();
-  output.line('=', len);
-  output.newLine();
+  output.utils.line('=', len);
+  output.utils.newLine();
 };
 
 colors.setTheme({

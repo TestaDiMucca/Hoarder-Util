@@ -6,6 +6,8 @@ import * as colors from 'colors';
 export enum Operations {
   /** Prepend date to an image based on modify or EXIF */
   dateTag = 'date-tag',
+  /** Filename => media tags */
+  nameToTag = 'name-to-tag',
   /** Test operation */
   nihao = 'nihao',
   /** Prints an umu */

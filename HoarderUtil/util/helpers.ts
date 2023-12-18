@@ -162,3 +162,48 @@ export const msgShortcuts = {
   errorAndQuit,
   messageAndQuit,
 };
+
+/**
+ * Return absolute path if valid
+ */
+export const validatePath = async (inputPath = '.', quit = true) => {
+  const usePath = inputPath;
+  const absPath = path.resolve(usePath);
+
+  const validPath = validDirectoryPath(absPath);
+
+  output.log(`Scanning for path ${absPath} ; valid ${validPath}`);
+
+  if (validPath) return absPath;
+
+  if (quit) msgShortcuts.errorAndQuit(`Not a valid path: ${absPath}`);
+  return null;
+};
+
+export const patternToTags = (pattern: string): string[] | null =>
+  pattern.match(/%(.*?)%/g)?.map((s) => s.replace(/%/g, ''));
+
+export const parseStringToTags = (
+  pattern: string,
+  input: string
+): null | Record<string, string> => {
+  const tagNames = patternToTags(pattern);
+
+  if (!tagNames) return null;
+
+  const inputMatcherRegExp = new RegExp(
+    pattern.replace(/%(.*?)%/g, '(.*?)') + '$'
+  );
+  const extractedMatches = input.match(inputMatcherRegExp)?.slice(1);
+
+  if (!extractedMatches) output.log(`Skipping ${input} - no tags found`);
+
+  if (!extractedMatches) return null;
+
+  return tagNames.reduce<Record<string, string>>((tags, tagName, i) => {
+    tags[tagName] = extractedMatches[i];
+    return tags;
+  }, {});
+};
+
+export const removeExt = (s: string) => s.replace(/\.[^/.]+$/, '');

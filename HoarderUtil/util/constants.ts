@@ -3,3 +3,8 @@ export const DATETAG_SUPPORTED_EXTENSIONS: Record<'img' | 'mov', string[]> = {
   img: ['jpg', 'jpeg', 'png', 'webp', 'bmp'],
   mov: ['mov', 'mp4', 'webm', 'gif'],
 };
+
+/**
+ * Default match pattern to use for file -> tag
+ */
+export const DEFAULT_TAGGING_PATTERN = '%artist% - %title%';

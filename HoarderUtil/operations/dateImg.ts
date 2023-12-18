@@ -10,7 +10,7 @@ import {
   getFileListWithExcludes,
   getUserConfirmation,
   msgShortcuts,
-  validDirectoryPath,
+  validatePath,
 } from '../util/helpers';
 import promises from '../util/promises';
 import { formatDateString } from '../util/dateUtils';
@@ -18,15 +18,7 @@ import output from '../util/output';
 import { DATETAG_SUPPORTED_EXTENSIONS } from '../util/constants';
 
 const dateImg = async (options: TerminalArgs) => {
-  const usePath = options.path ?? '.';
-  const absPath = path.resolve(usePath);
-
-  const validPath = validDirectoryPath(absPath);
-
-  output.log(`Scanning for path ${absPath} ; valid ${validPath}`);
-
-  if (!validPath)
-    return msgShortcuts.errorAndQuit(`Not a valid path: ${absPath}`);
+  const absPath = await validatePath(options.path);
 
   const fileList = await getFileListWithExcludes(absPath, options.excludes);
   const processed = await getNames(absPath, fileList, !options.commit);
@@ -61,15 +53,15 @@ const getNames = async (
       const ext = getExt(fileName).toLowerCase();
 
       const validImg = DATETAG_SUPPORTED_EXTENSIONS.img.includes(ext);
-      const validMov =
+      const validOther =
         validImg || DATETAG_SUPPORTED_EXTENSIONS.mov.includes(ext);
 
       output.log(
-        `Scanning ${fileName}, valid img/other: ${validImg}/${validMov}`
+        `Scanning ${fileName}, valid img/other: ${validImg}/${validOther}`
       );
 
       /** Not supported type that we want to process */
-      if (!validImg && !validMov) return list;
+      if (!validImg && !validOther) return list;
 
       const fullPath = `${rootDir}/${fileName}`;
 
@@ -106,7 +98,7 @@ const getNames = async (
   if (proposed.length === 0) return proposed;
 
   output.out('Confirm below:');
-  output.table(
+  output.utils.table(
     proposed.map((v) => ({
       from: v.fileName,
       to: v.newFileName,

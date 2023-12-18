@@ -45,7 +45,7 @@ class Output {
    * Literally does nothing special
    * Exists just to remind console.table exists
    */
-  public table(data: Array<Record<string, string>>) {
+  private table(data: Array<Record<string, string>>) {
     console.table(data);
   }
 
@@ -65,12 +65,21 @@ class Output {
     });
   }
 
-  public line(char?: string, length?: number) {
+  /**
+   * Stateless printing helpers
+   */
+  public utils = {
+    line: this.line,
+    newLine: this.newLine,
+    table: this.table,
+  };
+
+  private line(char?: string, length?: number) {
     const line = (char ?? '-').repeat(length ?? process.stdout.columns);
     console.log(colors.gray(line));
   }
 
-  public newLine() {
+  private newLine() {
     console.log('\n');
   }
 }
