@@ -231,3 +231,12 @@ export const withTimer = async <T>(
 
   return result;
 };
+
+export const checkPathExists = async (path: string) => {
+  try {
+    await fs.stat(path);
+    return true;
+  } catch {
+    return false;
+  }
+};

@@ -8,8 +8,8 @@ import { NiHaoTestFlags } from '../util/types';
 /**
  * Hello whirl for testing
  */
-const nihao = async ({ quick }: NiHaoTestFlags) => {
-  output.out(colors.rainbow('您好！ Salve! Hola!'));
+const nihao = async ({ commandArgs = [], quick }: NiHaoTestFlags) => {
+  output.out(colors.rainbow(`您好！ Salve! Hola! ${commandArgs[0] ?? ''}`));
 
   if (quick) {
     const fileList = await getFileList(resolve('.'));

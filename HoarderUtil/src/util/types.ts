@@ -26,13 +26,19 @@ export type ColorsWithTheme<T extends string> = typeof colors & {
 
 type UniversalFlags = {
   verbose?: boolean;
+  commandArgs?: string[];
+  commit?: boolean;
 };
+
+export type FsOpFlags = {
+  operation: Operations.directoryTree;
+  path?: string;
+} & UniversalFlags;
 
 export type FileOpFlags = {
   operation: Operations.nameToTag | Operations.dateTag;
   path?: string;
   excludes?: string;
-  commit?: boolean;
   format?: string;
 } & UniversalFlags;
 
@@ -45,6 +51,10 @@ export type BasicFlags = {
   operation: Operations.umu;
 } & UniversalFlags;
 
-export type TerminalArgs = UniversalFlags | FileOpFlags;
+export type TerminalArgs =
+  | UniversalFlags
+  | FileOpFlags
+  | NiHaoTestFlags
+  | FsOpFlags;
 
 export type OperationHandler = (opts?: TerminalArgs) => void | Promise<void>;

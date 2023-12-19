@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 
-import { header } from './operations/global';
-import { addCommandsAndOptions, setupProgram } from './operations/operationMap';
+import { header } from './src/operations/global';
+import {
+  addCommandsAndOptions,
+  setupProgram,
+} from './src/operations/operationMap';
 
 const program = new Command();
 

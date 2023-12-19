@@ -32,7 +32,7 @@ class Output {
   public log(...args: any[]) {
     if (!this.verbose) return;
 
-    console.log(colors.blue(`[${OUT_TAG}]`), ...args);
+    console.log(colors.blue(`[${OUT_TAG}]`), ...args.map((a) => colors.dim(a)));
   }
 
   /**
