@@ -1,35 +1,58 @@
-import * as ffMeta from 'ffmetadata';
+import * as ffmpeg from 'fluent-ffmpeg';
 import output from './output';
 
-type ReadTags = {
-  artist?: string;
-  title?: string;
-  /** Often just year */
-  date?: string;
-  genre?: string;
-  comment?: string;
-  track?: number;
+export const readTags = async (
+  filePath: string
+): Promise<null | ffmpeg.FfprobeData> =>
+  new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, meta) =>
+      err ? reject(err) : resolve(meta)
+    );
+  });
+
+/**
+ * @todo seems to re-encode everything, can we improve the perf here?
+ */
+export const writeTags = async (
+  filePath: string,
+  tags: Record<string, string | number>
+): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const meta: string[] = [];
+
+    const tagNames = Object.keys(tags);
+
+    tagNames.forEach((tagName) => {
+      meta.push('-metadata');
+      meta.push(`${tagName}=${tags[tagName]}`);
+    });
+
+    output.log(
+      `Starting ffmpeg job for ${filePath} with ${tagNames.length} tags`
+    );
+
+    ffmpeg(filePath)
+      .outputOptions(...meta)
+      .audioCodec('copy')
+      .videoCodec('copy')
+      .output(getTempName(filePath))
+      .on('end', () => resolve())
+      .on('progress', (_p: FfmpegProgress) => {})
+      .on('error', (e) => reject(e))
+      .run();
+  });
+
+export const getTempName = (fileName: string): string => {
+  const split = fileName.split('.');
+  split[split.length - 2] = `${split[split.length - 2]}_e`;
+  return split.join('.');
 };
 
-export const readTags = (filePath: string): Promise<null | ReadTags> =>
-  new Promise((resolve) => {
-    ffMeta.read(filePath, (err, data: ReadTags) => {
-      if (err) {
-        output.queueError(err.message);
-        return resolve(null);
-      }
-      resolve(data);
-    });
-  });
-
-export const writeTags = (
-  filePath: string,
-  tags: Partial<ReadTags>
-): Promise<void> =>
-  new Promise((resolve) => {
-    ffMeta.write(filePath, tags, (err) => {
-      if (err) output.queueError(err.message);
-
-      resolve();
-    });
-  });
+type FfmpegProgress = {
+  frames: number;
+  currentFps: number;
+  currentKbps: number;
+  targetSize: number;
+  timemark: string;
+  percent?: number;
+};

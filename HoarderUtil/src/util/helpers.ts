@@ -4,7 +4,6 @@ import * as path from 'path';
 import PromptSync = require('prompt-sync');
 import output from './output';
 import * as prompt from 'prompt-sync';
-import { TerminalArgs } from './types';
 import { exifToJsDate } from './dateUtils';
 import { DATETAG_SUPPORTED_EXTENSIONS } from './constants';
 
@@ -239,4 +238,10 @@ export const checkPathExists = async (path: string) => {
   } catch {
     return false;
   }
+};
+
+export const replaceFile = async (oldPath: string, newPath: string) => {
+  output.log(`Replacing ${newPath} => ${oldPath}`);
+  await fs.unlink(oldPath);
+  await fs.rename(newPath, oldPath);
 };

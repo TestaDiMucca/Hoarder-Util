@@ -1,3 +1,4 @@
+import * as fs from 'fs/promises';
 import * as colors from 'colors/safe';
 
 import {
@@ -5,11 +6,12 @@ import {
   getExt,
   parseStringToTags,
   removeExt,
+  replaceFile,
 } from '../util/helpers';
 import { FileOpFlags } from '../util/types';
 import output from '../util/output';
 import { DEFAULT_TAGGING_PATTERN } from '../util/constants';
-import { writeTags } from '../util/ffMeta';
+import { getTempName, writeTags } from '../util/ffMeta';
 import { withFileListHandling } from './operations.helpers';
 
 type NameToTagCtx = {
@@ -18,7 +20,8 @@ type NameToTagCtx = {
 
 type ProcessedFile = {
   fileName: string;
-  tags: Record<string, string>;
+  existingTags: Record<string, string | number>;
+  tags: Record<string, string | number>;
 };
 
 const nameToTag = async (options: FileOpFlags) => {
@@ -41,18 +44,25 @@ const nameToTag = async (options: FileOpFlags) => {
 
       if (!parsedTags) return;
 
+      const existingTags = {};
+
       add({
         fileName,
+        existingTags,
         tags: parsedTags,
       });
     },
     outputFormatter,
-    commitItem: async ({ fileName, tags }, { rootDir }) => {
+    commitItem: async ({ fileName, existingTags, tags }, { rootDir }) => {
       const fullPath = `${rootDir}/${fileName}`;
       output.log(`Attempting to tag ${colors.cyan(fileName)}`);
 
-      await writeTags(fullPath, tags);
+      await writeTags(fullPath, { ...existingTags, ...tags });
+      await replaceFile(fullPath, getTempName(fullPath));
+
+      output.log(`Completed ${colors.cyan(fileName)}`);
     },
+    commitConcurrency: 1,
   });
 };
 

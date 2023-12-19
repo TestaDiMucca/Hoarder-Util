@@ -61,6 +61,8 @@ export const withFileListHandling = async <
   const absPath = await validatePath(options.path);
   const fileList = await getFileListWithExcludes(absPath, options.excludes);
 
+  output.log(`Searching in ${absPath}`);
+
   const proposed = await withTimer(
     () =>
       promises.reduce<string, Array<T>>(
@@ -118,6 +120,8 @@ export const withFileListHandling = async <
 
   let processedCount = 0;
 
+  output.out('Writing changes...');
+
   await withTimer(
     () =>
       promises.map(
@@ -142,6 +146,8 @@ export const withFileListHandling = async <
       ),
     (time) => output.log(`Time to process: ${time} ms`)
   );
+
+  output.dump();
 
   return processedCount;
 };

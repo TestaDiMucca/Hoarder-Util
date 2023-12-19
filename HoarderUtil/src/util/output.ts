@@ -47,7 +47,13 @@ class Output {
    * Exists just to remind console.table exists
    */
   private table(data: Array<Record<string, string>>) {
-    console.table(data);
+    console.table(
+      data.map((d) => {
+        const ret: Record<string, string> = {};
+        Object.keys(d).forEach((k) => (ret[k] = overflow(d[k])));
+        return ret;
+      })
+    );
   }
 
   /**
@@ -84,5 +90,8 @@ class Output {
     console.log('\n');
   }
 }
+
+const overflow = (str: string, max = 40) =>
+  str.length > max ? str.slice(0, max - 1) + '…' : str;
 
 export default new Output();

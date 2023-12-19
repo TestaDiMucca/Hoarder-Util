@@ -23,11 +23,11 @@
   "dependencies": {
     "colors": "^1.4.0",
     "commander": "^11.1.0",
-    "conf": "^12.0.0",
+    "conf": "^10.2.0",
     "dateformat": "^4.6.3",
     "exif": "^0.6.0",
-    "ffmetadata": "^1.7.0",
     "figlet": "^1.7.0",
+    "fluent-ffmpeg": "^2.1.2",
     "is-invalid-path": "^1.0.2",
     "prompt-sync": "^4.2.0",
     "ts-node": "^10.9.2",
@@ -36,6 +36,7 @@
   "devDependencies": {
     "@types/dateformat": "^3.0.1",
     "@types/figlet": "^1.5.8",
+    "@types/fluent-ffmpeg": "^2.1.24",
     "@types/jest": "^29.5.11",
     "@types/node": "^20.10.4",
     "@types/prompt-sync": "^4.2.3",
