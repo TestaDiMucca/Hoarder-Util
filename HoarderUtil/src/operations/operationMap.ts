@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { Command, Argument } from 'commander';
 import * as colors from 'colors/safe';
 
 import { OperationHandler, Operations, TerminalArgs } from '../util/types';
@@ -9,6 +9,7 @@ import nihao from './nihao';
 import output from '../util/output';
 import { APP_NAME, APP_VER } from '../util/constants';
 import dirTree from './dirTree';
+import pathAliases, { PathAliasAction } from './pathAliases';
 
 type AnyFnc = (...args: any[]) => any;
 
@@ -16,6 +17,7 @@ type ActionDefinition = {
   handler: OperationHandler;
   definition: Opt;
   options?: Opt[];
+  args?: Argument[];
   helperText?: string;
 };
 
@@ -86,6 +88,17 @@ export const operationMap: OpMap<ActionDefinition> = {
     helperText: `Example call:
       $ h-util dir-tree dir/subdir,dir/subdir2`,
   },
+  [Operations.pathAlias]: {
+    handler: pathAliases,
+    definition: ['paths', 'Set path aliases for easy access later on.'],
+    args: [
+      new Argument('<action>', 'Which action to take').choices(
+        Object.values(PathAliasAction)
+      ),
+      new Argument('[aliasName]', 'Name of the alias. Use with mk/rm.'),
+      new Argument('[path]', 'The path to stash away. Used with mk.'),
+    ],
+  },
 };
 
 export const setupProgram = (program: Command) =>
@@ -104,10 +117,12 @@ export const setupProgram = (program: Command) =>
 
 export const addCommandsAndOptions = (program: Command) => {
   Object.keys(operationMap).forEach((opKey: Operations) => {
-    const { options, definition, handler, helperText } = operationMap[opKey];
+    const { args, options, definition, handler, helperText } =
+      operationMap[opKey];
     /** Necessary to keep context of options to that command */
     const cmdChain = program.command(definition[0]).description(definition[1]);
 
+    args?.forEach((arg) => cmdChain.addArgument(arg));
     options?.forEach((opt) => cmdChain.option(opt[0], opt[1]));
 
     if (helperText) cmdChain.addHelpText('after', '\n' + helperText);

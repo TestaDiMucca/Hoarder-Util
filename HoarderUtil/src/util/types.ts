@@ -13,6 +13,7 @@ export enum Operations {
   /** Prints an umu */
   umu = 'umu',
   directoryTree = 'dir-tree',
+  pathAlias = 'paths',
 }
 
 /** A custom theme was applied */
@@ -48,13 +49,14 @@ export type NiHaoTestFlags = {
 } & UniversalFlags;
 
 export type BasicFlags = {
-  operation: Operations.umu;
+  operation: Operations.umu | Operations.pathAlias;
 } & UniversalFlags;
 
 export type TerminalArgs =
   | UniversalFlags
   | FileOpFlags
   | NiHaoTestFlags
-  | FsOpFlags;
+  | FsOpFlags
+  | BasicFlags;
 
 export type OperationHandler = (opts?: TerminalArgs) => void | Promise<void>;

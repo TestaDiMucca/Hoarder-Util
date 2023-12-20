@@ -5,7 +5,8 @@ import PromptSync = require('prompt-sync');
 import output from './output';
 import * as prompt from 'prompt-sync';
 import { exifToJsDate } from './dateUtils';
-import { DATETAG_SUPPORTED_EXTENSIONS } from './constants';
+import { DATETAG_SUPPORTED_EXTENSIONS, PATH_ALIAS_STORE } from './constants';
+import ConfigStore from '../util/confLoader';
 
 const ExifImage = require('exif').ExifImage;
 
@@ -163,11 +164,22 @@ export const msgShortcuts = {
   messageAndQuit,
 };
 
+const getAliasName = (pathStr: string) => {
+  const m = pathStr.match(/%(.*?)%/g);
+
+  if (m?.length) return m[0].replace(/%/g, '');
+
+  return null;
+};
+
 /**
  * Return absolute path if valid
  */
 export const validatePath = async (inputPath = '.', quit = true) => {
-  const usePath = inputPath;
+  const alias = getAliasName(inputPath);
+  const usePath = alias
+    ? (ConfigStore.get(`${PATH_ALIAS_STORE}.${alias}`) as string)
+    : inputPath;
   const absPath = path.resolve(usePath);
 
   const validPath = validDirectoryPath(absPath);
