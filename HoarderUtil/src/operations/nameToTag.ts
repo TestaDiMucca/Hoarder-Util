@@ -1,4 +1,3 @@
-import * as fs from 'fs/promises';
 import * as colors from 'colors/safe';
 
 import {

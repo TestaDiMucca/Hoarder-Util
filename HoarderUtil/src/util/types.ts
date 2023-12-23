@@ -14,6 +14,7 @@ export enum Operations {
   umu = 'umu',
   directoryTree = 'dir-tree',
   pathAlias = 'paths',
+  opAlias = 'op-alias',
 }
 
 /** A custom theme was applied */
@@ -26,9 +27,11 @@ export type ColorsWithTheme<T extends string> = typeof colors & {
  */
 
 type UniversalFlags = {
+  operation: string;
   verbose?: boolean;
   commandArgs?: string[];
   commit?: boolean;
+  saveAlias?: string;
 };
 
 export type FsOpFlags = {

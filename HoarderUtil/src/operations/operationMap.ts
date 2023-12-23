@@ -10,6 +10,8 @@ import output from '../util/output';
 import { APP_NAME, APP_VER } from '../util/constants';
 import dirTree from './dirTree';
 import pathAliases, { PathAliasAction } from './pathAliases';
+import { withAliasPersist } from './operations.helpers';
+import opAlias, { OpAliasAction } from './opAlias';
 
 type AnyFnc = (...args: any[]) => any;
 
@@ -99,7 +101,28 @@ export const operationMap: OpMap<ActionDefinition> = {
       new Argument('[path]', 'The path to stash away. Used with mk.'),
     ],
   },
+  [Operations.opAlias]: {
+    handler: opAlias,
+    definition: ['op-alias', 'See and manage saved operation runs'],
+    args: [
+      new Argument('<action>', 'Which action to take').choices(
+        Object.values(OpAliasAction)
+      ),
+      new Argument('[aliasName]', 'Name of the alias. Use with run/rm.'),
+    ],
+  },
 };
+
+const COMMON_OPTS: Array<[string, string]> = [
+  [
+    '-S, --saveAlias <alias>',
+    'Save an alias after running to store the operation and its options',
+  ],
+  [
+    '-c, --commit',
+    'No dry runs, no prompts, just commit any changes because yolo.',
+  ],
+];
 
 export const setupProgram = (program: Command) =>
   program
@@ -109,10 +132,6 @@ export const setupProgram = (program: Command) =>
       colors.magenta(
         '🧰 Data hoarder utils for convenience. Just a bunch of useless things I do at lot, packaged together.'
       )
-    )
-    .option(
-      '-c, --commit',
-      'No dry runs, no prompts, just commit any changes because yolo.'
     );
 
 export const addCommandsAndOptions = (program: Command) => {
@@ -123,7 +142,9 @@ export const addCommandsAndOptions = (program: Command) => {
     const cmdChain = program.command(definition[0]).description(definition[1]);
 
     args?.forEach((arg) => cmdChain.addArgument(arg));
-    options?.forEach((opt) => cmdChain.option(opt[0], opt[1]));
+    [...(options ?? []), ...COMMON_OPTS].forEach((opt) =>
+      cmdChain.option(opt[0], opt[1])
+    );
 
     if (helperText) cmdChain.addHelpText('after', '\n' + helperText);
 
@@ -142,10 +163,9 @@ export const addCommandsAndOptions = (program: Command) => {
 
         output.utils.newLine();
 
-        handler({
-          ...opts,
-          commandArgs,
-        });
+        const enhancedOpts = { ...opts, commandArgs, operation: opKey };
+
+        withAliasPersist(async () => await handler(enhancedOpts), enhancedOpts);
       })
       .showHelpAfterError(true);
   });

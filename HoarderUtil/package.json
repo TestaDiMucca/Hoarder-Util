@@ -12,7 +12,8 @@
     "build": "tsc -p .",
     "local": "npm i -g",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
-    "update": "npm run build && npm run local"
+    "update": "npm run build && npm run local",
+    "ex": "npm run ts-n -- op-alias ls"
   },
   "bin": {
     "h-util": "./lib/index.js"

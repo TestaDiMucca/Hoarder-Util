@@ -1,12 +1,12 @@
-import ConfigStore from '../util/confLoader';
 import { PATH_ALIAS_STORE } from '../util/constants';
-import {
-  checkPathExists,
-  getUserConfirmation,
-  msgShortcuts,
-} from '../util/helpers';
+import { checkPathExists, getUserConfirmation } from '../util/helpers';
 import output from '../util/output';
 import { BasicFlags } from '../util/types';
+import {
+  confAliasLsFactory,
+  confAliasMkFactory,
+  confAliasRmFactory,
+} from './operations.helpers';
 
 export enum PathAliasAction {
   ls = 'ls',
@@ -18,7 +18,7 @@ const pathAliases = async (opts: BasicFlags) => {
   const [operation, alias, path] = opts.commandArgs;
 
   output.log(
-    `Aliases called with method "${operation}", args ${alias}:${path}`
+    `Path aliases called with method "${operation}", args ${alias}:${path}`
   );
 
   switch (operation) {
@@ -33,59 +33,26 @@ const pathAliases = async (opts: BasicFlags) => {
   }
 };
 
-const pathsLs = () => {
-  const stored = ConfigStore.get(PATH_ALIAS_STORE);
+const pathsLs = confAliasLsFactory(PATH_ALIAS_STORE);
 
-  if (!stored) return output.out('There are no stored path aliases.');
+const pathsMk = confAliasMkFactory<string>(
+  PATH_ALIAS_STORE,
+  pathsLs,
+  async (path) => {
+    const exists = await checkPathExists(path);
 
-  if (typeof stored !== 'object')
-    msgShortcuts.errorAndQuit(
-      `Something weird is stored in the store: ${stored}`
-    );
+    if (!exists) {
+      output.error('Path does not appear valid.');
 
-  output.utils.table(
-    Object.keys(stored).map((k) => ({
-      alias: k,
-      path: stored[k],
-    }))
-  );
-};
+      const input = getUserConfirmation('Store anyway?');
 
-const pathsMk = async (alias: string, path: string) => {
-  const exists = await checkPathExists(path);
+      if (input === 'n') return false;
+    }
 
-  if (!exists) {
-    output.error('Path does not appear valid.');
-
-    const input = getUserConfirmation('Store anyway?');
-
-    if (input === 'n') return;
+    return true;
   }
+);
 
-  const curr = (ConfigStore.get(PATH_ALIAS_STORE) ?? {}) as Record<
-    string,
-    string
-  >;
-
-  ConfigStore.set(PATH_ALIAS_STORE, {
-    ...curr,
-    [alias]: path,
-  });
-
-  output.out(`Added path under alias "${alias}"`);
-  pathsLs();
-};
-
-const pathsRm = (alias: string) => {
-  const key = `${PATH_ALIAS_STORE}.${alias}`;
-  const exists = ConfigStore.get(key);
-
-  if (!exists) msgShortcuts.errorAndQuit(`Alias ${alias} does not exist.`);
-
-  ConfigStore.delete(key);
-
-  output.out('Store now:');
-  pathsLs();
-};
+const pathsRm = confAliasRmFactory(PATH_ALIAS_STORE, pathsLs);
 
 export default pathAliases;

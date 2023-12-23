@@ -9,7 +9,9 @@ import {
 } from '../util/helpers';
 import output from '../util/output';
 import promises from '../util/promises';
-import { FileOpFlags } from '../util/types';
+import ConfigStore, { addKeyToStore } from '../util/confLoader';
+import { FileOpFlags, TerminalArgs } from '../util/types';
+import { OP_ALIAS_STORE } from '../util/constants';
 
 export type EnhancedContext<C> = C & {
   rootDir: string;
@@ -150,4 +152,77 @@ export const withFileListHandling = async <
   output.dump();
 
   return processedCount;
+};
+
+export const confAliasLsFactory =
+  <T = string>(storeName: string, processor?: (v: T) => string) =>
+  () => {
+    const stored = ConfigStore.get(storeName);
+
+    if (!stored) return output.out('There are no stored aliases.');
+
+    if (typeof stored !== 'object')
+      msgShortcuts.errorAndQuit(
+        `Something weird is stored in the store: ${stored}`
+      );
+
+    output.utils.table(
+      Object.keys(stored).map((k) => ({
+        alias: k,
+        path: processor ? processor(stored[k]) : stored[k],
+      }))
+    );
+  };
+
+export const confAliasMkFactory =
+  <T = string>(
+    storeName: string,
+    ls: () => void,
+    validate: (path: T) => Promise<boolean>
+  ) =>
+  async (alias: string, path: T) => {
+    const valid = await validate(path);
+
+    if (!valid) return;
+
+    addKeyToStore(storeName, alias, path);
+
+    output.out(`Added path under alias "${alias}"`);
+    ls();
+  };
+
+export const confAliasRmFactory =
+  (storeName: string, ls: () => void) => (alias: string) => {
+    const key = `${storeName}.${alias}`;
+    const exists = ConfigStore.get(key);
+
+    if (!exists) msgShortcuts.errorAndQuit(`Alias ${alias} does not exist.`);
+
+    ConfigStore.delete(key);
+
+    output.out('Store now:');
+    ls();
+  };
+
+export const withAliasPersist = async (
+  cb: () => Promise<void>,
+  opts: TerminalArgs
+) => {
+  await cb();
+
+  if (!opts.saveAlias) return;
+
+  const alias = opts.saveAlias;
+
+  output.out(`Operation "${opts.operation}" ran.`);
+
+  const input = getUserConfirmation(`Save operation alias "${alias}"?`);
+
+  if (input === 'n') return;
+
+  delete opts.saveAlias;
+
+  addKeyToStore(OP_ALIAS_STORE, alias, opts);
+
+  output.out('Saved new operation alias');
 };
