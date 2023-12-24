@@ -114,6 +114,16 @@ export const validDirectoryPath = async (dir: string) => {
 
 export const getFileList = (dir: string) => fs.readdir(dir);
 
+export const checkFilenameExcluded = (fileName: string, pattern: string) => {
+  try {
+    const re = new RegExp(pattern, 'i');
+
+    return fileName.search(re) >= 0;
+  } catch (e) {
+    return fileName.toLowerCase().includes(pattern.toLowerCase());
+  }
+};
+
 export const getFileListWithExcludes = async (
   dir: string,
   excludes?: string
@@ -121,7 +131,8 @@ export const getFileListWithExcludes = async (
   let excludeList: string[] | null;
 
   try {
-    excludeList = excludes ? excludes.split(',').map((s) => s.trim()) : null;
+    /** Double comma required to not break apart regex stuff */
+    excludeList = excludes ? excludes.split(',,').map((s) => s.trim()) : null;
   } catch (e: any) {
     errorAndQuit(`Invalid excludes provided. ${e.message}`);
   }
@@ -130,15 +141,14 @@ export const getFileListWithExcludes = async (
 
   if (!excludeList) return fullList;
 
+  output.log(`Excludes matching with: "${excludeList.join(',')}"`);
+
   const filteredList = fullList.filter(
-    (fileName) =>
-      !excludeList.some((ex) =>
-        fileName.toLowerCase().includes(ex.toLowerCase())
-      )
+    (fileName) => !excludeList.some((ex) => checkFilenameExcluded(fileName, ex))
   );
 
   output.log(
-    `Excludes filter removed ${(fullList.length = filteredList.length)} files.`
+    `Excludes filter removed ${fullList.length - filteredList.length} files.`
   );
 
   return filteredList;

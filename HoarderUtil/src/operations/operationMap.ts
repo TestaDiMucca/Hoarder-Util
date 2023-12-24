@@ -33,7 +33,7 @@ const FILE_OP_OPTS: Opt[] = [
   ['-p, --path [path]', 'Specify custom path. Defaults to current dir.'],
   [
     '-e, --excludes <csv>',
-    'CSV string of partial filenames to exclude. Applies to file operations.',
+    'dCSV (double comma) string of partial filenames to exclude. Applies to file operations.',
   ],
   ['-f, --format', 'Input template for matching or formatting'],
 ];

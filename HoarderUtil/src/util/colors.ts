@@ -1,5 +1,9 @@
 import * as colors from 'colors/safe';
-import { ColorsWithTheme } from './types';
+
+/** A custom theme was applied */
+type ColorsWithTheme<T extends string> = typeof colors & {
+  [key in T]: (i: string) => void;
+};
 
 colors.setTheme({
   roma: ['bgRed', 'yellow'],

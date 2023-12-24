@@ -17,11 +17,6 @@ export enum Operations {
   opAlias = 'op-alias',
 }
 
-/** A custom theme was applied */
-export type ColorsWithTheme<T extends string> = typeof colors & {
-  [key in T]: (i: string) => void;
-};
-
 /*
  * === Options Payloads ===
  */
