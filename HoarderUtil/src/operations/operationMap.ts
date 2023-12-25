@@ -12,6 +12,7 @@ import dirTree from './dirTree';
 import pathAliases, { PathAliasAction } from './pathAliases';
 import { withAliasPersist } from './operations.helpers';
 import opAlias, { OpAliasAction } from './opAlias';
+import jpgCompress from './jpgCompress';
 
 type AnyFnc = (...args: any[]) => any;
 
@@ -110,6 +111,15 @@ export const operationMap: OpMap<ActionDefinition> = {
       ),
       new Argument('[aliasName]', 'Name of the alias. Use with run/rm.'),
     ],
+  },
+  [Operations.jpgCompress]: {
+    handler: jpgCompress,
+    definition: [
+      'jpg-compress',
+      'Compress unimportant images to a set quality for storage',
+    ],
+    args: [new Argument('<quality>', '1-100 quality setting')],
+    options: [...FILE_OP_OPTS, ...UNIVERSAL_OPTS],
   },
 };
 

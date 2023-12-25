@@ -5,11 +5,13 @@ type ColorsWithTheme<T extends string> = typeof colors & {
   [key in T]: (i: string) => void;
 };
 
-colors.setTheme({
-  roma: ['bgRed', 'yellow'],
-});
+type ColorOpts = keyof typeof colors;
+
+const customThemes: Record<string, ColorOpts[]> = { roma: ['bgRed', 'yellow'] };
+
+colors.setTheme(customThemes);
 
 /**
  * Colors wrapped with custom themes
  */
-export default colors as ColorsWithTheme<'roma'>;
+export default colors as ColorsWithTheme<keyof typeof customThemes>;

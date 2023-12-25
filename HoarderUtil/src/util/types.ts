@@ -15,6 +15,7 @@ export enum Operations {
   directoryTree = 'dir-tree',
   pathAlias = 'paths',
   opAlias = 'op-alias',
+  jpgCompress = 'jpg-compress',
 }
 
 /*

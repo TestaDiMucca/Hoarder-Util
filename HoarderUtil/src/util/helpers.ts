@@ -236,7 +236,10 @@ export const removeExt = (s: string) => s.replace(/\.[^/.]+$/, '');
 export const checkSupportedExt = (
   ext: string,
   categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>
-) => categories.some((cat) => DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext));
+) =>
+  categories.some((cat) =>
+    DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext.toLowerCase())
+  );
 
 export const withTimer = async <T>(
   cb: () => Promise<T>,
