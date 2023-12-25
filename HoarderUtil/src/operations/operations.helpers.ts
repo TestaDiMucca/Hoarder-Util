@@ -12,6 +12,7 @@ import promises from '../util/promises';
 import ConfigStore, { addKeyToStore } from '../util/confLoader';
 import { FileOpFlags, TerminalArgs } from '../util/types';
 import { OP_ALIAS_STORE } from '../util/constants';
+import ProgressBar from '../fun/progressBar';
 
 export type EnhancedContext<C> = C & {
   rootDir: string;
@@ -61,10 +62,16 @@ export const withFileListHandling = async <
   outputFormatter = genericOutputFormatter,
 }: WithFileListHandlingArgs<T, C>) => {
   const absPath = await validatePath(options.path);
+  /** Look for files */
   const fileList = await getFileListWithExcludes(absPath, options.excludes);
 
   output.log(`Searching in ${absPath}`);
 
+  const progressBar = new ProgressBar('Scanning files', {
+    subStep: fileList.length,
+  });
+
+  /** Scan file names and propose changes */
   const proposed = await withTimer(
     () =>
       promises.reduce<string, Array<T>>(
@@ -83,6 +90,8 @@ export const withFileListHandling = async <
                 curr: () => list,
               }
             );
+
+            progressBar.updateBar('subStep', i + 1, fileName);
           } catch (e: any) {
             output.queueError(`Error reducing "${fileName}": ${e.message}`);
           } finally {
@@ -93,6 +102,8 @@ export const withFileListHandling = async <
       ),
     (time) => output.log(`Time to scan: ${time} ms`)
   );
+
+  progressBar.stop();
 
   /**
    * Confirm for non-YOLOers

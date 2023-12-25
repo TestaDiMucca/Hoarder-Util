@@ -72,6 +72,10 @@ class Output {
     });
   }
 
+  public isVerbose() {
+    return this.verbose;
+  }
+
   /**
    * Stateless printing helpers
    */

@@ -22,6 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cli-progress": "^3.12.0",
     "colors": "^1.4.0",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
@@ -35,6 +36,7 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@types/cli-progress": "^3.11.5",
     "@types/dateformat": "^3.0.1",
     "@types/figlet": "^1.5.8",
     "@types/fluent-ffmpeg": "^2.1.24",
