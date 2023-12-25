@@ -15,7 +15,8 @@ export const readTags = async (
  */
 export const writeTags = async (
   filePath: string,
-  tags: Record<string, string | number>
+  tags: Record<string, string | number>,
+  onProgress?: (p: number) => void
 ): Promise<void> =>
   new Promise((resolve, reject) => {
     const meta: string[] = [];
@@ -37,7 +38,7 @@ export const writeTags = async (
       .videoCodec('copy')
       .output(getTempName(filePath))
       .on('end', () => resolve())
-      .on('progress', (_p: FfmpegProgress) => {})
+      .on('progress', (p: FfmpegProgress) => onProgress(p.percent))
       .on('error', (e) => reject(e))
       .run();
   });

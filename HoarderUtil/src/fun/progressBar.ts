@@ -1,4 +1,6 @@
 import * as CliProgress from 'cli-progress';
+import * as colors from 'colors/safe';
+
 import output from '../util/output';
 
 type NewBarArgs = Record<string, number>;
@@ -14,7 +16,9 @@ export default class ProgressBar<T extends NewBarArgs> {
       {
         clearOnComplete: false,
         hideCursor: true,
-        format: `${barName}: {bar} | {stepName} | {value}/{total} {percentage}%`,
+        format: `${barName}: ${colors.cyan(
+          '{bar}'
+        )} | {stepName} | {value}/{total} {percentage}%`,
       },
       CliProgress.Presets.shades_classic
     );

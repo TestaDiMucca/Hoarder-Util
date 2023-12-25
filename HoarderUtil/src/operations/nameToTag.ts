@@ -52,11 +52,17 @@ const nameToTag = async (options: FileOpFlags) => {
       });
     },
     outputFormatter,
-    commitItem: async ({ fileName, existingTags, tags }, { rootDir }) => {
+    commitItem: async (
+      { fileName, existingTags, tags },
+      { rootDir },
+      { onProgress }
+    ) => {
       const fullPath = `${rootDir}/${fileName}`;
       output.log(`Attempting to tag ${colors.cyan(fileName)}`);
 
-      await writeTags(fullPath, { ...existingTags, ...tags });
+      await writeTags(fullPath, { ...existingTags, ...tags }, (p) =>
+        onProgress('tagging', p)
+      );
       await replaceFile(fullPath, getTempName(fullPath));
 
       output.log(`Completed ${colors.cyan(fileName)}`);

@@ -19,9 +19,13 @@ export type EnhancedContext<C> = C & {
   index: number;
 };
 
-type ReducerCommit<T> = {
+type ReducerPrep<T> = {
   add: (v: T) => void;
   curr: () => T[];
+};
+
+type MapCommit = {
+  onProgress: (label: string, progress: number) => void;
 };
 
 type BaseFile = {
@@ -33,11 +37,15 @@ type WithFileListHandlingArgs<T extends BaseFile, C extends object> = {
   prepReducer: (
     fileName: string,
     ctx: EnhancedContext<C>,
-    ops: ReducerCommit<T>
+    ops: ReducerPrep<T>
   ) => Promise<void>;
   context?: C;
   outputFormatter?: (v: T) => Record<string, string>;
-  commitItem: (item: T, ctx: EnhancedContext<C>) => Promise<void>;
+  commitItem: (
+    item: T,
+    ctx: EnhancedContext<C>,
+    ops: MapCommit
+  ) => Promise<void>;
   commitConcurrency?: number;
 };
 
@@ -67,7 +75,7 @@ export const withFileListHandling = async <
 
   output.log(`Searching in ${absPath}`);
 
-  const progressBar = new ProgressBar('Scanning files', {
+  const scanProgress = new ProgressBar('Scanning files', {
     subStep: fileList.length,
   });
 
@@ -91,7 +99,7 @@ export const withFileListHandling = async <
               }
             );
 
-            progressBar.updateBar('subStep', i + 1, fileName);
+            scanProgress.updateBar('subStep', i + 1, fileName);
           } catch (e: any) {
             output.queueError(`Error reducing "${fileName}": ${e.message}`);
           } finally {
@@ -103,7 +111,7 @@ export const withFileListHandling = async <
     (time) => output.log(`Time to scan: ${time} ms`)
   );
 
-  progressBar.stop();
+  scanProgress.stop();
 
   /**
    * Confirm for non-YOLOers
@@ -133,7 +141,10 @@ export const withFileListHandling = async <
 
   let processedCount = 0;
 
-  output.out('Writing changes...');
+  const commitProgress = new ProgressBar('Committing changes', {
+    files: proposed.length,
+    progress: 100,
+  });
 
   await withTimer(
     () =>
@@ -141,11 +152,23 @@ export const withFileListHandling = async <
         proposed,
         async (item, i) => {
           try {
-            await commitItem(item, {
-              ...context,
-              index: i,
-              rootDir: absPath,
-            });
+            await commitItem(
+              item,
+              {
+                ...context,
+                index: i,
+                rootDir: absPath,
+              },
+              {
+                onProgress: (label, progress) =>
+                  commitProgress.updateBar(
+                    'progress',
+                    progress,
+                    label ?? item.fileName
+                  ),
+              }
+            );
+            commitProgress.updateBar('files', i + 1, item.fileName);
             processedCount++;
           } catch (e: any) {
             output.queueError(
@@ -160,6 +183,7 @@ export const withFileListHandling = async <
     (time) => output.log(`Time to process: ${time} ms`)
   );
 
+  commitProgress.stop();
   output.dump();
 
   return processedCount;

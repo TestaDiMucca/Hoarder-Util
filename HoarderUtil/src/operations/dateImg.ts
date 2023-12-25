@@ -55,7 +55,11 @@ const dateImg = async (options: FileOpFlags) => {
       });
     },
     outputFormatter,
-    commitItem: async ({ fileName, newFileName }, { rootDir }) => {
+    commitItem: async (
+      { fileName, newFileName },
+      { rootDir },
+      { onProgress }
+    ) => {
       const oldPath = path.join(rootDir, fileName);
       const newPath = path.join(rootDir, newFileName);
 
@@ -65,7 +69,11 @@ const dateImg = async (options: FileOpFlags) => {
         )}`
       );
 
+      onProgress('rename', 0);
+
       await fsRename(oldPath, newPath);
+
+      onProgress('rename', 100);
     },
   });
 };
