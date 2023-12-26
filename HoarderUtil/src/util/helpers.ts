@@ -7,6 +7,7 @@ import * as prompt from 'prompt-sync';
 import { exifToJsDate } from './dateUtils';
 import { DATETAG_SUPPORTED_EXTENSIONS, PATH_ALIAS_STORE } from './constants';
 import ConfigStore from '../util/confLoader';
+import { getFileList, validDirectoryPath } from './files';
 
 const ExifImage = require('exif').ExifImage;
 
@@ -101,18 +102,6 @@ export const chunkArray = <T>(arr: T[], chunkSize: number) => {
   }
   return result;
 };
-
-export const validDirectoryPath = async (dir: string) => {
-  try {
-    const stats = await fs.stat(dir);
-
-    return stats.isDirectory();
-  } catch (e) {
-    return false;
-  }
-};
-
-export const getFileList = (dir: string) => fs.readdir(dir);
 
 export const checkFilenameExcluded = (fileName: string, pattern: string) => {
   try {
@@ -231,8 +220,6 @@ export const parseStringToTags = (
   }, {});
 };
 
-export const removeExt = (s: string) => s.replace(/\.[^/.]+$/, '');
-
 export const checkSupportedExt = (
   ext: string,
   categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>
@@ -254,19 +241,4 @@ export const withTimer = async <T>(
   onDone(time);
 
   return result;
-};
-
-export const checkPathExists = async (path: string) => {
-  try {
-    await fs.stat(path);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-export const replaceFile = async (oldPath: string, newPath: string) => {
-  output.log(`Replacing ${newPath} => ${oldPath}`);
-  await fs.unlink(oldPath);
-  await fs.rename(newPath, oldPath);
 };

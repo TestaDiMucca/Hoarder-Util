@@ -1,17 +1,11 @@
 import * as colors from 'colors/safe';
 import Jimp = require('jimp');
 
-import {
-  checkSupportedExt,
-  getExt,
-  msgShortcuts,
-  replaceFile,
-} from '../util/helpers';
+import { checkSupportedExt, getExt, msgShortcuts } from '../util/helpers';
 import output from '../util/output';
 import { FileOpFlags } from '../util/types';
 import { withFileListHandling } from './operations.helpers';
-import { replaceExtension } from '../util/files';
-import { getTempName } from '../util/ffMeta';
+import { getTempName, replaceExtension, replaceFile } from '../util/files';
 
 const jpgCompress = async (options: FileOpFlags) => {
   const [_quality] = options.commandArgs;

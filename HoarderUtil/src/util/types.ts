@@ -1,5 +1,3 @@
-import * as colors from 'colors';
-
 /**
  * Supported operations
  */
@@ -36,7 +34,7 @@ export type FsOpFlags = {
 } & UniversalFlags;
 
 export type FileOpFlags = {
-  operation: Operations.nameToTag | Operations.dateTag;
+  operation: Operations.nameToTag | Operations.dateTag | Operations.jpgCompress;
   path?: string;
   excludes?: string;
   format?: string;

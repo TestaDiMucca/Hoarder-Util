@@ -1,5 +1,6 @@
 import { PATH_ALIAS_STORE } from '../util/constants';
-import { checkPathExists, getUserConfirmation } from '../util/helpers';
+import { checkPathExists } from '../util/files';
+import { getUserConfirmation } from '../util/helpers';
 import output from '../util/output';
 import { BasicFlags } from '../util/types';
 import {

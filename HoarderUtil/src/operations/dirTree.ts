@@ -4,13 +4,13 @@ import * as isInvalid from 'is-invalid-path';
 import { FsOpFlags } from '../util/types';
 import output from '../util/output';
 import {
-  checkPathExists,
   getUserConfirmation,
   msgShortcuts,
   validatePath,
   withTimer,
 } from '../util/helpers';
 import colors from '../util/colors';
+import { checkPathExists } from '../util/files';
 
 const dirTree = async (options: FsOpFlags) => {
   const dirListStr = options.commandArgs?.[0]

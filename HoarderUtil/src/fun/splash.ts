@@ -98,7 +98,7 @@ const SPLASH_OPTS: SplashOpts = [
   ],
   /** Tales from the Hood */
   ['Ah! The doo-doo! The poopedy-pop! The shit!', 'Mr. Simms'],
-  /** <etal is for Everyone, Freedom Call */
+  /** Metal is for Everyone, Freedom Call */
   'Metal is for everyone, stronger than the law!',
   /** Bocchi the Rock */
   [
@@ -117,8 +117,9 @@ const SPLASH_OPTS: SplashOpts = [
 export const getSplashText = () => {
   const result = randomFromArray(SPLASH_OPTS);
 
-  const mainText = Array.isArray(result) ? result[0] : result;
-  const subText = Array.isArray(result) ? result[1] : undefined;
+  const isMultiPart = Array.isArray(result);
+  const mainText = isMultiPart ? result[0] : result;
+  const subText = isMultiPart ? result[1] : undefined;
 
   return {
     len: mainText.length,

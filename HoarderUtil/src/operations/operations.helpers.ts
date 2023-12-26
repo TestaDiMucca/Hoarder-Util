@@ -20,11 +20,14 @@ export type EnhancedContext<C> = C & {
 };
 
 type ReducerPrep<T> = {
+  /** Add file to list of what we will process */
   add: (v: T) => void;
+  /** Current list of items */
   curr: () => T[];
 };
 
 type MapCommit = {
+  /** For progress bar updates */
   onProgress: (label: string, progress: number) => void;
 };
 
@@ -33,19 +36,25 @@ type BaseFile = {
 };
 
 type WithFileListHandlingArgs<T extends BaseFile, C extends object> = {
+  /** Terminal options */
   options: FileOpFlags;
+  /** Method to determine if an item makes it to final processing list */
   prepReducer: (
     fileName: string,
     ctx: EnhancedContext<C>,
     ops: ReducerPrep<T>
   ) => Promise<void>;
+  /** Common information the helper will preserve across file runs */
   context?: C;
+  /** For outputting from the parsed data in prepReducer to table output */
   outputFormatter?: (v: T) => Record<string, string>;
+  /** Handler for actually committing changes to a file */
   commitItem: (
     item: T,
     ctx: EnhancedContext<C>,
     ops: MapCommit
   ) => Promise<void>;
+  /** How many commits to run concurrently, depending how heavy the task is */
   commitConcurrency?: number;
 };
 

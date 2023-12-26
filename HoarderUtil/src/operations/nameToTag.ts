@@ -1,17 +1,12 @@
 import * as colors from 'colors/safe';
 
-import {
-  checkSupportedExt,
-  getExt,
-  parseStringToTags,
-  removeExt,
-  replaceFile,
-} from '../util/helpers';
+import { checkSupportedExt, getExt, parseStringToTags } from '../util/helpers';
 import { FileOpFlags } from '../util/types';
 import output from '../util/output';
 import { DEFAULT_TAGGING_PATTERN } from '../util/constants';
-import { getTempName, writeTags } from '../util/ffMeta';
+import { writeTags } from '../util/ffMeta';
 import { withFileListHandling } from './operations.helpers';
+import { getTempName, removeExt, replaceFile } from '../util/files';
 
 type NameToTagCtx = {
   pattern: string;

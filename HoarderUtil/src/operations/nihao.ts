@@ -2,8 +2,8 @@ import * as colors from 'colors/safe';
 import { resolve } from 'path';
 
 import output from '../util/output';
-import { getFileList } from '../util/helpers';
 import { NiHaoTestFlags } from '../util/types';
+import { getFileList } from '../util/files';
 
 /**
  * Hello whirl for testing

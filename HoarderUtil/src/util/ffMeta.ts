@@ -1,6 +1,11 @@
 import * as ffmpeg from 'fluent-ffmpeg';
-import output from './output';
 
+import output from './output';
+import { getTempName } from './files';
+
+/**
+ * Get hash of existing metadata in a media obj
+ */
 export const readTags = async (
   filePath: string
 ): Promise<null | ffmpeg.FfprobeData> =>
@@ -11,7 +16,7 @@ export const readTags = async (
   });
 
 /**
- * @todo seems to re-encode everything, can we improve the perf here?
+ * Write a record of tags into a file
  */
 export const writeTags = async (
   filePath: string,
@@ -32,22 +37,27 @@ export const writeTags = async (
       `Starting ffmpeg job for ${filePath} with ${tagNames.length} tags`
     );
 
+    let totalTime: number;
+
     ffmpeg(filePath)
       .outputOptions(...meta)
       .audioCodec('copy')
       .videoCodec('copy')
       .output(getTempName(filePath))
+      .on('codecData', (data) => {
+        totalTime = parseInt(data.duration.replace(/:/g, ''));
+      })
+      .on('start', () => onProgress(0))
       .on('end', () => resolve())
-      .on('progress', (p: FfmpegProgress) => onProgress(p.percent))
+      .on('progress', (p: FfmpegProgress) => {
+        if (!totalTime || totalTime <= 0) return;
+
+        const time = parseInt(p.timemark.replace(/:/g, ''));
+        onProgress((time / totalTime) * 100);
+      })
       .on('error', (e) => reject(e))
       .run();
   });
-
-export const getTempName = (fileName: string): string => {
-  const split = fileName.split('.');
-  split[split.length - 2] = `${split[split.length - 2]}_e`;
-  return split.join('.');
-};
 
 type FfmpegProgress = {
   frames: number;
