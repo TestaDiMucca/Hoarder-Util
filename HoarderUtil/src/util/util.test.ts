@@ -87,7 +87,7 @@ describe('utils', () => {
     ];
 
     test.each(regExCases)('uses regex too in %s', (fileName, shouldMatch) => {
-      const matchStr = '\\d{1,2}\\D\\d{1,2}\\D';
+      const matchStr = '^\\d{1,2}\\D\\d{1,2}\\D';
 
       const result = checkFilenameExcluded(fileName, matchStr);
       expect(result).toEqual(shouldMatch);

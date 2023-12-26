@@ -35,14 +35,14 @@ export default class ProgressBar<T extends NewBarArgs> {
     }, {} as BarMap<T>);
   }
 
-  public updateBar(bar: keyof T, progress: number, stepName?: string) {
+  public updateBar = (bar: keyof T, progress: number, stepName?: string) => {
     if (this.stopped) return;
 
     this.bars[bar].update(progress, { stepName });
-  }
+  };
 
-  public stop() {
+  public stop = () => {
     this.bar.stop();
     this.stopped = true;
-  }
+  };
 }
