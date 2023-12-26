@@ -11,7 +11,11 @@
     "test-build": "npm run build && npx tauri dev"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@tauri-apps/cli": "^1.5.9",
+    "framer-motion": "^6.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
