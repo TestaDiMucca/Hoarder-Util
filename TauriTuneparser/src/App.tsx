@@ -1,16 +1,15 @@
-// import { useState } from 'react'
-
-import './App.css'
-import LoadLibrary from './components/LoadLibrary'
+import './App.css';
+import LoadLibrary from './components/LoadLibrary';
+import LibraryProvider from './providers/LibraryProvider';
 
 function App() {
-  // const [count, setCount] = useState(0)
-
   return (
     <>
-      <LoadLibrary />
+      <LibraryProvider>
+        <LoadLibrary />
+      </LibraryProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
