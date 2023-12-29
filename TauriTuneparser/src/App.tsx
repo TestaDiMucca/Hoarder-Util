@@ -1,12 +1,12 @@
 import './App.css';
-import LoadLibrary from './components/LoadLibrary';
 import LibraryProvider from './providers/LibraryProvider';
+import Container from './components/Container';
 
 function App() {
   return (
     <>
       <LibraryProvider>
-        <LoadLibrary />
+        <Container />
       </LibraryProvider>
     </>
   );

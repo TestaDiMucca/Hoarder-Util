@@ -1,8 +1,10 @@
 import React, { createContext, useState } from 'react';
 
+import { MediaRecord } from 'src/types/types';
+
 interface LibraryContextValues {
-  library: string[];
-  setLibrary: (_: string[]) => void;
+  library: MediaRecord[];
+  setLibrary: (_: MediaRecord[]) => void;
 }
 
 export const LibraryContext = createContext<LibraryContextValues>({
@@ -15,7 +17,7 @@ interface ProviderProps {}
 const LibraryProvider: React.FC<React.PropsWithChildren<ProviderProps>> = ({
   children,
 }) => {
-  const [library, setLibrary] = useState<string[]>([]);
+  const [library, setLibrary] = useState<MediaRecord[]>([]);
 
   return (
     <LibraryContext.Provider value={{ library, setLibrary }}>

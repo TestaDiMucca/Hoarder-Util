@@ -38,7 +38,7 @@ export default class ProgressBar<T extends NewBarArgs> {
   public updateBar = (bar: keyof T, progress: number, stepName?: string) => {
     if (this.stopped) return;
 
-    this.bars[bar].update(progress, { stepName });
+    this.bars[bar].update(Number(progress.toFixed(2)), { stepName });
   };
 
   public stop = () => {

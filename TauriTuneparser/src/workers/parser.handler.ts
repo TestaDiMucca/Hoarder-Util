@@ -1,7 +1,8 @@
+import { MediaRecord } from 'src/types/types';
 import ParserWorker from './parser.worker?worker';
 import { OutboundMessage } from './workers.types';
 
-export const callParser = (xmlString: string) =>
+export const callParser = (xmlString: string): Promise<MediaRecord[]> =>
   new Promise((resolve, reject) => {
     const worker = new ParserWorker();
 
