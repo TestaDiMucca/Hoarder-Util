@@ -1,11 +1,11 @@
 import idb from 'idb';
 
-import { SongRecord } from 'src/types/types';
+import { MediaRecord } from 'src/types/types';
 
 const DB_NAME = 'muzaquesDb';
 const STORE_NAME = 'muzaques';
 
-let db: idb.IDBPDatabase<SongRecord>;
+let db: idb.IDBPDatabase<MediaRecord>;
 
 const init = async () => {
   db = await idb.openDB(DB_NAME, 1, {
@@ -32,7 +32,7 @@ const clear = async () => {
   await store.clear();
 };
 
-const addItem = async (item: SongRecord) => {
+const addItem = async (item: MediaRecord) => {
   const tx = db.transaction(STORE_NAME, 'readwrite');
   await tx.objectStore(STORE_NAME).add(item);
 };

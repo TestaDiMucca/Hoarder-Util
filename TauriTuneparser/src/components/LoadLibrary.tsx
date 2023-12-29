@@ -1,7 +1,7 @@
 import { Text, VStack, useToast } from '@chakra-ui/react';
 import { ChangeEvent, useCallback } from 'react';
 import { readFile } from 'src/utils/helpers';
-import { parseLibraryXml } from 'src/utils/parser';
+import { callParser } from 'src/workers/parser.handler';
 
 function LoadLibrary() {
   const toast = useToast();
@@ -12,7 +12,7 @@ function LoadLibrary() {
         if (!file) return;
 
         const txt = await readFile(file);
-        const parsed = await parseLibraryXml(txt);
+        const parsed = await callParser(txt);
         console.log(parsed);
       } catch (e: any) {
         console.error(e);

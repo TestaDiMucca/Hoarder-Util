@@ -31,6 +31,7 @@ const KEY_MAP: Record<XMLKey, keyof MediaRecord> = {
   Year: 'year',
   'Track Number': 'trackNo',
   Grouping: 'grouping',
+  'Has Video': 'hasVideo',
 };
 
 const extract = (node?: Node, el?: string) => {
@@ -42,9 +43,13 @@ const extract = (node?: Node, el?: string) => {
 };
 
 const getFirstText = (node: Node): Primitive =>
-  node.type === 'text' ? node.text : getFirstText(node.elements[0]);
+  node.type === 'text'
+    ? node.text
+    : node.elements
+    ? getFirstText(node.elements[0])
+    : node.name;
 
-const parseMediaRecord = (record: Node): Partial<MediaRecord> | null => {
+const parseMediaRecord = (record: Node): MediaRecord | null => {
   if (record.type === 'text' || !record.elements) return null;
 
   /* elements come in key : type pairs in the array */
@@ -65,13 +70,13 @@ const parseMediaRecord = (record: Node): Partial<MediaRecord> | null => {
     if (mapToKey) result[mapToKey] = getFirstText(e);
   });
 
-  return result;
+  return result as MediaRecord;
 };
 
 const parseMediaRecordList = (records: Node) => {
   if (records.type === 'text') return [];
 
-  return records.elements.reduce<Array<Partial<MediaRecord>>>((a, v, _i) => {
+  return records.elements.reduce<Array<MediaRecord>>((a, v, _i) => {
     if (v.name === 'key' || v.type === 'text') return a;
 
     const parsed = parseMediaRecord(v);

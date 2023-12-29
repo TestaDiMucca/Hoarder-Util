@@ -9,4 +9,5 @@ export type MediaRecord = {
   year?: string;
   trackNo?: number;
   grouping?: string;
+  hasVideo?: boolean;
 };
