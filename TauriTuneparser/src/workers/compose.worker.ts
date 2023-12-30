@@ -65,7 +65,7 @@ const getGenrePie = (
     );
 
     const classLabel = belongsToClass ?? 'Other';
-    increment(allGenres, `${classLabel}: ` + genreLabel ?? 'Unknown genre');
+    increment(allGenres, `${classLabel}: ` + genreLabel);
     increment(genreClass, classLabel);
   });
 
