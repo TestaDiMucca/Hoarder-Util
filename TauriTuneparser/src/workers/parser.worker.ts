@@ -1,22 +1,17 @@
 import { parseLibraryXml } from 'src/utils/parser';
-import { InboundMessage } from './workers.types';
+import { Parser_InboundMessage } from './workers.types';
+import { handleError, handleMessage } from './workers.helpers';
 
-const handleError = (message: string) =>
-  postMessage({
-    error: message,
-  });
+addEventListener('message', (message: MessageEvent<Parser_InboundMessage>) => {
+  const { cmd } = message.data;
 
-const handleMessage = <T>(data: T, state = 'success') =>
-  postMessage({
-    data,
-    state,
-  });
+  switch (cmd) {
+    case 'parse':
+      const parsedObjs = parseLibraryXml(message.data.payload);
+      handleMessage(parsedObjs);
+      return;
 
-addEventListener('message', (message: MessageEvent<InboundMessage>) => {
-  if (message.data.cmd === 'parse') {
-    const parsedObjs = parseLibraryXml(message.data.payload);
-    handleMessage(parsedObjs);
-    return;
+    default:
   }
 
   handleError('Unsupported message command');

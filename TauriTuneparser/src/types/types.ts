@@ -11,3 +11,7 @@ export type MediaRecord = {
   grouping?: string;
   hasVideo?: boolean;
 };
+
+export enum Graphs {
+  genrePie = 'genrePie',
+}

@@ -10,6 +10,7 @@ import {
   Textarea,
   RadioGroup,
   Radio,
+  VStack,
 } from '@chakra-ui/react';
 import { ChangeEvent, useCallback, useState } from 'react';
 import {
@@ -62,9 +63,11 @@ export default function ConfigurationModal({ isOpen, onClose }: Props) {
             value={videoSettings}
             onChange={handleChangeVideoSettings}
           >
-            <Radio value={VideoIncludeSettings.include}>Include</Radio>
-            <Radio value={VideoIncludeSettings.exclude}>Exclude</Radio>
-            <Radio value={VideoIncludeSettings.only}>Only</Radio>
+            <VStack alignItems="flex-start">
+              <Radio value={VideoIncludeSettings.include}>Include</Radio>
+              <Radio value={VideoIncludeSettings.exclude}>Exclude</Radio>
+              <Radio value={VideoIncludeSettings.only}>Only</Radio>
+            </VStack>
           </RadioGroup>
         </ModalBody>
         <ModalFooter>

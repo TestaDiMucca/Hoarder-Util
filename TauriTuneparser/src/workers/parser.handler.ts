@@ -1,6 +1,6 @@
 import { MediaRecord } from 'src/types/types';
 import ParserWorker from './parser.worker?worker';
-import { OutboundMessage } from './workers.types';
+import { Parser_OutboundMessage } from './workers.types';
 
 export const callParser = (xmlString: string): Promise<MediaRecord[]> =>
   new Promise((resolve, reject) => {
@@ -13,7 +13,7 @@ export const callParser = (xmlString: string): Promise<MediaRecord[]> =>
 
     worker.addEventListener(
       'message',
-      (message: MessageEvent<OutboundMessage>) => {
+      (message: MessageEvent<Parser_OutboundMessage>) => {
         switch (message.data.state) {
           case 'success':
             resolve(message.data.data);

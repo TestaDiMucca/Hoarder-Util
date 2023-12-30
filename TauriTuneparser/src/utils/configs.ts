@@ -7,24 +7,41 @@ export enum VideoIncludeSettings {
 const LS_CLASSIFICATIONS = 'classifications';
 const LS_VIDEO_INCLUSION = 'videoInclusion';
 
-const configFactory = <T extends string>(
-  configName: string,
-  defaultValue?: T
-) => ({
-  get: (): T => {
-    const stored = localStorage.getItem(configName);
+const safeParse = (str: string) => {
+  try {
+    return JSON.parse(str);
+  } catch (_e) {
+    return null;
+  }
+};
 
-    return (stored ?? defaultValue ?? '') as T;
+const configFactory = <T extends string>({
+  configName,
+  defaultValue,
+  json,
+}: {
+  configName: string;
+  defaultValue?: T;
+  json?: boolean;
+}) => ({
+  get: (): T => {
+    const rawStored = localStorage.getItem(configName);
+
+    const stored = json && rawStored ? safeParse(rawStored) : rawStored;
+
+    return (stored as T) ?? defaultValue;
   },
   set: (val: T) => {
-    localStorage.setItem(configName, val);
+    localStorage.setItem(configName, json ? JSON.stringify(val) : val);
   },
 });
 
 /** @todo break into string[] and upgrade UI accordingly */
-export const Classifications = configFactory<string>(LS_CLASSIFICATIONS, '');
+export const Classifications = configFactory<string>({
+  configName: LS_CLASSIFICATIONS,
+});
 
-export const VideoInclusion = configFactory<VideoIncludeSettings>(
-  LS_VIDEO_INCLUSION,
-  VideoIncludeSettings.exclude
-);
+export const VideoInclusion = configFactory<VideoIncludeSettings>({
+  configName: LS_VIDEO_INCLUSION,
+  defaultValue: VideoIncludeSettings.exclude,
+});

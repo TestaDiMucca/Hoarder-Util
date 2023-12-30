@@ -22,7 +22,7 @@ export default function Container() {
   }, []);
 
   return (
-    <VStack>
+    <VStack w="full">
       {library.length ? <LibraryViewer /> : <LoadLibrary />}
       <Button onClick={modalStates.config.on}>Configuration</Button>
       <ConfigurationModal
