@@ -42,6 +42,12 @@ function LoadLibrary() {
 
     console.log('persisting');
     await IndexedDB.addItems(loaded);
+
+    toast({
+      title: 'Saved library',
+      description: 'This library will now be the default on load',
+    });
+
     handleLoaded();
   }, [loaded]);
 
