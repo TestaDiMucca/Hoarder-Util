@@ -19,7 +19,7 @@ export type Parser_OutboundMessage =
     };
 
 export type Composer_InboundMessage = {
-  graph: Graphs.genrePie;
+  graph: Graphs;
   data: MediaRecord[];
   options: {
     videoSettings: VideoIncludeSettings;

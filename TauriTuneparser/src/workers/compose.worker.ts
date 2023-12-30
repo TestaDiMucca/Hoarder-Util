@@ -13,7 +13,9 @@ addEventListener(
       case Graphs.genrePie:
         handleMessage(getGenrePie(data, options));
         return;
-
+      case Graphs.genrePlays:
+        handleMessage(getGenrePie(data, options, true));
+        return;
       default:
         return handleError('Unsupported graph type');
     }
@@ -22,15 +24,17 @@ addEventListener(
 
 type CounterMap = Record<string, number>;
 
-const increment = (record: CounterMap, key: string) =>
-  record[key] ? record[key]++ : (record[key] = 1);
+const increment = (record: CounterMap, key: string, amount = 1) =>
+  record[key] ? (record[key] += amount) : (record[key] = amount);
 
+/** Convert to pie graph's required data format */
 const transformToArray = (record: CounterMap) =>
   Object.entries(record).map(([name, value]) => ({ name, value }));
 
 const getGenrePie = (
   data: MediaRecord[],
-  opts: Composer_InboundMessage['options']
+  opts: Composer_InboundMessage['options'],
+  byPlays = false
 ) => {
   const { videoSettings, classifications } = opts;
 
@@ -43,8 +47,8 @@ const getGenrePie = (
 
   let total = 0;
 
-  data.forEach((media, i) => {
-    const { hasVideo, genre } = media;
+  data.forEach((media) => {
+    const { hasVideo, genre, plays } = media;
 
     if (
       (hasVideo && videoSettings === VideoIncludeSettings.exclude) ||
@@ -52,7 +56,7 @@ const getGenrePie = (
     )
       return;
 
-    total++;
+    if (byPlays && (!plays || plays === 0)) return;
 
     const genreLabel = genre ?? 'Unknown genre';
 
@@ -64,9 +68,13 @@ const getGenrePie = (
       genre?.toLowerCase().includes(c.toLowerCase())
     );
 
+    const incrementAmount = byPlays ? plays : 1;
+
     const classLabel = belongsToClass ?? 'Other';
-    increment(allGenres, `${classLabel}: ` + genreLabel);
-    increment(genreClass, classLabel);
+    increment(allGenres, `${classLabel}: ` + genreLabel, incrementAmount);
+    increment(genreClass, classLabel, incrementAmount);
+
+    total += incrementAmount;
   });
 
   const genreClassArr = sortByKey(transformToArray(genreClass), 'name');

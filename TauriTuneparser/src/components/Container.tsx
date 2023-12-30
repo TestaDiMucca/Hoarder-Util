@@ -9,7 +9,7 @@ import useToggleState from 'src/hooks/useToggleState';
 
 export default function Container() {
   const modalStates = useToggleState(['config']);
-  const { library, setLibrary } = useLibraryContext();
+  const { library, setLibrary, renderKey } = useLibraryContext();
 
   const loadData = useCallback(async () => {
     const loaded = await IndexedDB.list();
@@ -22,7 +22,7 @@ export default function Container() {
   }, []);
 
   return (
-    <VStack w="full">
+    <VStack w="full" key={renderKey}>
       {library.length ? <LibraryViewer /> : <LoadLibrary />}
       <Button onClick={modalStates.config.on}>Configuration</Button>
       <ConfigurationModal

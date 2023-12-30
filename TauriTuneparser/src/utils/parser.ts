@@ -32,6 +32,7 @@ const KEY_MAP: Record<XMLKey, keyof MediaRecord> = {
   'Track Number': 'trackNo',
   Grouping: 'grouping',
   'Has Video': 'hasVideo',
+  'Play Count': 'plays',
 };
 
 const extract = (node?: Node, el?: string) => {

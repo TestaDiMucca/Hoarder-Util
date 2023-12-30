@@ -10,7 +10,11 @@ type DataPoint = {
   value: number;
 };
 
-export default function GenrePie() {
+type Props = {
+  usePlays?: boolean;
+};
+
+export default function GenrePie({ usePlays }: Props) {
   const { library } = useLibraryContext();
   const [genreData, setGenreData] = useState<DataPoint[]>([]);
   const [classData, setClassData] = useState<DataPoint[]>([]);
@@ -18,18 +22,21 @@ export default function GenrePie() {
   const getData = useCallback(async () => {
     if (library.length === 0) return;
 
-    const data = (await callComposer(Graphs.genrePie, library)) as {
+    const data = (await callComposer(
+      usePlays ? Graphs.genrePlays : Graphs.genrePie,
+      library
+    )) as {
       allGenres: any[];
       genreClass: any[];
     };
 
     setGenreData(data.allGenres);
     if (data.genreClass.length) setClassData(data.genreClass);
-  }, [library]);
+  }, [library, usePlays]);
 
   useEffect(() => {
     void getData();
-  }, [library.length]);
+  }, [library.length, usePlays]);
 
   return (
     <PieChart

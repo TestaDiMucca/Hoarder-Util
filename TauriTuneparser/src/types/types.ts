@@ -14,4 +14,5 @@ export type MediaRecord = {
 
 export enum Graphs {
   genrePie = 'genrePie',
+  genrePlays = 'genrePlays',
 }

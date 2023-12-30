@@ -52,7 +52,7 @@ function LoadLibrary() {
     });
 
     handleLoaded();
-  }, [loaded]);
+  }, [loaded, handleLoaded]);
 
   const handleCancel = useCallback(() => {
     setLibrary([]);
