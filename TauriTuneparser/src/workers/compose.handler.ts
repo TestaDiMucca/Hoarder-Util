@@ -8,7 +8,10 @@ import {
 } from './workers.types';
 import { Classifications, VideoInclusion } from 'src/utils/configs';
 
-const callComposerRaw = (graph: Graphs, rawData: MediaRecord[]): Promise<any> =>
+const callComposerRaw = <T>(
+  graph: Graphs,
+  rawData: MediaRecord[]
+): Promise<{ data1: T[]; data2?: T[] }> =>
   new Promise((resolve, reject) => {
     const worker = new ComposerWorker();
 
@@ -40,4 +43,7 @@ const callComposerRaw = (graph: Graphs, rawData: MediaRecord[]): Promise<any> =>
     );
   });
 
-export const callComposer = throttle(callComposerRaw, 1000);
+export const callComposer = throttle(
+  callComposerRaw,
+  1000
+) as typeof callComposerRaw;

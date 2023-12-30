@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
-
-import useLibraryContext from 'src/hooks/useLibraryContext';
 import { Graphs } from 'src/types/types';
-import { callComposer } from 'src/workers/compose.handler';
 import PieChart from './PieChart';
+import useCallComposer from 'src/hooks/useCallComposer';
 
 type DataPoint = {
   name: string;
@@ -15,28 +12,12 @@ type Props = {
 };
 
 export default function GenrePie({ usePlays }: Props) {
-  const { library } = useLibraryContext();
-  const [genreData, setGenreData] = useState<DataPoint[]>([]);
-  const [classData, setClassData] = useState<DataPoint[]>([]);
+  const { data1, data2 } = useCallComposer<DataPoint>(
+    usePlays ? Graphs.genrePlays : Graphs.genrePie
+  );
 
-  const getData = useCallback(async () => {
-    if (library.length === 0) return;
-
-    const data = (await callComposer(
-      usePlays ? Graphs.genrePlays : Graphs.genrePie,
-      library
-    )) as {
-      allGenres: any[];
-      genreClass: any[];
-    };
-
-    setGenreData(data.allGenres);
-    if (data.genreClass.length) setClassData(data.genreClass);
-  }, [library, usePlays]);
-
-  useEffect(() => {
-    void getData();
-  }, [library.length, usePlays]);
+  const classData = data2;
+  const genreData = data1;
 
   return (
     <PieChart

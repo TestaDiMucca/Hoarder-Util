@@ -5,10 +5,12 @@ import useLibraryContext from 'src/hooks/useLibraryContext';
 import { Graphs } from 'src/types/types';
 import IndexedDB from 'src/utils/database';
 import GenrePie from './Charts/GenrePie';
+import TimelineView from './Charts/TimelineView';
 
 const GRAPH_COMPONENT_MAP: Record<Graphs, React.ReactNode> = {
   [Graphs.genrePie]: <GenrePie />,
   [Graphs.genrePlays]: <GenrePie usePlays />,
+  [Graphs.addedTimeline]: <TimelineView />,
 };
 
 export default function LibraryViewer() {
@@ -38,6 +40,7 @@ export default function LibraryViewer() {
       <Select placeholder="Select a graph" onChange={handleSelectGraph}>
         <option value={Graphs.genrePie}>Genre pie</option>
         <option value={Graphs.genrePlays}>Genre plays</option>
+        <option value={Graphs.addedTimeline}>Added over time</option>
       </Select>
       {selectedGraph && (
         <Box minH="40vh" w="full">
