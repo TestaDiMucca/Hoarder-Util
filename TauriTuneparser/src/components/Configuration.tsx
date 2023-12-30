@@ -11,6 +11,7 @@ import {
   RadioGroup,
   Radio,
   VStack,
+  useToast,
 } from '@chakra-ui/react';
 import { ChangeEvent, useCallback, useState } from 'react';
 import {
@@ -29,6 +30,8 @@ export default function ConfigurationModal({ isOpen, onClose }: Props) {
   const [videoSettings, setVideoSettings] = useState(VideoInclusion.get());
   const [classifications, setClassifications] = useState(Classifications.get());
 
+  const toast = useToast();
+
   const handleChangeVideoSettings = useCallback(
     (s: VideoIncludeSettings) => setVideoSettings(s),
     []
@@ -44,7 +47,14 @@ export default function ConfigurationModal({ isOpen, onClose }: Props) {
   const handleSave = useCallback(() => {
     Classifications.set(classifications);
     VideoInclusion.set(videoSettings);
-  }, [videoSettings, classifications]);
+
+    toast({
+      title: 'Settings saved!',
+      status: 'success',
+    });
+
+    onClose();
+  }, [videoSettings, classifications, onClose]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -57,6 +67,7 @@ export default function ConfigurationModal({ isOpen, onClose }: Props) {
           <Textarea
             placeholder="Classifications"
             onChange={handleChangeClassifications}
+            value={classifications}
           />
           <H2>Video settings</H2>
           <RadioGroup

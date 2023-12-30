@@ -6,7 +6,7 @@ import Container from './components/Container';
 
 function App() {
   return (
-    <Box w="100vw" h="100vh">
+    <Box w="full" h="full">
       <LibraryProvider>
         <Container />
       </LibraryProvider>

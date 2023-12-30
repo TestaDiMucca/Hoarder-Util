@@ -19,6 +19,10 @@ function LoadLibrary() {
         if (!file) return;
 
         const txt = await readFile(file);
+        toast({
+          title: 'Processing...',
+          description: 'Now parsing, please hang on.',
+        });
         const parsed = await callParser(txt);
         setLoaded(parsed);
       } catch (e: any) {
@@ -40,7 +44,6 @@ function LoadLibrary() {
   const handlePersist = useCallback(async () => {
     if (!loaded || loaded.length === 0) return;
 
-    console.log('persisting');
     await IndexedDB.addItems(loaded);
 
     toast({

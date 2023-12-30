@@ -34,12 +34,11 @@ const list = async () =>
 
 const clear = async () =>
   withInitDb(async () => {
-    const tx = db.transaction(STORE_NAME);
+    const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
 
     if (!store?.clear) return;
 
-    // @ts-expect-error it thinks clear() is of never type
     await store.clear();
   });
 

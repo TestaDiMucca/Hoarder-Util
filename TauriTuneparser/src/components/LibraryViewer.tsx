@@ -42,8 +42,12 @@ export default function LibraryViewer() {
           {GRAPH_COMPONENT_MAP[selectedGraph]}
         </Box>
       )}
-      You are in the library
-      <Button onClick={handleUnload}>Unload</Button>
+      {!selectedGraph && (
+        <>
+          You are in the library
+          <Button onClick={handleUnload}>Unload</Button>
+        </>
+      )}
     </Box>
   );
 }

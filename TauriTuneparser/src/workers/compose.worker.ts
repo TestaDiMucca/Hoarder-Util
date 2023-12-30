@@ -2,6 +2,7 @@ import { Graphs, MediaRecord } from 'src/types/types';
 import { Composer_InboundMessage } from './workers.types';
 import { handleError, handleMessage } from './workers.helpers';
 import { VideoIncludeSettings } from 'src/utils/configs';
+import { sortByKey } from 'src/utils/helpers';
 
 addEventListener(
   'message',
@@ -19,10 +20,12 @@ addEventListener(
   }
 );
 
-const increment = (record: Record<string, number>, key: string) =>
+type CounterMap = Record<string, number>;
+
+const increment = (record: CounterMap, key: string) =>
   record[key] ? record[key]++ : (record[key] = 1);
 
-const transformToArray = (record: Record<string, number>) =>
+const transformToArray = (record: CounterMap) =>
   Object.entries(record).map(([name, value]) => ({ name, value }));
 
 const getGenrePie = (
@@ -35,8 +38,8 @@ const getGenrePie = (
     .split(',')
     .filter((s) => s.length > 1);
 
-  const allGenres: Record<string, number> = {};
-  const genreClass: Record<string, number> = {};
+  const allGenres: CounterMap = {};
+  const genreClass: CounterMap = {};
 
   let total = 0;
 
@@ -50,19 +53,26 @@ const getGenrePie = (
       return;
 
     total++;
-    increment(allGenres, genre ?? 'Unknown genre');
 
-    if (parsedClassifications.length === 0) return;
+    const genreLabel = genre ?? 'Unknown genre';
+
+    if (parsedClassifications.length === 0) {
+      increment(allGenres, genreLabel);
+    }
 
     const belongsToClass = parsedClassifications.find((c) =>
       genre?.toLowerCase().includes(c.toLowerCase())
     );
 
-    increment(genreClass, belongsToClass ?? 'Other');
+    const classLabel = belongsToClass ?? 'Other';
+    increment(allGenres, `${classLabel}: ` + genreLabel ?? 'Unknown genre');
+    increment(genreClass, classLabel);
   });
 
+  const genreClassArr = sortByKey(transformToArray(genreClass), 'name');
+
   return {
-    allGenres: transformToArray(allGenres),
-    genreClass: transformToArray(genreClass),
+    allGenres: sortByKey(transformToArray(allGenres), 'name'),
+    genreClass: genreClassArr,
   };
 };
