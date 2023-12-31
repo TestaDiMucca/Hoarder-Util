@@ -13,6 +13,7 @@ import { Graphs } from 'src/types/types';
 import { Classifications } from 'src/utils/configs';
 import { DUSK } from 'src/utils/palettes';
 import ResponsiveContainer from './generics/ResponsiveContainer';
+import Spinner from '../common/Spinner';
 
 type DataPoint = {
   name: string;
@@ -22,7 +23,7 @@ type DataPoint = {
 const CHART_SIZE = 400;
 
 export default function TimelineView() {
-  const { data1 } = useCallComposer<DataPoint>(Graphs.addedTimeline);
+  const { data1, loading } = useCallComposer<DataPoint>(Graphs.addedTimeline);
 
   const potentialCategories = useMemo(
     () => [
@@ -33,6 +34,8 @@ export default function TimelineView() {
     ],
     []
   );
+
+  if (loading) return <Spinner />;
 
   return (
     <ResponsiveContainer>

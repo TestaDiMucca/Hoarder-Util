@@ -1,6 +1,7 @@
 import useCallComposer from 'src/hooks/useCallComposer';
 import { Graphs } from 'src/types/types';
 import PieChart from './generics/PieChart';
+import Spinner from '../common/Spinner';
 
 type DataPoint = {
   name: string;
@@ -8,7 +9,9 @@ type DataPoint = {
 };
 
 export default function GroupingPie() {
-  const { data1 } = useCallComposer<DataPoint>(Graphs.groupingsPie);
+  const { data1, loading } = useCallComposer<DataPoint>(Graphs.groupingsPie);
+
+  if (loading) return <Spinner />;
 
   return <PieChart outerData={data1} formatLegend={formatLegend} />;
 }

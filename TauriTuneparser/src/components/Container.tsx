@@ -5,6 +5,7 @@ import useLibraryContext from 'src/hooks/useLibraryContext';
 import LibraryViewer from './LibraryViewer';
 import { Box, VStack } from '@chakra-ui/react';
 import BottomBar from './Navs/BottomBar';
+import Loader from './common/Loader';
 
 export default function Container() {
   const { library, setLibrary, renderKey } = useLibraryContext();
@@ -20,10 +21,13 @@ export default function Container() {
   }, []);
 
   return (
-    <VStack w="3xl" h="full" key={renderKey}>
-      <Box h="full">{library.length ? <LibraryViewer /> : <LoadLibrary />}</Box>
+    <VStack w="3xl" h="full">
+      <Box h="full" key={renderKey}>
+        {library.length ? <LibraryViewer /> : <LoadLibrary />}
+      </Box>
 
       <BottomBar />
+      <Loader />
     </VStack>
   );
 }

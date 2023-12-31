@@ -12,6 +12,8 @@ import {
   Radio,
   VStack,
   useToast,
+  Stack,
+  Box,
 } from '@chakra-ui/react';
 import { ChangeEvent, useCallback, useState } from 'react';
 import {
@@ -63,23 +65,29 @@ export default function ConfigurationModal({ isOpen, onClose }: Props) {
         <ModalHeader>Configuration</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <H2>Classifications</H2>
-          <Textarea
-            placeholder="Classifications"
-            onChange={handleChangeClassifications}
-            value={classifications}
-          />
-          <H2>Video settings</H2>
-          <RadioGroup
-            value={videoSettings}
-            onChange={handleChangeVideoSettings}
-          >
-            <VStack alignItems="flex-start">
-              <Radio value={VideoIncludeSettings.include}>Include</Radio>
-              <Radio value={VideoIncludeSettings.exclude}>Exclude</Radio>
-              <Radio value={VideoIncludeSettings.only}>Only</Radio>
-            </VStack>
-          </RadioGroup>
+          <Stack>
+            <Box>
+              <H2>Classifications</H2>
+              <Textarea
+                placeholder="Classifications"
+                onChange={handleChangeClassifications}
+                value={classifications}
+              />
+            </Box>
+            <Box>
+              <H2>Video settings</H2>
+              <RadioGroup
+                value={videoSettings}
+                onChange={handleChangeVideoSettings}
+              >
+                <VStack alignItems="flex-start">
+                  <Radio value={VideoIncludeSettings.include}>Include</Radio>
+                  <Radio value={VideoIncludeSettings.exclude}>Exclude</Radio>
+                  <Radio value={VideoIncludeSettings.only}>Only</Radio>
+                </VStack>
+              </RadioGroup>
+            </Box>
+          </Stack>
         </ModalBody>
         <ModalFooter>
           <Button onClick={handleSave}>Save</Button>

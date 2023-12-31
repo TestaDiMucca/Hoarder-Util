@@ -19,6 +19,7 @@ export default function TopBar({ children }: Props) {
       borderBottom={`1px solid ${colors.blue}`}
       background={colors.lightBlue}
       filter={`drop-shadow(0px 1px 8px ${colors.gray})`}
+      zIndex="1"
     >
       {children}
     </Box>

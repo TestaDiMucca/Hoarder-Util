@@ -19,6 +19,8 @@ const useCallComposer = <T>(graph: Graphs) => {
 
     setData1(data.data1);
     if (data.data2?.length) setData2(data.data2);
+
+    setLoading(false);
   }, [library, graph]);
 
   useEffect(() => {

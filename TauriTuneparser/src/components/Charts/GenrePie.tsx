@@ -1,6 +1,7 @@
 import { GenrePieType, Graphs } from 'src/types/types';
 import PieChart from './generics/PieChart';
 import useCallComposer from 'src/hooks/useCallComposer';
+import Spinner from '../common/Spinner';
 
 type DataPoint = {
   name: string;
@@ -18,10 +19,14 @@ const TYPE_TO_GRAPH_MAP: Record<GenrePieType, Graphs> = {
 };
 
 export default function GenrePie({ type = GenrePieType.songs }: Props) {
-  const { data1, data2 } = useCallComposer<DataPoint>(TYPE_TO_GRAPH_MAP[type]);
+  const { data1, data2, loading } = useCallComposer<DataPoint>(
+    TYPE_TO_GRAPH_MAP[type]
+  );
 
   const classData = data2;
   const genreData = data1;
+
+  if (loading) return <Spinner />;
 
   return (
     <PieChart

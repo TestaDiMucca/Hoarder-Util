@@ -7,6 +7,11 @@ const VStack: ComponentStyleConfig = {
 };
 
 const theme = extendTheme({
+  fonts: {
+    body: 'system-ui, sans-serif',
+    heading: 'Georgia, serif',
+    mono: 'Menlo, monospace',
+  },
   components: {
     VStack,
   },

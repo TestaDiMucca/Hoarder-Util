@@ -17,6 +17,8 @@ export default function BottomBar() {
       boxSizing="border-box"
       display="flex"
       borderTop={`1px solid ${colors.blue}`}
+      zIndex="1"
+      background="white"
     >
       <IconButton
         onClick={modalStates.config.on}
