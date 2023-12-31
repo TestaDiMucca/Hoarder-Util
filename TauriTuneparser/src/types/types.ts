@@ -15,5 +15,13 @@ export type MediaRecord = {
 export enum Graphs {
   genrePie = 'genrePie',
   genrePlays = 'genrePlays',
+  genreArtists = 'genreArtists',
   addedTimeline = 'addedTimeline',
+  groupingsPie = 'groupingsPie',
+}
+
+export enum GenrePieType {
+  songs = 'songs',
+  plays = 'plays',
+  artists = 'artists',
 }

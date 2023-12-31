@@ -1,4 +1,4 @@
-import { Graphs, MediaRecord } from 'src/types/types';
+import { GenrePieType, Graphs, MediaRecord } from 'src/types/types';
 import { Composer_InboundMessage } from './workers.types';
 import { handleError, handleMessage } from './workers.helpers';
 import { VideoIncludeSettings } from 'src/utils/configs';
@@ -16,10 +16,16 @@ addEventListener(
         handleMessage(getGenrePie(data, options));
         return;
       case Graphs.genrePlays:
-        handleMessage(getGenrePie(data, options, true));
+        handleMessage(getGenrePie(data, options, GenrePieType.plays));
+        return;
+      case Graphs.genreArtists:
+        handleMessage(getGenrePie(data, options, GenrePieType.artists));
         return;
       case Graphs.addedTimeline:
         handleMessage(getAddedTimeline(data, options));
+        return;
+      case Graphs.groupingsPie:
+        handleMessage(getGroupingPie(data, options));
         return;
       default:
         return handleError('Unsupported graph type');
@@ -47,6 +53,34 @@ const shouldExcludeMedia = (media: MediaRecord, opts: Options) => {
     return true;
 
   return false;
+};
+
+const getGroupingPie = (data: MediaRecord[], opts: Options) => {
+  const groupMap: CounterMap = {};
+
+  const artistDeduper = new Set<string>();
+
+  data.forEach((media) => {
+    const { grouping, artist } = media;
+
+    if (shouldExcludeMedia(media, opts)) return;
+
+    if (!grouping) return;
+
+    const groups = grouping.split(',');
+
+    groups.forEach((group) => {
+      const dedupeKey = `${group}-${artist}`;
+
+      if (artistDeduper.has(dedupeKey)) return;
+      increment(groupMap, group);
+      artistDeduper.add(dedupeKey);
+    });
+  });
+
+  return {
+    data1: sortByKey(transformToArray(groupMap), 'value', false),
+  };
 };
 
 const getAddedTimeline = (data: MediaRecord[], opts: Options) => {
@@ -85,20 +119,29 @@ const getAddedTimeline = (data: MediaRecord[], opts: Options) => {
   };
 };
 
-const getGenrePie = (data: MediaRecord[], opts: Options, byPlays = false) => {
+const getGenrePie = (
+  data: MediaRecord[],
+  opts: Options,
+  type = GenrePieType.songs
+) => {
   const { classifications } = opts;
 
   const parsedClassifications = classifications
     .split(',')
     .filter((s) => s.length > 1);
 
+  const byPlays = type === GenrePieType.plays;
+  const byArtists = type === GenrePieType.artists;
+
   const allGenres: CounterMap = {};
   const genreClass: CounterMap = {};
+
+  const artistDeduper = new Set<string>();
 
   let total = 0;
 
   data.forEach((media) => {
-    const { genre, plays } = media;
+    const { genre, plays, artist } = media;
 
     if (shouldExcludeMedia(media, opts)) return;
 
@@ -114,6 +157,12 @@ const getGenrePie = (data: MediaRecord[], opts: Options, byPlays = false) => {
     const belongsToClass = parsedClassifications.find((c) =>
       genre?.toLowerCase().includes(c.toLowerCase())
     );
+
+    if (byArtists) {
+      const dedupeKey = `${genreLabel}-${artist}`;
+      if (artistDeduper.has(dedupeKey)) return;
+      artistDeduper.add(dedupeKey);
+    }
 
     const incrementAmount = byPlays ? plays : 1;
 

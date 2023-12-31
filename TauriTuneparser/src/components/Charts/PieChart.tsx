@@ -48,30 +48,29 @@ export default function PieChart({
   return (
     <ResponsiveContainer minHeight={CHART_SIZE} minWidth={CHART_SIZE * 2}>
       <DefaultPieChart width={CHART_SIZE * 2} height={CHART_SIZE}>
-        {isNested && (
-          <Pie
-            data={upperData}
-            dataKey="value"
-            cx="50%"
-            cy="50%"
-            outerRadius={isNested ? 90 : 130}
-            fill="#8884d8"
-          >
-            <LabelList
-              dataKey="name"
-              style={{ fontSize: '60%', textTransform: 'lowercase' }}
+        <Pie
+          data={upperData}
+          dataKey="value"
+          cx="50%"
+          cy="50%"
+          outerRadius={isNested ? 90 : 130}
+          fill="#8884d8"
+        >
+          <LabelList
+            dataKey="name"
+            position="insideTop"
+            style={{ fontSize: '60%', textTransform: 'lowercase' }}
+          />
+          {upperData.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={DUSK[index % DUSK.length]}
+              fillOpacity={
+                focusedKey ? (focusedKey === entry.name ? 1 : 0.4) : 1
+              }
             />
-            {upperData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={DUSK[index % DUSK.length]}
-                fillOpacity={
-                  focusedKey ? (focusedKey === entry.name ? 1 : 0.4) : 1
-                }
-              />
-            ))}
-          </Pie>
-        )}
+          ))}
+        </Pie>
 
         {isNested && (
           <Pie

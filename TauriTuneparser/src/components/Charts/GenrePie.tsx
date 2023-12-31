@@ -1,4 +1,4 @@
-import { Graphs } from 'src/types/types';
+import { GenrePieType, Graphs } from 'src/types/types';
 import PieChart from './PieChart';
 import useCallComposer from 'src/hooks/useCallComposer';
 
@@ -8,13 +8,17 @@ type DataPoint = {
 };
 
 type Props = {
-  usePlays?: boolean;
+  type?: GenrePieType;
 };
 
-export default function GenrePie({ usePlays }: Props) {
-  const { data1, data2 } = useCallComposer<DataPoint>(
-    usePlays ? Graphs.genrePlays : Graphs.genrePie
-  );
+const TYPE_TO_GRAPH_MAP: Record<GenrePieType, Graphs> = {
+  [GenrePieType.songs]: Graphs.genrePie,
+  [GenrePieType.plays]: Graphs.genrePlays,
+  [GenrePieType.artists]: Graphs.genreArtists,
+};
+
+export default function GenrePie({ type = GenrePieType.songs }: Props) {
+  const { data1, data2 } = useCallComposer<DataPoint>(TYPE_TO_GRAPH_MAP[type]);
 
   const classData = data2;
   const genreData = data1;

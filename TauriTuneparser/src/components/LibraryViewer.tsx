@@ -2,15 +2,18 @@ import { Box, Button, useToast, Select } from '@chakra-ui/react';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 
 import useLibraryContext from 'src/hooks/useLibraryContext';
-import { Graphs } from 'src/types/types';
+import { GenrePieType, Graphs } from 'src/types/types';
 import IndexedDB from 'src/utils/database';
 import GenrePie from './Charts/GenrePie';
 import TimelineView from './Charts/TimelineView';
+import GroupingPie from './Charts/GroupingPie';
 
 const GRAPH_COMPONENT_MAP: Record<Graphs, React.ReactNode> = {
   [Graphs.genrePie]: <GenrePie />,
-  [Graphs.genrePlays]: <GenrePie usePlays />,
+  [Graphs.genrePlays]: <GenrePie type={GenrePieType.plays} />,
+  [Graphs.genreArtists]: <GenrePie type={GenrePieType.artists} />,
   [Graphs.addedTimeline]: <TimelineView />,
+  [Graphs.groupingsPie]: <GroupingPie />,
 };
 
 export default function LibraryViewer() {
@@ -40,7 +43,9 @@ export default function LibraryViewer() {
       <Select placeholder="Select a graph" onChange={handleSelectGraph}>
         <option value={Graphs.genrePie}>Genre pie</option>
         <option value={Graphs.genrePlays}>Genre plays</option>
+        <option value={Graphs.genreArtists}>Genre artists</option>
         <option value={Graphs.addedTimeline}>Added over time</option>
+        <option value={Graphs.groupingsPie}>Groupings pie</option>
       </Select>
       {selectedGraph && (
         <Box minH="40vh" w="full">
