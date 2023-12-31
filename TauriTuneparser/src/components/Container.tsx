@@ -3,12 +3,10 @@ import LoadLibrary from './LoadLibrary';
 import IndexedDB from 'src/utils/database';
 import useLibraryContext from 'src/hooks/useLibraryContext';
 import LibraryViewer from './LibraryViewer';
-import { Button, VStack } from '@chakra-ui/react';
-import ConfigurationModal from './Configuration';
-import useToggleState from 'src/hooks/useToggleState';
+import { Box, VStack } from '@chakra-ui/react';
+import BottomBar from './Navs/BottomBar';
 
 export default function Container() {
-  const modalStates = useToggleState(['config']);
   const { library, setLibrary, renderKey } = useLibraryContext();
 
   const loadData = useCallback(async () => {
@@ -22,13 +20,10 @@ export default function Container() {
   }, []);
 
   return (
-    <VStack w="full" key={renderKey}>
-      {library.length ? <LibraryViewer /> : <LoadLibrary />}
-      <Button onClick={modalStates.config.on}>Configuration</Button>
-      <ConfigurationModal
-        isOpen={modalStates.config.isOn}
-        onClose={modalStates.config.off}
-      />
+    <VStack w="3xl" h="full" key={renderKey}>
+      <Box h="full">{library.length ? <LibraryViewer /> : <LoadLibrary />}</Box>
+
+      <BottomBar />
     </VStack>
   );
 }

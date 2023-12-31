@@ -25,3 +25,10 @@ export const SEA = [
 ];
 
 export const DUSK = ['#051e3e', '#251e3e', '#451e3e', '#651e3e', '#851e3e'];
+
+export const colors = {
+  green: '#3d7c47',
+  blue: '#09868b',
+  lightBlue: '#76c1d4',
+  gray: '#f7f7f7',
+};
