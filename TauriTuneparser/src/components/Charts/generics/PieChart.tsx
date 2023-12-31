@@ -1,16 +1,15 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   PieChart as DefaultPieChart,
   Pie,
-  ResponsiveContainer,
   Tooltip,
-  LabelList,
   Legend,
   Cell,
 } from 'recharts';
-import { DUSK, FOREST } from 'src/utils/palettes';
 
-const CHART_SIZE = 400;
+import { DUSK, FOREST } from 'src/utils/palettes';
+import ResponsiveContainer from './ResponsiveContainer';
+import { CHART_SIZE } from './charts.constants';
 
 type DataPoint = {
   name: string;
@@ -46,7 +45,7 @@ export default function PieChart({
   const lowerData = outerData;
 
   return (
-    <ResponsiveContainer minHeight={CHART_SIZE} minWidth={CHART_SIZE * 2}>
+    <ResponsiveContainer>
       <DefaultPieChart width={CHART_SIZE * 2} height={CHART_SIZE}>
         <Pie
           data={upperData}
@@ -55,12 +54,9 @@ export default function PieChart({
           cy="50%"
           outerRadius={isNested ? 90 : 130}
           fill="#8884d8"
+          minAngle={2}
+          label={percentGateFormatter(0.01)}
         >
-          <LabelList
-            dataKey="name"
-            position="insideTop"
-            style={{ fontSize: '60%', textTransform: 'lowercase' }}
-          />
           {upperData.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
@@ -81,6 +77,8 @@ export default function PieChart({
             innerRadius={110}
             outerRadius={130}
             fill="#82ca9d"
+            minAngle={1}
+            label={focusedKey ? undefined : percentGateFormatter(0.03)}
           >
             {lowerData.map((entry, index) => (
               <Cell
@@ -118,3 +116,50 @@ export default function PieChart({
     </ResponsiveContainer>
   );
 }
+const RADIAN = Math.PI / 180;
+
+const percentGateFormatter = (useGate?: number) => (v: any) => {
+  const { innerRadius, outerRadius, midAngle, cx, cy } = v;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  const split = v.name.split(':');
+  const displayName = (split[1] ?? split[0]).toLowerCase();
+
+  if (useGate && v.percent < useGate) return null;
+
+  const commonProps: React.SVGAttributes<SVGTextElement> = {
+    x: x,
+    y: y,
+    textAnchor: x > cx ? 'start' : 'end',
+    fontSize: useGate ? 7 : 12,
+    fontWeight: 300,
+    dominantBaseline: 'central',
+  };
+
+  return (
+    <g>
+      <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="10 10" result="glow" />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="glow" />
+          <feMergeNode in="glow" />
+        </feMerge>
+      </filter>
+      <text
+        {...commonProps}
+        stroke="black"
+        style={{
+          filter: 'url(#glow)',
+        }}
+      >
+        {displayName}
+      </text>
+      <text {...commonProps} stroke="white">
+        {displayName}
+      </text>
+    </g>
+  );
+};

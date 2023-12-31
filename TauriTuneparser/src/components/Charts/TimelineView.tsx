@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import {
-  ResponsiveContainer,
   Tooltip,
   AreaChart,
   CartesianGrid,
@@ -13,6 +12,7 @@ import useCallComposer from 'src/hooks/useCallComposer';
 import { Graphs } from 'src/types/types';
 import { Classifications } from 'src/utils/configs';
 import { DUSK } from 'src/utils/palettes';
+import ResponsiveContainer from './generics/ResponsiveContainer';
 
 type DataPoint = {
   name: string;
@@ -35,7 +35,7 @@ export default function TimelineView() {
   );
 
   return (
-    <ResponsiveContainer minHeight={CHART_SIZE} minWidth={CHART_SIZE * 2}>
+    <ResponsiveContainer>
       <AreaChart
         width={CHART_SIZE * 2}
         height={CHART_SIZE}

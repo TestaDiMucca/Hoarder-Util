@@ -1,5 +1,5 @@
 import { GenrePieType, Graphs } from 'src/types/types';
-import PieChart from './PieChart';
+import PieChart from './generics/PieChart';
 import useCallComposer from 'src/hooks/useCallComposer';
 
 type DataPoint = {
