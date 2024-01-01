@@ -1,3 +1,0 @@
-/**
- * Microservice two
- */

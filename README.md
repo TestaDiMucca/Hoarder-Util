@@ -12,10 +12,6 @@ Terminal utility to automate some common data tasks while data hoarding, such as
 - Quickly compress some media files for storage
 - Umu
 
-## Messaging
-
-I don't remember what this was intended to be.
-
 ## Slides
 
 Host a service that collects images from a chosen directory and broadcasts them out for viewing. Intended to operate as a digital picture frame type scenario.
@@ -56,7 +52,3 @@ Supports:
 - Migrating files
 
 Has its own barebones front-end to handle user activity when connecting to the server.
-
-## Utilities client
-
-Front-end project for the utilities. Didn't really get off the ground.
