@@ -160,6 +160,7 @@ export const withFileListHandling = async <
       promises.map(
         proposed,
         async (item, i) => {
+          commitProgress.updateBar('files', i, item.fileName);
           try {
             await commitItem(
               item,
