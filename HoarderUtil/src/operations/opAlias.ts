@@ -23,13 +23,13 @@ const opAlias = async (opts: BasicFlags) => {
     case OpAliasAction.rm:
       return opsRm(alias);
     case OpAliasAction.run:
-      return opsRun(alias);
+      return opsRun(alias, opts);
     default:
       output.error(`Unsupported action "${operation}"`);
   }
 };
 
-const opsRun = async (alias: string) => {
+const opsRun = async (alias: string, opts: BasicFlags) => {
   const stored = ConfigStore.get(OP_ALIAS_STORE);
   const op: TerminalArgs = stored[alias];
 
@@ -40,6 +40,11 @@ const opsRun = async (alias: string) => {
     );
   }
 
+  const override: Partial<TerminalArgs> = {
+    commit: opts.commit,
+    verbose: opts.verbose,
+  };
+
   output.out(`Preparing to run - ${optsToStr(op)}`);
 
   const handler = operationMap[op.operation]?.handler;
@@ -49,7 +54,7 @@ const opsRun = async (alias: string) => {
       `Handler for ${op.operation} could not be found.`
     );
 
-  await handler(op);
+  await handler({ ...op, ...override });
 
   output.out(`Completed run - ${op.operation}`);
 };
