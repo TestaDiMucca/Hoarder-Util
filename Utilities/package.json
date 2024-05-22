@@ -16,7 +16,7 @@
     "express": "^4.18.2",
     "ffmetadata": "^1.5.0",
     "fs-extra": "^8.1.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "taglib2": "^2.9.6",
     "youtube-dl": "^2.0.1"
   }
