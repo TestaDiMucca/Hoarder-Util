@@ -22,6 +22,7 @@ type ActionDefinition = {
   options?: Opt[];
   args?: Argument[];
   helperText?: string;
+  aliases?: string[];
 };
 
 type OptFlags = string;
@@ -105,6 +106,7 @@ export const operationMap: OpMap<ActionDefinition> = {
   [Operations.opAlias]: {
     handler: opAlias,
     definition: ['op-alias', 'See and manage saved operation runs'],
+    aliases: ['op'],
     args: [
       new Argument('<action>', 'Which action to take').choices(
         Object.values(OpAliasAction)
@@ -146,7 +148,7 @@ export const setupProgram = (program: Command) =>
 
 export const addCommandsAndOptions = (program: Command) => {
   Object.keys(operationMap).forEach((opKey: Operations) => {
-    const { args, options, definition, handler, helperText } =
+    const { args, options, definition, handler, helperText, aliases } =
       operationMap[opKey];
     /** Necessary to keep context of options to that command */
     const cmdChain = program.command(definition[0]).description(definition[1]);
@@ -155,6 +157,8 @@ export const addCommandsAndOptions = (program: Command) => {
     [...(options ?? []), ...COMMON_OPTS].forEach((opt) =>
       cmdChain.option(opt[0], opt[1])
     );
+
+    if (aliases) cmdChain.aliases(aliases);
 
     if (helperText) cmdChain.addHelpText('after', '\n' + helperText);
 
