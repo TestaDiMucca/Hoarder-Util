@@ -4,7 +4,7 @@ import ConfigStore from '../util/confLoader';
 import { BasicFlags, TerminalArgs } from '../util/types';
 import { confAliasLsFactory, confAliasRmFactory } from './operations.helpers';
 import { msgShortcuts } from '../util/helpers';
-import { operationMap } from './operationMap';
+import { operationMap } from '../operationMap';
 
 export enum OpAliasAction {
   ls = 'ls',

@@ -66,6 +66,8 @@ const genericOutputFormatter = <T>(v: T): Record<string, string> =>
 
 /**
  * Handles scanning, confirms, logging, etc.
+ *
+ * Used as the structure for file-based ops to keep consistent operating order
  */
 export const withFileListHandling = async <
   T extends BaseFile,
@@ -199,6 +201,9 @@ export const withFileListHandling = async <
   return processedCount;
 };
 
+/**
+ * Factory for listing items in managed lists
+ */
 export const confAliasLsFactory =
   <T = string>(storeName: string, processor?: (v: T) => string) =>
   () => {
@@ -219,6 +224,9 @@ export const confAliasLsFactory =
     );
   };
 
+/**
+ * Factory for creating items in managed lists
+ */
 export const confAliasMkFactory =
   <T = string>(
     storeName: string,
@@ -236,6 +244,9 @@ export const confAliasMkFactory =
     ls();
   };
 
+/**
+ * Factory for removing items in managed lists
+ */
 export const confAliasRmFactory =
   (storeName: string, ls: () => void) => (alias: string) => {
     const key = `${storeName}.${alias}`;
@@ -249,6 +260,9 @@ export const confAliasRmFactory =
     ls();
   };
 
+/**
+ * Allows saving a run command under specified alias
+ */
 export const withAliasPersist = async (
   cb: () => Promise<void>,
   opts: TerminalArgs

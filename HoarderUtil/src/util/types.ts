@@ -57,3 +57,5 @@ export type TerminalArgs =
   | BasicFlags;
 
 export type OperationHandler = (opts?: TerminalArgs) => void | Promise<void>;
+
+export type AnyFnc = (...args: any[]) => any;

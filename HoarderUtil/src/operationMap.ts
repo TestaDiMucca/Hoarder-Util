@@ -1,27 +1,37 @@
 import { Command, Argument } from 'commander';
 import * as colors from 'colors/safe';
 
-import { OperationHandler, Operations, TerminalArgs } from '../util/types';
-import dateImg from './dateImg';
-import { umu } from './global';
-import nameToTag from './nameToTag';
-import nihao from './nihao';
-import output from '../util/output';
-import { APP_NAME, APP_VER } from '../util/constants';
-import dirTree from './dirTree';
-import pathAliases, { PathAliasAction } from './pathAliases';
-import { withAliasPersist } from './operations.helpers';
-import opAlias, { OpAliasAction } from './opAlias';
-import jpgCompress from './jpgCompress';
+import {
+  type AnyFnc,
+  OperationHandler,
+  Operations,
+  TerminalArgs,
+} from './util/types';
+import dateImg from './operations/dateImg';
+import { umu } from './operations/global';
+import nameToTag from './operations/nameToTag';
+import nihao from './operations/nihao';
+import output from './util/output';
+import { APP_NAME, APP_VER } from './util/constants';
+import dirTree from './operations/dirTree';
+import pathAliases, { PathAliasAction } from './operations/pathAliases';
+import { withAliasPersist } from './operations/operations.helpers';
+import opAlias, { OpAliasAction } from './operations/opAlias';
+import jpgCompress from './operations/jpgCompress';
 
-type AnyFnc = (...args: any[]) => any;
-
+/** Defines an operation to map into commander */
 type ActionDefinition = {
+  /** Actual method for handling this operation */
   handler: OperationHandler;
+  /** Flag that invokes the operation, with description */
   definition: Opt;
+  /** Various options the operation supports, with descriptions */
   options?: Opt[];
+  /** Arguments, which require additional user input (e.g. providing a title) */
   args?: Argument[];
+  /** Small blurb good for providing context or examples */
   helperText?: string;
+  /** Alternate flags to invoke the op */
   aliases?: string[];
 };
 

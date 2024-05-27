@@ -29,13 +29,19 @@ export default class ProgressBar<T extends NewBarArgs> {
     }
 
     this.bars = Object.keys(args).reduce<BarMap<T>>((a, barName) => {
-      a[barName as keyof T] = this.bar.create(args[barName], 0);
+      a[barName as keyof T] = this.bar.create(args[barName], 0, {
+        stepName: 'Initializing',
+      });
 
       return a;
     }, {} as BarMap<T>);
   }
 
-  public updateBar = (bar: keyof T, progress: number, stepName?: string) => {
+  public updateBar = (
+    bar: keyof T,
+    progress: number,
+    stepName: string = 'Initializing'
+  ) => {
     if (this.stopped) return;
 
     this.bars[bar].update(Number(progress.toFixed(2)), { stepName });
