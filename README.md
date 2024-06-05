@@ -1,54 +1,38 @@
-# Micro Projects
+# H-util-cli
 
+Turns some common data operations into a CLI tool, to prevent needing various third party apps and utilities and configs.
 
-Various little tools and utilities to place into assorted Raspberry Pis on the network. Or stand-alone app-ish things.
+## Prerequisites
 
-## Hoarder Util (h-util)
+Needs the `ffmpeg` tool installed to perform media type actions.
 
-Terminal utility to automate some common data tasks while data hoarding, such as:
+```bash
+brew install ffmpeg
+```
 
-- Prefixing image names by their creation date
-- Tagging video metadata by their title (e.g. with YT downloader)
-- Quickly compress some media files for storage
-- Umu
+## Usage
 
-## Slides
+To link the command to be able to run it from terminal globally, run:
 
-Host a service that collects images from a chosen directory and broadcasts them out for viewing. Intended to operate as a digital picture frame type scenario.
+```bash
+npm run update
+h-util -o nihao
+```
 
-Supports:
-- Exif reading
-- Mapbox API for GPS data
-- Shuffling data
-- Scanning directories
+If already built and just needs installation:
 
-Eventually received a lot of edits to make it work more like a slide viewer, which probably caused some mess.
+```bash
+npm run local
+```
 
-## Slideshow
+To run in-place just use as follows. Note the `--` which indicates flags should be passed to the script and not consumed by npm/ts-node.
 
-Slide show viewer for family picture viewing.
+```bash
+npm run ts-n -- -o umu
+```
 
-## Streamer
+## Test
 
-Small test for a media streaming application *Aqua+*. This is the server-side project created to experiment with uploads and media.
-
-## Streamer-client
-
-Client-side project from the streaming application *Aqua+*. Created to experiment with `preact`.
-
-## Muzaque Parser
-
-Small test application to experiment with Tauri and building a compiled front-end.
-
-Parses a library XML exported from iTunes/Apple Music, and displays basic aggregated library info via charts and pie graphs.
-
-## Utilities
-
-Pre-H-util project that's hosted somewhere and offers a small UI to perform various utility tasks.
-
-Supports:
-- Prefixing image names by their creation date
-- Downloading and tagging youtube videos
-- Migrating files
-
-Has its own barebones front-end to handle user activity when connecting to the server.
+```bash
+npm run test
+```
