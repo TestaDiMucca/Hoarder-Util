@@ -1,6 +1,11 @@
 # H-util-cli
 
-Turns some common data operations into a CLI tool, to prevent needing various third party apps and utilities and configs.
+Turns some common data operations into a CLI tool, to prevent needing various third party apps and utilities and configs. This includes:
+
+- Prefixing image names by their creation date
+- Tagging video metadata by their title (e.g. with YT downloader)
+- Quickly compress some media files for storage
+- Umu
 
 ## Prerequisites
 
