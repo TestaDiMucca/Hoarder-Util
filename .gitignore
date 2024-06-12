@@ -13,3 +13,4 @@ testData/
 *.db
 build/
 lib/
+*.bak.*
