@@ -17,6 +17,12 @@ brew install ffmpeg
 
 ## Usage
 
+This command will link and instantly invoke to test a successful installation:
+
+```bash
+npm run test-install
+```
+
 To link the command to be able to run it from terminal globally, run:
 
 ```bash
@@ -30,10 +36,12 @@ If already built and just needs installation:
 npm run local
 ```
 
+In some scenarios there may be a permissions error. [This link](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) has provided useful as it may be an npm global installations issue.
+
 To run in-place just use as follows. Note the `--` which indicates flags should be passed to the script and not consumed by npm/ts-node.
 
 ```bash
-npm run ts-n -- -o umu
+npm run ts-n -- umu
 ```
 
 ## Test
