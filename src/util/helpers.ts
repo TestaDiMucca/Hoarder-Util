@@ -228,6 +228,9 @@ export const checkSupportedExt = (
     DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext.toLowerCase())
   );
 
+/**
+ * Measure the time it takes to run a callback
+ */
 export const withTimer = async <T>(
   cb: () => Promise<T>,
   onDone: (time: number) => void
@@ -241,4 +244,26 @@ export const withTimer = async <T>(
   onDone(time);
 
   return result;
+};
+
+/**
+ * Get date metadata times for a file and apply them back when performing file op
+ * It is assumed the callback will modify or replace the file specified by the path
+ */
+export const withUTimes = async <T>(cb: () => Promise<T>, filePath: string) => {
+  let meta: null | Awaited<ReturnType<typeof fs.stat>> = null;
+
+  try {
+    meta = await fs.stat(filePath);
+  } catch (e: any) {
+    output.error(
+      `[withUTimes] could not get metadata on file to apply: ${e.message}`
+    );
+  }
+
+  const res = await cb();
+
+  if (meta) await fs.utimes(filePath, meta.atime, meta.mtime);
+
+  return res;
 };

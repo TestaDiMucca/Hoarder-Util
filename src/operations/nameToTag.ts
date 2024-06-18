@@ -1,6 +1,11 @@
 import * as colors from 'colors/safe';
 
-import { checkSupportedExt, getExt, parseStringToTags } from '../util/helpers';
+import {
+  checkSupportedExt,
+  getExt,
+  parseStringToTags,
+  withUTimes,
+} from '../util/helpers';
 import { FileOpFlags } from '../util/types';
 import output from '../util/output';
 import { DEFAULT_TAGGING_PATTERN } from '../util/constants';
@@ -55,10 +60,12 @@ const nameToTag = async (options: FileOpFlags) => {
       const fullPath = `${rootDir}/${fileName}`;
       output.log(`Attempting to tag ${colors.cyan(fileName)}`);
 
-      await writeTags(fullPath, { ...existingTags, ...tags }, (p) =>
-        onProgress('tagging', p)
-      );
-      await replaceFile(fullPath, getTempName(fullPath));
+      await withUTimes(async () => {
+        await writeTags(fullPath, { ...existingTags, ...tags }, (p) =>
+          onProgress('tagging', p)
+        );
+        await replaceFile(fullPath, getTempName(fullPath));
+      }, fullPath);
 
       output.log(`Completed ${colors.cyan(fileName)}`);
     },
