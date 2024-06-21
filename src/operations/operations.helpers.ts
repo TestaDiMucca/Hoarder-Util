@@ -84,6 +84,9 @@ export const withFileListHandling = async <
   /** Look for files */
   const fileList = await getFileListWithExcludes(absPath, options.excludes);
 
+  if (fileList.length === 0)
+    return msgShortcuts.messageAndQuit('No valid files in directory. 再見.');
+
   output.log(`Searching in ${absPath}`);
 
   const scanProgress = new ProgressBar('Scanning files', {
