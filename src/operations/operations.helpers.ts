@@ -124,6 +124,11 @@ export const withFileListHandling = async <
 
   scanProgress.stop();
 
+  if (proposed.length === 0)
+    return msgShortcuts.messageAndQuit(
+      'No files to process. Exiting. Arrivederci'
+    );
+
   /**
    * Confirm for non-YOLOers
    */
