@@ -14,4 +14,3 @@ testData/
 build/
 lib/
 *.bak.*
-dist/
