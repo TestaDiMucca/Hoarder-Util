@@ -43,14 +43,14 @@ yarn add electron-updater electron-store electron-log
 ```bash
 yarn create vite
 ```
-run this and make the project name `FrontEndApp` and `select vue` and then select `typescript`.
-After Doing that you should have a new Folder called `FrontEndApp`
+run this and make the project name `client` and `select vue` and then select `typescript`.
+After Doing that you should have a new Folder called `client`
 ![BroJenuel Screen Shot](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/smdi6mjwxf0oh9fzca98.png)
 
-After Doing that, `cd FrontEndApp` and install the dependencies by running `yarn install`
+After Doing that, `cd client` and install the dependencies by running `yarn install`
 
-## STEP 4: Setup FrontEndApp 
-Setup This file `FrontEndApp\vite.config.ts`
+## STEP 4: Setup client 
+Setup This file `client\vite.config.ts`
 ```ts
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -69,7 +69,7 @@ export default defineConfig(({ mode }) => ({
 ```
 This will configure the ouput folder to `./../dist` whenever we run build, and also going to make the server default to 3000 this is important.
 
-Go to This file `FrontEndApp\package.json` and edit the build script and lets add some options. `--emptyOutDir` will remove the folder whenever we build the FrontEndApp.
+Go to This file `client\package.json` and edit the build script and lets add some options. `--emptyOutDir` will remove the folder whenever we build the client.
 ```bash
 "scripts": {
         "dev": "vite",
@@ -84,13 +84,13 @@ dist
 node_modules
 ```
 
-After doing all that you can try running `yarn build` in `/FrontEndApp` directory if build command works properly.
+After doing all that you can try running `yarn build` in `/client` directory if build command works properly.
 
-Like in this image, it successfully built the `FrontEndApp` to this `dist folder`.
+Like in this image, it successfully built the `client` to this `dist folder`.
 
 ![showing vue js dist folder](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/fdow7a0d1ortwp6v0an1.png)
 
-I think that the setup in our `FrontEndApp`.
+I think that the setup in our `client`.
 
 ## STEP 5: Setup Electron
 Lets Create a Folder `Electron` where we can put all our Electron Typescript Files.
@@ -293,12 +293,12 @@ contextBridge.exposeInMainWorld("browserWindow", {
     "build": "tsc",
     "watch": "nodemon --exec yarn serve:electron",
     "start": "yarn nightly:rename && concurrently -k \"yarn serve:front\" \"yarn watch\"",
-    "front:setup": "cd FrontEndApp && yarn",
+    "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
-    "serve:front": "cd FrontEndApp && yarn dev",
+    "serve:front": "cd client && yarn dev",
     "serve:electron": "set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build && wait-on tcp:3000 && electron .",
-    "build:front": "cd FrontEndApp && yarn build",
+    "build:front": "cd client && yarn build",
     "electron:build": "yarn build",
     "electron:builder": "electron-builder",
     "app:build": "yarn prod:rename && yarn build:front && yarn electron:build && yarn electron:builder",

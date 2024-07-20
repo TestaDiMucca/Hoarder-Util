@@ -1,26 +1,26 @@
 {
-  "name": "electron-vue",
+  "name": "h-util-ui",
   "version": "1.0.0",
-  "description": "This is a sample",
+  "description": "UI based hoarder util",
   "main": "./dist/main.js",
   "license": "MIT",
-  "author": "BroJenuel",
+  "author": "",
   "scripts": {
     "build": "tsc",
     "watch": "nodemon --exec yarn serve:electron",
     "start": "yarn nightly:rename && concurrently -k \"yarn serve:front\" \"yarn watch\"",
-    "front:setup": "cd FrontEndApp && yarn",
+    "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
-    "serve:front": "cd FrontEndApp && yarn dev",
+    "serve:front": "cd client && yarn dev",
     "serve:electron": "set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build && wait-on tcp:3000 && electron .",
-    "build:front": "cd FrontEndApp && yarn build",
+    "build:front": "cd client && yarn build",
     "electron:build": "yarn build",
     "electron:builder": "electron-builder",
     "app:build": "yarn prod:rename && yarn build:front && yarn electron:build && yarn electron:builder",
     "app:build:nightly": "set APP_IS_NIGHTLY=yes && set APP_IS_DEV=no && yarn nightly:rename && yarn build:front && yarn electron:build && yarn electron:builder",
-    "nightly:rename": "json -I -f package.json -e \"this.name='electron-vue'\" && json -I -f package.json -e \"this.build.productName='Electron Vue Nightly'\" && json -I -f package.json -e \"this.build.appId='com.official-electron-vue.app'\"",
-    "prod:rename": "json -I -f package.json -e \"this.name='electron-vue'\" && json -I -f package.json -e \"this.build.productName='Electron Vue'\" && json -I -f package.json -e \"this.build.appId='com.official-electron-vue.app'\"",
+    "nightly:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI Nightly'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
+    "prod:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
     "sqlite-rebuild": "cd node_modules/better-sqlite3 && npm run build-release",
     "postinstall": "electron-builder install-app-deps",
@@ -42,13 +42,13 @@
     "electron-updater": "^5.3.0"
   },
   "build": {
-    "appId": "com.official-electron-vue.app",
-    "productName": "Electron Vue",
-    "copyright": "Copyright © 2022 ${author}",
+    "appId": "com.official-h-util-ui.app",
+    "productName": "H-Util UI",
+    "copyright": "Copyright © TdM",
     "publish": [
       {
         "provider": "github",
-        "owner": "Bible-Projects"
+        "owner": "TdM-JunkWare"
       }
     ],
     "nsis": {
