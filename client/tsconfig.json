@@ -7,16 +7,5 @@
     {
       "path": "./tsconfig.node.json"
     }
-  ],
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "CommonJS",
-        "outDir": "./dist",
-        "removeComments": true,
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "skipLibCheck": true
-    },
-    "include": ["Electron/**/*.ts"]
+  ]
 }
