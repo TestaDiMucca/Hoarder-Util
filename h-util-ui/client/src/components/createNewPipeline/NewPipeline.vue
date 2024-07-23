@@ -20,7 +20,7 @@ const handleModuleSelect = (moduleType: ProcessingModuleType, index: number) => 
   <div>
     <h3>New pipeline</h3>
 
-    <div v-for="(pipelineModule, i) in pipelineModules">
+    <div v-for="(_pipelineModule, i) in pipelineModules">
       <q-btn color="primary" label="Module Type">
         <q-menu>
           <q-list style="min-width: 100px">
