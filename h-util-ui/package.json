@@ -1,0 +1,77 @@
+{
+  "name": "h-util-ui",
+  "version": "1.0.0",
+  "description": "UI based hoarder util",
+  "main": "./dist/main.js",
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "build": "tsc",
+    "watch": "nodemon --exec yarn serve:electron",
+    "start": "yarn nightly:rename && concurrently -k \"yarn serve:front\" \"yarn watch\"",
+    "front:setup": "cd client && yarn",
+    "electron:setup": "yarn",
+    "setup": "yarn front:setup && yarn electron:setup",
+    "serve:front": "cd client && yarn dev",
+    "serve:electron": "set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build && wait-on tcp:3000 && electron .",
+    "build:front": "cd client && yarn build",
+    "electron:build": "yarn build",
+    "electron:builder": "electron-builder",
+    "app:build": "yarn prod:rename && yarn build:front && yarn electron:build && yarn electron:builder",
+    "app:build:nightly": "set APP_IS_NIGHTLY=yes && set APP_IS_DEV=no && yarn nightly:rename && yarn build:front && yarn electron:build && yarn electron:builder",
+    "nightly:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI Nightly'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
+    "prod:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
+    "electron-rebuild": "./node_modules/.bin/electron-rebuild",
+    "sqlite-rebuild": "cd node_modules/better-sqlite3 && npm run build-release",
+    "postinstall": "electron-builder install-app-deps",
+    "up:win": "up_using_window.cmd"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0",
+    "concurrently": "^7.6.0",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^9.7.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-vue": "^9.27.0",
+    "json": "^11.0.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^3.3.3",
+    "typescript": "^4.9.4",
+    "wait-on": "^7.0.1"
+  },
+  "dependencies": {
+    "electron-log": "^4.4.8",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^5.3.0",
+    "uuid": "^10.0.0"
+  },
+  "build": {
+    "appId": "com.official-h-util-ui.app",
+    "productName": "H-Util UI Nightly",
+    "copyright": "Copyright © TdM",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "TdM-JunkWare"
+      }
+    ],
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": true
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "extraResources": [
+      "defaults/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist_electron"
+    }
+  }
+}

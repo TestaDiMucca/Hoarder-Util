@@ -12,5 +12,9 @@
         "parseable",
         "tastique",
         "tauri"
-    ]
+    ],
+    "vetur.validation.template": false,
+    "vetur.format.defaultFormatter.html": "none",
+    // Set the default
+    "editor.formatOnSave": true,
 }

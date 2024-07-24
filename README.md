@@ -49,3 +49,7 @@ npm run ts-n -- umu
 ```bash
 npm run test
 ```
+
+# H-Util-UI
+
+See README in `/h-util-ui` for the bootstrap template's setup instructions. Special directions (if any) will be added below if necessary.
