@@ -5,25 +5,27 @@ import { v4 as uuidV4 } from 'uuid';
 import { Pipeline, TaskQueue } from './types';
 
 export type VueStore = {
-  pipelines: Record<string, Pipeline>;
-  taskQueue: TaskQueue;
-}
+    pipelines: Record<string, Pipeline>;
+    selectedPipeline: Pipeline | null;
+    taskQueue: TaskQueue;
+};
 
 /** See composition API for more info */
 const state = reactive<VueStore>({
     pipelines: {},
-    taskQueue: []
+    selectedPipeline: null,
+    taskQueue: [],
 });
 
 const upsertPipeline = (pipeline: Pipeline) => {
-  if (!pipeline.id) pipeline.id = uuidV4();
+    if (!pipeline.id) pipeline.id = uuidV4();
 
-  state.pipelines[pipeline.id] = pipeline;
+    state.pipelines[pipeline.id] = pipeline;
 };
 
 const removePipeline = (pipelineId: string) => {
-  delete state.pipelines[pipelineId];
-}
+    delete state.pipelines[pipelineId];
+};
 
 export default {
     state,

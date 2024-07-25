@@ -25,6 +25,15 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
     [ProcessingModuleType.metadata]: DatabaseExport,
 };
 
+export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
+    [ProcessingModuleType.subfolder]: 'Directory name',
+    [ProcessingModuleType.compressImage]: 'Quality (%)',
+    [ProcessingModuleType.compressVideo]: 'Quality (%)',
+    /** Temp: accept format strings in future. */
+    [ProcessingModuleType.datePrefix]: null,
+    [ProcessingModuleType.metadata]: null,
+};
+
 /** Get a default starter module */
 export const getDefaultModule = (): ProcessingModule => ({
     type: ProcessingModuleType.datePrefix,
