@@ -1,26 +1,40 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { ProcessingModule, ProcessingModuleType } from '../../utils/types';
+import store from '../../utils/store';
+import { randomUUID } from 'crypto';
+import { getDefaultModule } from '../../utils/constants';
 
 const pipelineModules = ref<ProcessingModule[]>([
-  {
-    type: ProcessingModuleType.datePrefix,
-    options: {
-      value: ''
-    }
-  }
+  getDefaultModule()
 ]);
 
 const handleModuleSelect = (moduleType: ProcessingModuleType, index: number) => {
-  alert(String(moduleType + index))
+  const targetedModule = pipelineModules.value[index];
+
+  if (!targetedModule) return;
+  targetedModule.type = moduleType;
 }
+
+const handleNewModules = () => {
+  pipelineModules.value.push(getDefaultModule())
+}
+
+const handleSavePipeline = () => {
+  store.upsertPipeline({
+    id: randomUUID(),
+    name: `Test pipeline ${Date.now()}`,
+    processingModules: pipelineModules.value
+  })
+};
 </script>
 
 <template>
   <div>
     <h3>New pipeline</h3>
 
-    <div v-for="(_pipelineModule, i) in pipelineModules">
+    <div v-for="(pipelineModule, i) in pipelineModules">
+      <span>Selected : {{ pipelineModule.type }}</span>
       <q-btn color="primary" label="Module Type">
         <q-menu>
           <q-list style="min-width: 100px">
@@ -46,6 +60,13 @@ const handleModuleSelect = (moduleType: ProcessingModuleType, index: number) => 
       </q-btn>
     </div>
 
+    <button @click="handleNewModules">
+      Add a module
+    </button>
+
+    <button @click="handleSavePipeline">
+      Save pipeline
+    </button>
   </div>
 
   <a href="#/">
