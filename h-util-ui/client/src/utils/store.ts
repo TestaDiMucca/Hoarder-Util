@@ -20,7 +20,7 @@ const state = reactive<VueStore>({
 const upsertPipeline = (pipeline: Pipeline) => {
     if (!pipeline.id) pipeline.id = uuidV4();
 
-    state.pipelines[pipeline.id] = pipeline;
+    state.pipelines[pipeline.id!] = pipeline;
 };
 
 const removePipeline = (pipelineId: string) => {

@@ -27,7 +27,6 @@
     "up:win": "up_using_window.cmd"
   },
   "devDependencies": {
-    "@types/uuid": "^10.0.0",
     "concurrently": "^7.6.0",
     "electron": "^22.0.0",
     "electron-builder": "^23.6.0",
@@ -45,8 +44,7 @@
   "dependencies": {
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
-    "electron-updater": "^5.3.0",
-    "uuid": "^10.0.0"
+    "electron-updater": "^5.3.0"
   },
   "build": {
     "appId": "com.official-h-util-ui.app",
