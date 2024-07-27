@@ -11,10 +11,16 @@ const pipelineModules = ref<ProcessingModule[]>([
   getDefaultModule()
 ]);
 
-const handleModuleUpdated = (newData: ProcessingModule, index: number) => {
+const handleModuleUpdated = (newData: ProcessingModule | null, index: number) => {
   const targetedModule = pipelineModules.value[index];
 
   if (!targetedModule) return;
+
+  /** Null data means to remove the module */
+  if (!newData) {
+    pipelineModules.value.splice(index, 1);
+    return;
+  }
   pipelineModules.value[index] = newData;
 }
 
@@ -31,25 +37,27 @@ const handleSavePipeline = () => {
 
   window.location.href = '#/';
 };
+
+const hasModules = ref(pipelineModules.value.length > 0)
 </script>
 
 <template>
-  <div>
+  <q-card class="ui-card">
     <h3>New pipeline</h3>
 
-    <div v-for="(pipelineModule, index) in pipelineModules">
+    <q-card-section v-for="(pipelineModule, index) in pipelineModules">
       <NewPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
         :index="index" />
-    </div>
+    </q-card-section>
 
     <button @click="handleNewModules">
       Add a module
     </button>
 
-    <button @click="handleSavePipeline">
+    <button :disabled="hasModules" @click="handleSavePipeline">
       Save pipeline
     </button>
-  </div>
+  </q-card>
 
   <a href="#/">
     Cancel

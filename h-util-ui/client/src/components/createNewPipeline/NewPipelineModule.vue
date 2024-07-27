@@ -6,7 +6,7 @@ import { OPTION_LABELS } from '../../utils/constants';
 interface Props {
   processingModule: ProcessingModule;
   index: number;
-  handleModuleUpdated: (newData: ProcessingModule, index: number) => void;
+  handleModuleUpdated: (newData: ProcessingModule | null, index: number) => void;
 }
 
 const props = defineProps<Props>()
@@ -34,6 +34,8 @@ const handleModuleOptionUpdated = (event: Event) => {
 
   props.handleModuleUpdated(newData, props.index);
 }
+
+const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 
 const optionLabel = ref<string | null>(OPTION_LABELS[props.processingModule.type]);
 
@@ -69,5 +71,10 @@ const optionLabel = ref<string | null>(OPTION_LABELS[props.processingModule.type
       </q-list>
     </q-menu>
   </q-btn>
+
+  <button @click="handleRemoveModule">
+    Remove module
+  </button>
+
 
 </template>
