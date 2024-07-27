@@ -2,9 +2,7 @@
  * @file Minecraft style splash text for fun
  */
 import * as colors from 'colors/safe';
-import { printfExtended } from '@common/fileops';
-
-import { randomFromArray } from '../util/helpers';
+import { printfExtended, utils } from '@common/fileops';
 
 type SplashOpts = Array<string | [string, string]>;
 
@@ -95,7 +93,7 @@ const SPLASH_OPTS: SplashOpts = [
 ];
 
 export const getSplashText = () => {
-    const result = randomFromArray(SPLASH_OPTS);
+    const result = utils.randomFromArray(SPLASH_OPTS);
 
     const isMultiPart = Array.isArray(result);
     const mainText = isMultiPart ? result[0] : result;
@@ -105,7 +103,7 @@ export const getSplashText = () => {
         len: mainText.length,
         render: () => {
             printfExtended(colors.rainbow(mainText));
-            if (subText) console.log('   ◦', colors.dim(subText));
+            if (subText) printfExtended(`   ◦ ${colors.dim(subText)}`);
         },
     };
 };
