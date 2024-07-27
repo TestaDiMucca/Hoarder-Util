@@ -1,0 +1,19 @@
+{
+     "compilerOptions": {
+          "typeRoots": ["node_modules/@types"],
+          "outDir": "lib",
+          "module": "CommonJS",
+          "target": "es2017",
+          "composite": true
+     },
+     "rootDir": "./",
+     "baseUrl": "./",
+     "paths": {
+          "*": ["./*"]
+     },
+     "references": [
+          {
+               "path": "../packages/fileops"
+          }
+     ]
+}
