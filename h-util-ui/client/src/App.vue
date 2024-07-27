@@ -8,7 +8,6 @@ const routes: Record<string, VueComponent> = {
   '/': HomePage,
   '/new': NewPipeline
 }
-
 const currentPath = ref(window.location.hash)
 
 window.addEventListener('hashchange', () => {
