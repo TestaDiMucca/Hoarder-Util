@@ -14,6 +14,6 @@ when running `build commands` make sure to add github repository property on you
 
 ## Notes
 
-Bootstrapped with [this template](https://github.com/BroJenuel/vue-3-vite-electron-typescript)
-
-Vue Material Icons reference can be found [here](https://pictogrammers.com/library/mdi/)
+- Bootstrapped with [this template](https://github.com/BroJenuel/vue-3-vite-electron-typescript)
+- Using Quasar for components/UI
+- Vue Material Icons reference can be found [here](https://pictogrammers.com/library/mdi/)

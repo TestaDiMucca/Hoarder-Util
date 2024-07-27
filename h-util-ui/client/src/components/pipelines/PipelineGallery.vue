@@ -1,17 +1,17 @@
 <template>
   <div>
-    Current pipelines: {{ Object.keys(state.pipelines).length }}
+    Current pipelines: {{ Object.keys(stateStore.pipelines).length }}
+  </div>
+
+  <div v-for="pipeline in stateStore.pipelines">
+    <PipelineItem :pipeline-item="pipeline" />
   </div>
 </template>
 
-<script lang="ts">
-  import store from '../../utils/store';
+<script setup lang="ts">
+import { ref } from 'vue';
+import PipelineItem from './PipelineItem.vue';
+import store from '../../utils/store';
 
-  export default {
-    setup() {
-      return {
-        state: store.state,
-      };
-    }
-  };
+const stateStore = ref(store.state)
 </script>

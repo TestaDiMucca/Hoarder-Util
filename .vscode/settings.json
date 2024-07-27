@@ -11,7 +11,8 @@
         "nihao",
         "parseable",
         "tastique",
-        "tauri"
+        "tauri",
+        "uuidv4"
     ],
     "vetur.validation.template": false,
     "vetur.format.defaultFormatter.html": "none",

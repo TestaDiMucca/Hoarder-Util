@@ -11,7 +11,7 @@ useQuasar().dark.set(true);
 <template>
   <h3>Visual H-Util</h3>
 
-  <q-card class="my-card">
+  <q-card class="ui-card">
     <q-card-section>
       <div>
         Welcome to visual edition

@@ -3,6 +3,7 @@
         "target": "ESNext",
         "module": "CommonJS",
         "outDir": "./dist",
+				"composite": true,
         "removeComments": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,

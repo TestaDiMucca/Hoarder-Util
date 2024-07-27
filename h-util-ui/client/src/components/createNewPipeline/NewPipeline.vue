@@ -1,52 +1,73 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { ProcessingModule, ProcessingModuleType } from '../../utils/types';
+import { computed, ref } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
+import { ProcessingModule } from '../../utils/types';
+import store from '../../utils/store';
+import { getDefaultModule } from '../../utils/constants';
+import NewPipelineModule from './NewPipelineModule.vue';
 
+/** Replace with prop if any. */
 const pipelineModules = ref<ProcessingModule[]>([
-  {
-    type: ProcessingModuleType.datePrefix,
-    options: {
-      value: ''
-    }
-  }
+  getDefaultModule()
 ]);
 
-const handleModuleSelect = (moduleType: ProcessingModuleType, index: number) => {
-  alert(String(moduleType + index))
+const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
+
+const handleModuleUpdated = (newData: ProcessingModule | null, index: number) => {
+  const targetedModule = pipelineModules.value[index];
+
+  if (!targetedModule) return;
+
+  /** Null data means to remove the module */
+  if (!newData) {
+    pipelineModules.value.splice(index, 1);
+    return;
+  }
+  pipelineModules.value[index] = newData;
 }
+
+const handleNewModules = () => {
+  pipelineModules.value.push(getDefaultModule())
+}
+
+const handleSavePipeline = () => {
+  store.upsertPipeline({
+    id: uuidv4(),
+    name: pipelineName.value,
+    processingModules: pipelineModules.value
+  })
+
+  window.location.href = '#/';
+};
+
+const handlePipelineNameUpdated = (event: Event) => {
+  const newValue = (event.target as HTMLInputElement).value;
+
+  pipelineName.value = newValue;
+}
+
+const hasNoModules = computed(() => pipelineModules.value.length === 0)
 </script>
 
 <template>
-  <div>
+  <q-card class="ui-card">
     <h3>New pipeline</h3>
 
-    <div v-for="(_pipelineModule, i) in pipelineModules">
-      <q-btn color="primary" label="Module Type">
-        <q-menu>
-          <q-list style="min-width: 100px">
-            <q-item @click="handleModuleSelect(ProcessingModuleType.subfolder, i)" clickable v-close-popup>
-              <q-item-section>Place in directory</q-item-section>
-            </q-item>
-            <q-separator />
-            <q-item @click="handleModuleSelect(ProcessingModuleType.metadata, i)" clickable v-close-popup>
-              <q-item-section>Metadata tag</q-item-section>
-            </q-item>
-            <q-item @click="handleModuleSelect(ProcessingModuleType.datePrefix, i)" clickable v-close-popup>
-              <q-item-section>Date prefix</q-item-section>
-            </q-item>
-            <q-separator />
-            <q-item @click="handleModuleSelect(ProcessingModuleType.compressImage, i)" clickable v-close-popup>
-              <q-item-section>Compress image</q-item-section>
-            </q-item>
-            <q-item @click="handleModuleSelect(ProcessingModuleType.compressVideo, i)" clickable v-close-popup>
-              <q-item-section>Compress video</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
-    </div>
+    <input type="text" v-model="pipelineName" @input="handlePipelineNameUpdated" />
 
-  </div>
+    <q-card-section v-for="(pipelineModule, index) in pipelineModules">
+      <NewPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
+        :index="index" />
+    </q-card-section>
+
+    <button @click="handleNewModules">
+      Add a module
+    </button>
+
+    <button :disabled="hasNoModules" @click="handleSavePipeline">
+      Save pipeline
+    </button>
+  </q-card>
 
   <a href="#/">
     Cancel
