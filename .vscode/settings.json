@@ -7,6 +7,7 @@
         "exif",
         "ffprobe",
         "fileops",
+        "Jkwok",
         "Muzaque",
         "muzaques",
         "nihao",
@@ -18,5 +19,5 @@
     "vetur.validation.template": false,
     "vetur.format.defaultFormatter.html": "none",
     // Set the default
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": true
 }
