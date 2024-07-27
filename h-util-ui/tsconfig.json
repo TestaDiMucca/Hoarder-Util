@@ -10,5 +10,10 @@
         "strict": true,
         "skipLibCheck": true
     },
-    "include": ["Electron/**/*.ts"]
+    "include": ["Electron/**/*.ts"],
+     "references": [
+          {
+               "path": "../packages/fileops"
+          }
+     ]
 }
