@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import HomePage from './components/HomePage.vue'
 import NewPipeline from './components/createNewPipeline/NewPipeline.vue'
 import { VueComponent } from './utils/util.types'
+import { sendMessageToMain } from './utils/helpers'
 
 const routes: Record<string, VueComponent> = {
   '/': HomePage,
@@ -17,10 +18,17 @@ window.addEventListener('hashchange', () => {
 const currentView = computed(() => {
   return routes[currentPath.value.slice(1) || '/'] ?? HomePage
 })
+
+const electronApi = ref(!!(window as any).electronIpc)
+
+onMounted(() => {
+  sendMessageToMain('App mounted')
+})
 </script>
 
 <template>
   <component :is="currentView" />
+  <span>API ipc: {{ electronApi }}</span>
 </template>
 
 <style scoped>
