@@ -19,7 +19,7 @@ const datePrefixHandler: ModuleHandler = {
 
         const newPath = filePath.replace(fileName!, newName);
 
-        console.log('rename', filePath, newPath);
+        console.log('rename', fileName, newName);
 
         await fsRename(filePath, newPath);
     },

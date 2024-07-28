@@ -3,6 +3,7 @@ import { splitFileNameFromPath } from '@common/fileops';
 
 import { ModuleHandler } from '../util/types';
 import { ProcessingModule } from '../../common/common.types';
+import { messageWindow } from '../util/ipc';
 
 type WithFileListHandlingArgs<T extends object> = {
     fileList: string[];
@@ -60,6 +61,8 @@ export const withFileListHandling = async <T extends object = {}>({
             timeTaken = time;
         },
     );
+
+    messageWindow(`Operation completed in ${timeTaken}ms`);
 
     return {
         timeTaken,

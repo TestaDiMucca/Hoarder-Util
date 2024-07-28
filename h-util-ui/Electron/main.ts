@@ -7,6 +7,8 @@ import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
 import { ClientMessageRequest, ProcessingRequest } from '../common/common.types';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
+import output from './util/output';
+import { registerMainWindow } from './util/ipc';
 
 async function createWindow() {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -27,7 +29,7 @@ async function createWindow() {
         frame: true,
     };
 
-    console.log(`[main] creating window w/ preload ${preload}`);
+    output.log(`Creating window w/ preload ${preload}`);
 
     if (appBounds !== undefined && appBounds !== null) Object.assign(BrowserWindowOptions, appBounds);
     const mainWindow = new BrowserWindow(BrowserWindowOptions);
@@ -53,6 +55,8 @@ async function createWindow() {
         mainWindow.webContents.openDevTools();
     }
 
+    registerMainWindow(mainWindow);
+
     ipcMain.handle('versions', () => {
         return {
             node: process.versions.chrome,
@@ -63,27 +67,19 @@ async function createWindow() {
         };
     });
 
-    console.log('[main] Setting up listeners');
-
-    const messageWindow = () => {
-        mainWindow.webContents.send(IpcMessageType.mainMessage, {
-            message: 'Hello',
-        });
-    };
-
     ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {
         if (d.length === 0) {
-            console.log('Bad format');
+            output.error('Bad format');
             return;
         }
-        handleRunPipeline(JSON.parse(d[0]));
-        console.log('[main] run pipeline', d);
-        messageWindow();
+
+        const pipeline = JSON.parse(d[0]) as ProcessingRequest;
+        handleRunPipeline(pipeline);
+        output.log(`Run pipeline ${pipeline.pipeline.name} w/ ${pipeline.filePaths.length} files`);
     });
 
     ipcMain.on(IpcMessageType.clientMessage, (_e, d: ClientMessageRequest) => {
         handleClientMessage(d.message);
-        messageWindow();
     });
 }
 
@@ -97,14 +93,14 @@ app.whenReady().then(async () => {
             const { installExt } = await import('./installDevTool');
             await installExt();
         } catch (e) {
-            console.log('[main] Can not install extension!');
+            output.error('Can not install extension!');
         }
     }
 
     createWindow();
 
     app.on('activate', function () {
-        console.log('[main] activated and ready');
+        output.log('Window activated and ready');
 
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
@@ -116,7 +112,7 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-    console.log('[main] All windows closed');
+    output.log('All windows closed');
     if (process.platform !== 'darwin') {
         app.quit();
     }
