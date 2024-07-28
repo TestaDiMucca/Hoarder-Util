@@ -2,7 +2,8 @@ import { IpcMessageType } from '../../../common/common.constants';
 
 type IpcRendererExposed = {
     send: <T>(channel: string, data: T) => void;
-    on: <T>(channel: string, cb: (message: T) => void) => void;
+    on: <T>(channel: string, cb: (event: unknown, message: T) => void) => void;
+    onMainMessage: any;
 };
 
 /** Returns Electron communication channel if available */

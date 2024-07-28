@@ -1,5 +1,7 @@
 export const printf = (message: string) => console.log(message);
 
+export { Output } from './output';
+
 export const randomFromArray = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
 export const chunkArray = <T>(arr: T[], chunkSize: number) => {

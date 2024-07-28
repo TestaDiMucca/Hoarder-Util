@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
 import HomePage from './components/HomePage.vue'
 import NewPipeline from './components/createNewPipeline/NewPipeline.vue'
 import { VueComponent } from './utils/util.types'
-import { sendMessageToMain } from './utils/helpers'
+import { getIpcRenderer, sendMessageToMain } from './utils/helpers'
+
+const $q = useQuasar();
 
 const routes: Record<string, VueComponent> = {
   '/': HomePage,
@@ -22,7 +25,16 @@ const currentView = computed(() => {
 const electronApi = ref(!!(window as any).electronIpc)
 
 onMounted(() => {
-  sendMessageToMain('App mounted')
+  sendMessageToMain('App mounted');
+
+  const ipcRenderer = getIpcRenderer();
+
+  /** Subscribe to main's messages */
+  ipcRenderer?.onMainMessage((payload: string) => {
+    const message = payload;
+
+    $q.notify(message ?? 'No message')
+  })
 })
 </script>
 
