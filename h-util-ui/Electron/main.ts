@@ -1,12 +1,17 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, screen } from 'electron';
 import path from 'path';
+
+import { IpcMessageType } from '../common/common.constants';
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
+import { ClientMessageRequest, ProcessingRequest } from '../common/common.types';
+import { handleClientMessage, handleRunPipeline } from './operations/handler';
 
 async function createWindow() {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const appBounds: any = appConfig.get('setting.appBounds');
+    const preload = path.join(__dirname, '/preload.js');
     const BrowserWindowOptions: BrowserWindowConstructorOptions = {
         width: 1200,
         minWidth: 900,
@@ -14,13 +19,15 @@ async function createWindow() {
         minHeight: 600,
 
         webPreferences: {
-            preload: __dirname + '/preload.js',
+            preload,
             devTools: isDev,
         },
         show: false,
         alwaysOnTop: true,
         frame: true,
     };
+
+    console.log(`[main] creating window w/ preload ${preload}`);
 
     if (appBounds !== undefined && appBounds !== null) Object.assign(BrowserWindowOptions, appBounds);
     const mainWindow = new BrowserWindow(BrowserWindowOptions);
@@ -55,6 +62,29 @@ async function createWindow() {
             name: app.getName(),
         };
     });
+
+    console.log('[main] Setting up listeners');
+
+    const messageWindow = () => {
+        mainWindow.webContents.send(IpcMessageType.mainMessage, {
+            message: 'Hello',
+        });
+    };
+
+    ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {
+        if (d.length === 0) {
+            console.log('Bad format');
+            return;
+        }
+        handleRunPipeline(JSON.parse(d[0]));
+        console.log('[main] run pipeline', d);
+        messageWindow();
+    });
+
+    ipcMain.on(IpcMessageType.clientMessage, (_e, d: ClientMessageRequest) => {
+        handleClientMessage(d.message);
+        messageWindow();
+    });
 }
 
 // This method will be called when Electron has finished
@@ -67,12 +97,15 @@ app.whenReady().then(async () => {
             const { installExt } = await import('./installDevTool');
             await installExt();
         } catch (e) {
-            console.log('Can not install extension!');
+            console.log('[main] Can not install extension!');
         }
     }
 
     createWindow();
+
     app.on('activate', function () {
+        console.log('[main] activated and ready');
+
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -83,6 +116,7 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+    console.log('[main] All windows closed');
     if (process.platform !== 'darwin') {
         app.quit();
     }

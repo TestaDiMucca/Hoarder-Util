@@ -2,6 +2,10 @@
 
 A UI version of H-util to support dragging and dropping files and pipeline building.
 
+## Setup
+
+Run `yarn setup`
+
 ## Development mode
 
 You can start development mode by running. For more scripts you can review the script property in the package.json

@@ -1,7 +1,7 @@
 import * as colors from 'colors/safe';
 import { utils } from '@common/fileops';
 
-import { getFileListWithExcludes, getUserConfirmation, msgShortcuts, validatePath, withTimer } from '../util/helpers';
+import { getFileListWithExcludes, getUserConfirmation, msgShortcuts, validatePath } from '../util/helpers';
 import output from '../util/output';
 import ConfigStore, { addKeyToStore } from '../util/confLoader';
 import { FileOpFlags, TerminalArgs } from '../util/types';
@@ -78,7 +78,7 @@ export const withFileListHandling = async <T extends BaseFile, C extends object 
     });
 
     /** Scan file names and propose changes */
-    const proposed = await withTimer(
+    const proposed = await utils.withTimer(
         () =>
             promises.reduce<string, Array<T>>(
                 fileList,
@@ -136,7 +136,7 @@ export const withFileListHandling = async <T extends BaseFile, C extends object 
         progress: 100,
     });
 
-    await withTimer(
+    await utils.withTimer(
         () =>
             promises.map(
                 proposed,

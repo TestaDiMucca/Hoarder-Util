@@ -3,17 +3,20 @@
         "target": "ESNext",
         "module": "CommonJS",
         "outDir": "./dist",
-				"composite": true,
+		"composite": true,
         "removeComments": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "skipLibCheck": true
     },
-    "include": ["Electron/**/*.ts"],
+    "include": ["Electron/**/*.ts", "common/*.ts"],
      "references": [
           {
-               "path": "../packages/fileops"
+               "path": "../packages/fileops",
+          },
+           {
+               "path": "../packages/common",
           }
      ]
 }
