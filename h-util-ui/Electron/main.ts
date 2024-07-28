@@ -63,15 +63,21 @@ async function createWindow() {
         };
     });
 
+    console.log('[main] Setting up listeners');
+
     const messageWindow = () => {
         mainWindow.webContents.send(IpcMessageType.mainMessage, {
             message: 'Hello',
         });
     };
 
-    ipcMain.on(IpcMessageType.runPipeline, (_e, d: ProcessingRequest) => {
-        handleRunPipeline(d);
-        console.log('run pipeline', d);
+    ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {
+        if (d.length === 0) {
+            console.log('Bad format');
+            return;
+        }
+        handleRunPipeline(JSON.parse(d[0]));
+        console.log('[main] run pipeline', d);
         messageWindow();
     });
 
@@ -96,6 +102,7 @@ app.whenReady().then(async () => {
     }
 
     createWindow();
+
     app.on('activate', function () {
         console.log('[main] activated and ready');
 

@@ -15,7 +15,7 @@ const datePrefixHandler: ModuleHandler = {
 
         const { fileName, rootPath: _rootPath } = splitFileNameFromPath(filePath);
 
-        const newName = `${dateStr}_${fileName}`;
+        const newName = `${dateStr}${fileName}`;
 
         const newPath = filePath.replace(fileName!, newName);
 

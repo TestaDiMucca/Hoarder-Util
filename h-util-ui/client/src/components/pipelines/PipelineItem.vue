@@ -19,7 +19,7 @@ const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], rejectReasons)
   console.log(acceptFiles);
   console.log(rejectReasons);
   if (acceptFiles.length) {
-    ipcRenderer?.send(IpcMessageType.runPipeline, { filePaths: acceptFiles.map(f => (f as any).path), pipeline: props.pipelineItem }
+    ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify({ filePaths: acceptFiles.map(f => (f as any).path), pipeline: props.pipelineItem })]
     )
   } else {
     sendMessageToMain('No files detected')
