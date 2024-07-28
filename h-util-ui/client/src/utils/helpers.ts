@@ -1,18 +1,12 @@
 import { IpcMessageType } from '../../../common/common.constants';
 
-type IpcRendererExposed = {
-    send: <T>(channel: string, data: T) => void;
-    on: <T>(channel: string, cb: (event: unknown, message: T) => void) => void;
-    onMainMessage: any;
-};
-
 /** Returns Electron communication channel if available */
 export const getIpcRenderer = () => {
-    const ipcRenderer = (window as any).electronIpc;
+    const ipcRenderer = window.electronIpc;
 
     if (!ipcRenderer) return null;
 
-    return ipcRenderer as IpcRendererExposed;
+    return ipcRenderer;
 };
 
 /** Send a string message to Electron main channel for whatever reason */
