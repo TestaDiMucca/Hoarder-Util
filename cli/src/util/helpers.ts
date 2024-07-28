@@ -4,12 +4,9 @@ import * as path from 'path';
 import PromptSync = require('prompt-sync');
 import output from './output';
 import * as prompt from 'prompt-sync';
-import { exifToJsDate } from './dateUtils';
-import { DATETAG_SUPPORTED_EXTENSIONS, PATH_ALIAS_STORE } from './constants';
+import { PATH_ALIAS_STORE } from './constants';
 import ConfigStore from './confLoader';
 import { getFileList, validDirectoryPath } from './files';
-
-const ExifImage = require('exif').ExifImage;
 
 const defaultAc = (_input: string) => ['y', 'n'];
 
@@ -79,18 +76,6 @@ export const messageAndQuit = (message: string) => {
     exitApp();
 };
 
-export const getExif = (image: string): Promise<Date | null> =>
-    new Promise((resolve) => {
-        new ExifImage({ image }, (err, exif) => {
-            if (err) resolve(null);
-
-            const originalDate = exif?.exif?.DateTimeOriginal;
-            const converted = originalDate ? exifToJsDate(originalDate) : null;
-
-            resolve(originalDate ? new Date(converted) : null);
-        });
-    });
-
 export const checkFilenameExcluded = (fileName: string, pattern: string) => {
     try {
         const re = new RegExp(pattern, 'i');
@@ -124,14 +109,6 @@ export const getFileListWithExcludes = async (dir: string, excludes?: string) =>
     return filteredList;
 };
 
-export const getExt = (fileName: string) => path.extname(fileName).replace(/\./g, '').toLowerCase();
-
-export const getDateCreated = async (filePath: string) => {
-    const stat = await fs.stat(filePath);
-
-    return stat.ctime;
-};
-
 /**
  * Do a message and something else
  */
@@ -149,7 +126,7 @@ const getAliasName = (pathStr: string) => {
 };
 
 /**
- * Return absolute path if valid
+ * Return absolute path (presumably from an input) if valid
  */
 export const validatePath = async (inputPath = '.', quit = true) => {
     const alias = getAliasName(inputPath);
@@ -188,24 +165,6 @@ export const parseStringToTags = (pattern: string, input: string): null | Record
         tags[tagName] = extractedMatches[i];
         return tags;
     }, {});
-};
-
-export const checkSupportedExt = (ext: string, categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>) =>
-    categories.some((cat) => DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext.toLowerCase()));
-
-/**
- * Measure the time it takes to run a callback
- */
-export const withTimer = async <T>(cb: () => Promise<T>, onDone: (time: number) => void) => {
-    const start = Date.now();
-
-    const result = await cb();
-
-    const time = Date.now() - start;
-
-    onDone(time);
-
-    return result;
 };
 
 /**
