@@ -2,19 +2,19 @@
   "name": "h-util-ui",
   "version": "1.0.0",
   "description": "UI based hoarder util",
-  "main": "./dist/main.js",
+  "main": "./dist/Electron/main.js",
   "license": "MIT",
   "author": "",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && yarn build:front",
     "watch": "nodemon --exec yarn serve:electron",
-    "start": "yarn nightly:rename && concurrently -k \"yarn serve:front\" \"yarn watch\"",
+    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",
     "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
     "serve:front": "cd client && yarn dev",
-    "serve:electron": "set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build && wait-on tcp:3000 && electron .",
+    "serve:electron": "set ELECTRON_ENABLE_LOGGING=1 && set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build && wait-on tcp:3000 && electron --inspect=9229 .",
     "build:front": "cd client && yarn build",
     "electron:build": "yarn build",
     "electron:builder": "electron-builder",
@@ -43,6 +43,7 @@
     "wait-on": "^7.0.1"
   },
   "dependencies": {
+    "dateformat": "^4.6.3",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0"
@@ -51,6 +52,7 @@
     "../packages/fileops",
     "../packages/common"
   ],
+  "type": "commonjs",
   "build": {
     "appId": "com.official-h-util-ui.app",
     "productName": "H-Util UI Nightly",
@@ -72,6 +74,7 @@
     "extraResources": [
       "defaults/**/*"
     ],
+    "repository": "https://github.com/TestaDiMucca/Hoarder-Util",
     "directories": {
       "buildResources": "assets",
       "output": "dist_electron"

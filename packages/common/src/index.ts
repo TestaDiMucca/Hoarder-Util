@@ -92,3 +92,18 @@ export const promises = {
         return results;
     },
 };
+
+/**
+ * Measure the time it takes to run a callback
+ */
+export const withTimer = async <T>(cb: () => Promise<T>, onDone: (time: number) => void) => {
+    const start = Date.now();
+
+    const result = await cb();
+
+    const time = Date.now() - start;
+
+    onDone(time);
+
+    return result;
+};

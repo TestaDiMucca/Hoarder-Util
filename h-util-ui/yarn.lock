@@ -13,6 +13,8 @@
   resolved "file:../packages/fileops"
   dependencies:
     "@common/common" "^1.0.0"
+    dateformat "^5.0.3"
+    exif "^0.6.0"
 
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
@@ -808,6 +810,11 @@ date-fns@^2.29.1:
   version "2.29.3"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.29.3.tgz"
   integrity sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==
+
+dateformat@^4.6.3:
+  version "4.6.3"
+  resolved "https://registry.npmjs.org/dateformat/-/dateformat-4.6.3.tgz"
+  integrity sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==
 
 debounce-fn@^4.0.0:
   version "4.0.0"
