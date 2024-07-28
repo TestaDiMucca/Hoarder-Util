@@ -5,6 +5,8 @@ import { IpcMessageType } from '../common/common.constants';
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
+import { ClientMessageRequest, ProcessingRequest } from '../common/common.types';
+import { handleClientMessage, handleRunPipeline } from './operations/handler';
 
 async function createWindow() {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -67,13 +69,14 @@ async function createWindow() {
         });
     };
 
-    ipcMain.on(IpcMessageType.processFile, (e, d) => {
-        console.log('ipc event', d);
+    ipcMain.on(IpcMessageType.runPipeline, (_e, d: ProcessingRequest) => {
+        handleRunPipeline(d);
+        console.log('run pipeline', d);
         messageWindow();
     });
 
-    ipcMain.on(IpcMessageType.clientMessage, (e, d) => {
-        console.log('ipc event', d);
+    ipcMain.on(IpcMessageType.clientMessage, (_e, d: ClientMessageRequest) => {
+        handleClientMessage(d.message);
         messageWindow();
     });
 }

@@ -69,7 +69,8 @@ export const formatDateString = (date: Date, mask = 'yy-mm-dd-HH-MM_') => {
 /** Generates a date string given a file's path */
 export const getDateStringForFile = async (
     fullPath: string,
-    useExif = false
+    useExif = false,
+    mask?: string
 ): Promise<{ dateStr?: string; exifUsed?: boolean }> => {
     const exifDate = useExif ? await getExif(fullPath) : null;
     const metaDate = await getDateCreated(fullPath);
@@ -77,11 +78,21 @@ export const getDateStringForFile = async (
     /** No dates read at all, won't modify */
     if (!exifDate && !metaDate) return {};
 
-    const dateStr = formatDateString(exifDate ?? metaDate);
+    const dateStr = formatDateString(exifDate ?? metaDate, mask);
 
     return {
         dateStr,
         exifUsed: !!exifDate,
+    };
+};
+
+export const splitFileNameFromPath = (filePath: string) => {
+    const SPLIT_CHAR = '/';
+    const split = filePath.split(SPLIT_CHAR);
+    const fileName = split.pop();
+    return {
+        fileName,
+        rootPath: split.join(SPLIT_CHAR),
     };
 };
 

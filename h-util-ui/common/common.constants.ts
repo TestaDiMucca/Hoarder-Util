@@ -1,5 +1,5 @@
 export enum IpcMessageType {
-    processFile = 'process-file',
+    runPipeline = 'run-pipeline',
     mainMessage = 'main-message',
     clientMessage = 'client-message',
 }

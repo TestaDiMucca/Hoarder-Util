@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "nodemon --exec yarn serve:electron",
-    "start": "yarn nightly:rename && concurrently --names 'FRONT,ELECTRON' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",
+    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",
     "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
@@ -42,13 +42,16 @@
     "wait-on": "^7.0.1"
   },
   "dependencies": {
+    "dateformat": "^4.6.3",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0"
   },
   "workspaces": [
-    "../packages/fileops"
+    "../packages/fileops",
+    "../packages/common"
   ],
+  "type": "commonjs",
   "build": {
     "appId": "com.official-h-util-ui.app",
     "productName": "H-Util UI Nightly",

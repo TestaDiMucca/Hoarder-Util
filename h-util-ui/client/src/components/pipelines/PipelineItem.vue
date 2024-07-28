@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
-import { ref } from 'vue';
 
 import store from '../../utils/store';
 import { IpcMessageType } from '../../../../common/common.constants';
@@ -20,7 +19,8 @@ const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], rejectReasons)
   console.log(acceptFiles);
   console.log(rejectReasons);
   if (acceptFiles.length) {
-    ipcRenderer?.send(IpcMessageType.processFile, acceptFiles.map(f => (f as any).path))
+    ipcRenderer?.send(IpcMessageType.runPipeline, { filePaths: acceptFiles.map(f => (f as any).path), pipeline: props.pipelineItem }
+    )
   } else {
     sendMessageToMain('No files detected')
   }

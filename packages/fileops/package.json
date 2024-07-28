@@ -13,7 +13,7 @@
   "description": "",
   "dependencies": {
     "@common/common": "^1.0.0",
-    "dateformat": "^5.0.3",
+    "dateformat": "^4.6.3",
     "exif": "^0.6.0"
   },
   "devDependencies": {
