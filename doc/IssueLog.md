@@ -2,7 +2,49 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
-## Runtime logging issues - Jul 27
+## Cannot find dateformat - Jul 28
+
+### Encountered
+
+After trying to mess with `tsconfig` to set up paths, running `yarn start` broke.
+
+### Searched
+
+```
+Error: Cannot find module 'dateformat'
+```
+
+### Workaround
+
+Installed dateformat directly into the ui project folder. Not ideal, but not worth investigating further at this time.
+
+As a side note, encountered this while trying to run `yarn setup` to refresh the environment:
+
+```
+error quasar@2.16.6: The engine "yarn" is incompatible with this module. Expected version ">= 1.21.1".
+error Found incompatible module
+```
+
+Worked around it instead of addressing, fed up with setup and config snags for the day.
+
+## Quasar notify not working - Jul 28
+
+### Searched
+
+```
+Vue quasar Notify not showing
+```
+
+### Fix
+
+There is a bug with the import, necessary to import from the library path:
+
+```ts
+// import { Notify } from 'quasar';
+import Notify from 'quasar/src/plugins/notify/Notify';
+```
+
+## Runtime logging issues - Jul 28
 
 ### Encountered
 
