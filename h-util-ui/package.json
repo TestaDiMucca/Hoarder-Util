@@ -30,14 +30,14 @@
   "devDependencies": {
     "concurrently": "^7.6.0",
     "electron": "^22.3.27",
-    "electron-builder": "^23.6.0",
+    "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^9.7.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-vue": "^9.27.0",
     "json": "^11.0.0",
-    "nodemon": "^2.0.20",
+    "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "typescript": "^4.9.4",
     "wait-on": "^7.0.1"
