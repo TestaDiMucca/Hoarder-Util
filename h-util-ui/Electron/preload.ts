@@ -1,9 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron/renderer';
-import { IpcMessageType } from '../common/common.constants';
 
 contextBridge.exposeInMainWorld('browserWindow', {
     versions: () => ipcRenderer.invoke('versions'),
 });
+
+/**
+ * Note: Importing common types is causing issues. Make sure to refer to IpcMessageType
+ *   until this is fixed
+ */
 
 contextBridge.exposeInMainWorld('electronIpc', {
     send: ipcRenderer.send,
@@ -12,4 +16,8 @@ contextBridge.exposeInMainWorld('electronIpc', {
         ipcRenderer.on('main-message', (_e, payload) => {
             cb(payload.message);
         }),
+    loadData: () => ipcRenderer.invoke('load-data'),
+    saveData: (data: string) => ipcRenderer.send('save-data', data),
+    onAppClose: (callback: () => void) => ipcRenderer.on('close', callback),
+    confirmAppClose: () => ipcRenderer.send('confirm-close'),
 });

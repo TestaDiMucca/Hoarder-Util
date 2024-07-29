@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import HomePage from './components/HomePage.vue'
 import NewPipeline from './components/createNewPipeline/NewPipeline.vue'
 import { VueComponent } from './utils/util.types'
-import { getIpcRenderer, sendMessageToMain } from './utils/helpers'
+import { getIpcRenderer, loadUserData, saveUserData, sendMessageToMain } from './utils/helpers'
+import store from './utils/store'
 
 const $q = useQuasar();
 
@@ -24,6 +25,7 @@ const currentView = computed(() => {
 
 const electronApi = ref(!!(window as any).electronIpc)
 
+/** App setup */
 onMounted(() => {
   sendMessageToMain('App mounted');
 
@@ -34,6 +36,12 @@ onMounted(() => {
     const message = payload;
 
     $q.notify(message ?? 'No message')
+  })
+
+  loadUserData().then(data => {
+    if (!data) return;
+
+    store.setAllPipelines(data.pipelines);
   })
 })
 </script>

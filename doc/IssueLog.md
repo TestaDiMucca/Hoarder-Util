@@ -2,6 +2,16 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
+## Messages not coming from client - Jul 29
+
+### Encountered
+
+Attempting to link up save user data
+
+### Fix
+
+Calling `invoke` on the channel should be handled with `handle` and calling `send` handled with `on`. Moreover, there are limits to the IPC serialization so it seems safer to send string data.
+
 ## Cannot resolve modules - Jul 29
 
 ### Encountered

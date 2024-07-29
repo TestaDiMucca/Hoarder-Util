@@ -8,16 +8,23 @@ moduleAliases.addAliases({
 
 import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, screen } from 'electron';
 
-import { IpcMessageType } from '../common/common.constants';
+import { IpcMessageType } from '@shared/common.constants';
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
-import { ClientMessageRequest, ProcessingRequest } from '../common/common.types';
+import { ProcessingRequest } from '@shared/common.types';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import output from './util/output';
 import { registerMainWindow } from './util/ipc';
+import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
+
+const DATA_FILE = 'data.json';
 
 async function createWindow() {
+    /** Create handlers before window is ready */
+    const dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
+    ipcMain.handle(IpcMessageType.loadData, () => loadJsonStore(dataFilePath));
+
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const appBounds: any = appConfig.get('setting.appBounds');
     const preload = path.join(__dirname, '/preload.js');
@@ -64,6 +71,10 @@ async function createWindow() {
 
     registerMainWindow(mainWindow);
 
+    mainWindow.on('close', () => {
+        mainWindow.webContents.send(IpcMessageType.close);
+    });
+
     ipcMain.handle('versions', () => {
         return {
             node: process.versions.chrome,
@@ -85,9 +96,9 @@ async function createWindow() {
         output.log(`Run pipeline ${pipeline.pipeline.name} w/ ${pipeline.filePaths.length} files`);
     });
 
-    ipcMain.on(IpcMessageType.clientMessage, (_e, d: ClientMessageRequest) => {
-        handleClientMessage(d.message);
-    });
+    ipcMain.on(IpcMessageType.confirmClose, () => app.exit());
+    ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));
+    ipcMain.on(IpcMessageType.saveData, (_, data: string[]) => saveJsonStore(dataFilePath, data[0]));
 }
 
 // This method will be called when Electron has finished
