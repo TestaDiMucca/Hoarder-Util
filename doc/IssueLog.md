@@ -2,6 +2,35 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
+## Cannot resolve modules - Jul 29
+
+### Encountered
+
+```
+[PACKARINO] Error: Cannot find module '@util/output'
+[PACKARINO] Require stack:
+[PACKARINO] - /Users/admin/Documents/GitHub/Hoarder-Util/h-util-ui/dist/Electron/operations/handler.js
+```
+
+### Searched
+
+```
+node not compiling alias
+```
+
+### Fix
+
+Used module-alias
+
+In run time, when configured in `package.json` it would hard bake the path into the TS source and not `dist/`, so dynamic construction in `main.ts` was implemented as such:
+
+```ts
+moduleAliases.addAliases({
+    '@util': path.join(__dirname, 'util'),
+    '@shared': path.join(__dirname, '../common'),
+});
+```
+
 ## Cannot find dateformat - Jul 28
 
 ### Encountered
