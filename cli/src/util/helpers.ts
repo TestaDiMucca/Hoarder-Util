@@ -1,4 +1,3 @@
-import * as fs from 'fs/promises';
 import * as path from 'path';
 
 import PromptSync = require('prompt-sync');
@@ -141,48 +140,4 @@ export const validatePath = async (inputPath = '.', quit = true) => {
 
     if (quit) msgShortcuts.errorAndQuit(`Not a valid path: ${absPath}`);
     return null;
-};
-
-export const patternToTags = (pattern: string): string[] | null =>
-    pattern.match(/%(.*?)%/g)?.map((s) => s.replace(/%/g, ''));
-
-/**
- * Does weird reg-ex-y matching stuff
- * Returns null if it fails
- */
-export const parseStringToTags = (pattern: string, input: string): null | Record<string, string> => {
-    const tagNames = patternToTags(pattern);
-
-    if (!tagNames) return null;
-
-    const inputMatcherRegExp = new RegExp(pattern.replace(/%(.*?)%/g, '(.*?)') + '$');
-    const extractedMatches = input.match(inputMatcherRegExp)?.slice(1);
-
-    if (!extractedMatches) output.log(`Skipping "${input}" - no tags found`);
-    if (!extractedMatches) return null;
-
-    return tagNames.reduce<Record<string, string>>((tags, tagName, i) => {
-        tags[tagName] = extractedMatches[i];
-        return tags;
-    }, {});
-};
-
-/**
- * Get date metadata times for a file and apply them back when performing file op
- * It is assumed the callback will modify or replace the file specified by the path
- */
-export const withUTimes = async <T>(cb: () => Promise<T>, filePath: string) => {
-    let meta: null | Awaited<ReturnType<typeof fs.stat>> = null;
-
-    try {
-        meta = await fs.stat(filePath);
-    } catch (e: any) {
-        output.error(`[withUTimes] could not get metadata on file to apply: ${e.message}`);
-    }
-
-    const res = await cb();
-
-    if (meta) await fs.utimes(filePath, meta.atime, meta.mtime);
-
-    return res;
 };

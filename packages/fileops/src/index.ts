@@ -4,8 +4,18 @@ import dateFormat from 'dateformat';
 
 import { printf, chunkArray, promises, randomFromArray, withTimer } from '@common/common';
 import { ExifResult } from './types';
+import { writeTags, readTags } from './ffmeta';
 
 const ExifImage = require('exif').ExifImage;
+
+/**
+ * Write edited files to a temp filename so we don't mess with the original
+ */
+export const getTempName = (fileName: string): string => {
+    const split = fileName.split('.');
+    split[split.length - 2] = `${split[split.length - 2]}_tmp`;
+    return split.join('.');
+};
 
 /** Media files we'll operate on for the date rename util */
 export const DATETAG_SUPPORTED_EXTENSIONS: Record<'img' | 'mov', string[]> = {
@@ -106,6 +116,64 @@ export const checkDirectoryExists = async (directoryPath: string) => {
     } catch {
         return false;
     }
+};
+
+export const patternToTags = (pattern: string): string[] | undefined =>
+    pattern.match(/%(.*?)%/g)?.map((s) => s.replace(/%/g, ''));
+
+/**
+ * Does weird reg-ex-y matching stuff
+ * Returns null if it fails
+ */
+export const parseStringToTags = (pattern: string, input: string): null | Record<string, string> => {
+    const tagNames = patternToTags(pattern);
+
+    if (!tagNames) return null;
+
+    const inputMatcherRegExp = new RegExp(pattern.replace(/%(.*?)%/g, '(.*?)') + '$');
+    const extractedMatches = input.match(inputMatcherRegExp)?.slice(1);
+
+    if (!extractedMatches) return null;
+
+    return tagNames.reduce<Record<string, string>>((tags, tagName, i) => {
+        tags[tagName] = extractedMatches[i];
+        return tags;
+    }, {});
+};
+
+/**
+ * Get date metadata times for a file and apply them back when performing file op
+ * It is assumed the callback will modify or replace the file specified by the path
+ */
+export const withUTimes = async <T>(cb: () => Promise<T>, filePath: string) => {
+    let meta: null | Awaited<ReturnType<typeof fs.stat>> = null;
+
+    try {
+        meta = await fs.stat(filePath);
+    } catch (e: any) {
+        console.error(`[withUTimes] could not get metadata on file to apply: ${e.message}`);
+    }
+
+    const res = await cb();
+
+    if (meta) await fs.utimes(filePath, meta.atime, meta.mtime);
+
+    return res;
+};
+
+export const ffMeta = {
+    writeTags,
+    readTags,
+};
+
+export const replaceExtension = (fileName: string, ext: string) =>
+    path.join(path.dirname(fileName), path.basename(fileName, path.extname(fileName)) + '.' + ext);
+
+export const removeExt = (s: string) => s.replace(/\.[^/.]+$/, '');
+
+export const replaceFile = async (oldPath: string, newPath: string) => {
+    await fs.unlink(oldPath);
+    await fs.rename(newPath, oldPath);
 };
 
 /** General utility methods carried from common */

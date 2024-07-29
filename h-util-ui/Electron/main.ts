@@ -1,5 +1,12 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, screen } from 'electron';
 import path from 'path';
+import moduleAliases from 'module-alias';
+
+moduleAliases.addAliases({
+    '@util': path.join(__dirname, 'util'),
+    '@shared': path.join(__dirname, '../common'),
+});
+
+import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, screen } from 'electron';
 
 import { IpcMessageType } from '../common/common.constants';
 import { isDev } from './config';

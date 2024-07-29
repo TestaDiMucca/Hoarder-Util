@@ -14,7 +14,9 @@
   "workspaces": [
     "packages/*",
     "packages/common",
-    "packages/fileops"
+    "packages/fileops",
+    "h-util-ui/*",
+    "cli/*"
   ],
   "dependencies": {
     "typescript": "^5.5.4"
