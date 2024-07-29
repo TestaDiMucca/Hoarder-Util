@@ -1,6 +1,8 @@
 import { promises } from '@common/common';
+import output from '@util/output';
+import { ProcessingError } from '@util/errors';
+import { ProcessingRequest } from '@shared/common.types';
 
-import { ProcessingRequest } from '../../common/common.types';
 import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
 
@@ -13,15 +15,26 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
         const moduleHandler = MODULE_MAP[processingModule.type];
 
         if (!moduleHandler) {
-            console.log(`Module ${processingModule.type} not yet supported`);
+            output.log(`Module ${processingModule.type} not yet supported`);
             return;
         }
 
-        await withFileListHandling({
-            fileList: filePaths,
-            clientOptions: processingModule.options,
-            moduleHandler,
-        });
+        output.log(`Processing module ${processingModule.type}`);
+
+        try {
+            await withFileListHandling({
+                fileList: filePaths,
+                clientOptions: processingModule.options,
+                moduleHandler,
+            });
+        } catch (e) {
+            if (e instanceof ProcessingError) {
+                // in future we may ignore
+            } else {
+                console.error('[runPipeline]', e);
+                throw e;
+            }
+        }
     });
 };
 

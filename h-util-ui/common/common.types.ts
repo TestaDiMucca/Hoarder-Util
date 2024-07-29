@@ -10,6 +10,8 @@ export type ProcessingModule = {
     type: ProcessingModuleType;
     options: {
         value: string | number;
+        ignoreErrors?: boolean;
+        skipPreviouslyFailed?: boolean;
     };
 };
 

@@ -3,6 +3,7 @@ import { checkSupportedExt, getDateStringForFile, getExt, splitFileNameFromPath 
 
 import { ModuleHandler } from '../../util/types';
 import { ProcessingError } from '../../util/errors';
+import output from '../../util/output';
 
 const datePrefixHandler: ModuleHandler = {
     handler: async (filePath, _opts) => {
@@ -16,10 +17,9 @@ const datePrefixHandler: ModuleHandler = {
         const { fileName, rootPath: _rootPath } = splitFileNameFromPath(filePath);
 
         const newName = `${dateStr}${fileName}`;
-
         const newPath = filePath.replace(fileName!, newName);
 
-        console.log('rename', fileName, newName);
+        output.log(`rename ${fileName} to ${newName}`);
 
         await fsRename(filePath, newPath);
     },

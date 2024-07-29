@@ -1,4 +1,4 @@
-import { ProcessingModule } from '../../common/common.types';
+import { ProcessingModule } from '@shared/common.types';
 
 export type ModuleOptions<T extends object> = {
     onProgress: (label: string, progress: number) => void;
@@ -8,7 +8,12 @@ export type ModuleOptions<T extends object> = {
     clientOptions?: ProcessingModule['options'];
 };
 
-export type ModuleHandler<T extends object = {}> = {
-    handler: (filePath: string, opts?: Partial<ModuleOptions<T>>) => Promise<void>;
+export type ModuleHandler<T extends object = ProcessingModule['options'], S = Record<string, any>> = {
+    handler: (filePath: string, opts: Partial<ModuleOptions<T>>, dataStore: S) => Promise<void>;
     filter: (filePath: string) => Promise<boolean>;
+};
+
+export type FileWithMeta = {
+    filePath: string;
+    previouslySkipped?: boolean;
 };
