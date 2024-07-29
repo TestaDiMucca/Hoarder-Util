@@ -1,4 +1,3 @@
-// store.js
 import { reactive } from 'vue';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -40,9 +39,14 @@ const setAllPipelines = (data: VueStore['pipelines']) => {
     state.pipelines = { ...data };
 };
 
+const setSelectedPipeline = (pipeline: Pipeline | null) => {
+    state.selectedPipeline = pipeline;
+};
+
 export default {
     state,
     upsertPipeline,
     removePipeline,
     setAllPipelines,
+    setSelectedPipeline,
 };
