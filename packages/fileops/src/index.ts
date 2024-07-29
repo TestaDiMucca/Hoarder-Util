@@ -86,6 +86,9 @@ export const getDateStringForFile = async (
     };
 };
 
+/**
+ * Split a file path into its directory and the file itself's name
+ */
 export const splitFileNameFromPath = (filePath: string) => {
     const SPLIT_CHAR = '/';
     const split = filePath.split(SPLIT_CHAR);
@@ -94,6 +97,15 @@ export const splitFileNameFromPath = (filePath: string) => {
         fileName,
         rootPath: split.join(SPLIT_CHAR),
     };
+};
+
+export const checkDirectoryExists = async (directoryPath: string) => {
+    try {
+        await fs.access(directoryPath);
+        return true;
+    } catch {
+        return false;
+    }
 };
 
 /** General utility methods carried from common */

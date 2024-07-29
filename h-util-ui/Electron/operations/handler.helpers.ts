@@ -8,8 +8,10 @@ import { messageWindow } from '../util/ipc';
 type WithFileListHandlingArgs<T extends object> = {
     fileList: string[];
     moduleHandler: ModuleHandler<T>;
+    /** Information shared across modules if necessary */
     context?: T;
     onProgress?: (label: string, progress: number) => void;
+    /** Configurations passed from the client: module configs */
     clientOptions?: ProcessingModule['options'];
 };
 
@@ -35,6 +37,7 @@ export const withFileListHandling = async <T extends object = {}>({
                     const { filter, handler } = moduleHandler;
 
                     const { fileName } = splitFileNameFromPath(filePath);
+                    // In future if option is selected, can also filter based on previous fail
                     const shouldHandle = await filter(filePath);
 
                     onProgress?.(fileName!, Math.round(i / fileList.length) * 100);
@@ -44,13 +47,20 @@ export const withFileListHandling = async <T extends object = {}>({
                         return;
                     }
 
-                    await handler(filePath, {
-                        onSuccess: () => {
-                            processed++;
+                    /** For handlers to persist any temporary data needed */
+                    const dataStore: Record<string, any> = {};
+
+                    await handler(
+                        filePath,
+                        {
+                            onSuccess: () => {
+                                processed++;
+                            },
+                            context,
+                            clientOptions,
                         },
-                        context,
-                        clientOptions,
-                    });
+                        dataStore,
+                    );
                 } catch (e) {
                     console.log(e);
                     errored++;
