@@ -1,11 +1,9 @@
 import * as colors from 'colors/safe';
-import { getExt, checkSupportedExt } from '@common/fileops';
+import { getExt, checkSupportedExt, parseStringToTags, withUTimes, ffMeta } from '@common/fileops';
 
-import { parseStringToTags, withUTimes } from '../util/helpers';
 import { FileOpFlags } from '../util/types';
 import output from '../util/output';
 import { DEFAULT_TAGGING_PATTERN } from '../util/constants';
-import { writeTags } from '../util/ffMeta';
 import { withFileListHandling } from './operations.helpers';
 import { getTempName, removeExt, replaceFile } from '../util/files';
 
@@ -37,7 +35,7 @@ const nameToTag = async (options: FileOpFlags) => {
 
             const parsedTags = parseStringToTags(pattern, removeExt(fileName));
 
-            if (!parsedTags) return;
+            if (!parsedTags) return output.log(`Skipping "${fileName}" - no tags found`);
 
             const existingTags = {};
 
@@ -53,7 +51,7 @@ const nameToTag = async (options: FileOpFlags) => {
             output.log(`Attempting to tag ${colors.cyan(fileName)}`);
 
             await withUTimes(async () => {
-                await writeTags(fullPath, { ...existingTags, ...tags }, (p) => onProgress('tagging', p));
+                await ffMeta.writeTags(fullPath, { ...existingTags, ...tags }, (p) => onProgress('tagging', p));
                 await replaceFile(fullPath, getTempName(fullPath));
             }, fullPath);
 

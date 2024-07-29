@@ -10,7 +10,7 @@ export type ModuleOptions<T extends object> = {
 
 export type ModuleHandler<T extends object = ProcessingModule['options'], S = Record<string, any>> = {
     handler: (filePath: string, opts: Partial<ModuleOptions<T>>, dataStore: S) => Promise<void>;
-    filter: (filePath: string) => Promise<boolean>;
+    filter: (filePath: string) => Promise<boolean> | boolean;
 };
 
 export type FileWithMeta = {

@@ -23,7 +23,7 @@ const datePrefixHandler: ModuleHandler = {
 
         await fsRename(filePath, newPath);
     },
-    filter: async (filePath) => checkSupportedExt(getExt(filePath), ['img', 'mov']),
+    filter: (filePath) => checkSupportedExt(getExt(filePath), ['img', 'mov']),
 };
 
 export default datePrefixHandler;
