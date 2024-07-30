@@ -11,13 +11,17 @@ interface Props { pipelineItem: Pipeline }
 const props = defineProps<Props>()
 const ipcRenderer = getIpcRenderer();
 
-const deletePipeline = () => {
-  store.removePipeline(props.pipelineItem.id!);
+const deletePipeline = () =>
+  store.removePipeline(props.pipelineItem.id!)
+
+const selectPipeline = () => {
+  store.setSelectedPipeline(props.pipelineItem)
+
+  window.location.href = '#/new';
 }
 
-const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], rejectReasons) => {
-  // console.log(acceptFiles);
-  // console.log(rejectReasons);
+
+const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
   if (acceptFiles.length) {
     ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify({ filePaths: acceptFiles.map(f => (f as any).path), pipeline: props.pipelineItem })]
     )
@@ -30,24 +34,32 @@ const { getRootProps, getInputProps, isDragActive, open: openFileSelect } = useD
 </script>
 
 <template>
-  <q-card v-bind="getRootProps()">
-    <input v-bind="getInputProps()" />
-    <p v-if="isDragActive">Drop the files here ...</p>
-    <p v-else>Drag 'n' drop some files here, or click to select files</p>
-    <div class="pipeline-item">
-      {{ pipelineItem.name }}
+  <q-card>
+    <div v-bind="getRootProps()">
+      <div class="pipeline-item">
+        {{ pipelineItem.name }}
+      </div>
+      <input v-bind="getInputProps()" />
+      <p v-if="isDragActive">Drop the files here ...</p>
+      <p v-else>Drag 'n' drop some files here, or click to select files</p>
     </div>
+
 
     <button @click="openFileSelect">Choose files</button>
 
     <button @click="deletePipeline">
       Delete
     </button>
+
+    <button @click="selectPipeline">
+      Edit
+    </button>
   </q-card>
 </template>
 
 <style scoped>
 .pipeline-item {
-  padding: 1em
+  padding: 1em;
+  font-weight: 500;
 }
 </style>

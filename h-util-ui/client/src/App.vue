@@ -2,15 +2,16 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import HomePage from './components/HomePage.vue'
-import NewPipeline from './components/createNewPipeline/NewPipeline.vue'
+import EditPipeline from './components/editPipeline/EditPipeline.vue'
 import { VueComponent } from './utils/util.types'
-import { getIpcRenderer, sendMessageToMain } from './utils/helpers'
+import { getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
+import store from './utils/store'
 
 const $q = useQuasar();
 
 const routes: Record<string, VueComponent> = {
   '/': HomePage,
-  '/new': NewPipeline
+  '/new': EditPipeline
 }
 const currentPath = ref(window.location.hash)
 
@@ -24,6 +25,7 @@ const currentView = computed(() => {
 
 const electronApi = ref(!!(window as any).electronIpc)
 
+/** App setup */
 onMounted(() => {
   sendMessageToMain('App mounted');
 
@@ -34,6 +36,12 @@ onMounted(() => {
     const message = payload;
 
     $q.notify(message ?? 'No message')
+  })
+
+  loadUserData().then(data => {
+    if (!data) return;
+
+    store.setAllPipelines(data.pipelines);
   })
 })
 </script>

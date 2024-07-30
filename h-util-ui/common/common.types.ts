@@ -21,6 +21,10 @@ export type Pipeline = {
     processingModules: ProcessingModule[];
 };
 
+export type Storage = {
+    pipelines: Record<string, Pipeline>;
+};
+
 export type TaskQueue = Array<any>;
 
 export type SpawnedTask = {
@@ -33,8 +37,4 @@ export type SpawnedTask = {
 export type ProcessingRequest = {
     pipeline: Pipeline;
     filePaths: string[];
-};
-
-export type ClientMessageRequest = {
-    message: string;
 };
