@@ -36,12 +36,12 @@ const { getRootProps, getInputProps, isDragActive, open: openFileSelect } = useD
 <template>
   <q-card>
     <div v-bind="getRootProps()">
-      <input v-bind="getInputProps()" />
-      <p v-if="isDragActive">Drop the files here ...</p>
-      <p v-else>Drag 'n' drop some files here, or click to select files</p>
       <div class="pipeline-item">
         {{ pipelineItem.name }}
       </div>
+      <input v-bind="getInputProps()" />
+      <p v-if="isDragActive">Drop the files here ...</p>
+      <p v-else>Drag 'n' drop some files here, or click to select files</p>
     </div>
 
 
@@ -59,6 +59,7 @@ const { getRootProps, getInputProps, isDragActive, open: openFileSelect } = useD
 
 <style scoped>
 .pipeline-item {
-  padding: 1em
+  padding: 1em;
+  font-weight: 500;
 }
 </style>

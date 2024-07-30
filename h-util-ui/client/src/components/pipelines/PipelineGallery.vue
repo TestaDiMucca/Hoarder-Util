@@ -12,7 +12,7 @@ const stateStore = ref(store.state)
     Current pipelines: {{ Object.keys(stateStore.pipelines).length }}
   </div>
 
-  <div v-for="pipeline in stateStore.pipelines">
+  <div v-for="pipeline in stateStore.pipelines" :key="pipeline.id!">
     <PipelineItem :pipeline-item="pipeline" />
   </div>
 </template>
