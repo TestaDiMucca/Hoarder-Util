@@ -4,6 +4,7 @@ import path from 'path';
 import { formatDateString, getFileSize, splitFileNameFromPath } from '@common/fileops';
 import { ProcessingModule } from '@shared/common.types';
 import { ModuleHandler } from '@util/types';
+import { sleep } from '@common/common';
 
 type FilesScanned = {
     scanned?: string[];
@@ -19,6 +20,8 @@ const iterateHandler: ModuleHandler<ProcessingModule['options'], FilesScanned> =
 
         const fileSize = await getFileSize(filePath);
         dataStore.scanned.push(`${fileName} (${fileSize})`);
+
+        await sleep(500);
     },
     filter: () => true,
     onDone: async (opts, dataStore) => {

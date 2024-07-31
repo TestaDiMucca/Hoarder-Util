@@ -12,6 +12,8 @@ export const chunkArray = <T>(arr: T[], chunkSize: number) => {
     return result;
 };
 
+export const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
+
 type Resolvable<R> = R | PromiseLike<R>;
 
 export const promises = {
