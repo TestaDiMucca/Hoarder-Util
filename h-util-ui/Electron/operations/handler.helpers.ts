@@ -40,10 +40,11 @@ export const withFileListHandling = async <T extends object = {}>({
                     const { filter, handler } = moduleHandler;
 
                     const { fileName } = splitFileNameFromPath(filePath);
+
                     // In future if option is selected, can also filter based on previous fail
                     const shouldHandle = await filter(filePath);
 
-                    onProgress?.(fileName!, Math.round(i / fileList.length) * 100);
+                    onProgress?.(fileName, Math.round(i / fileList.length) * 100);
 
                     if (!shouldHandle) {
                         filtered++;
@@ -53,14 +54,14 @@ export const withFileListHandling = async <T extends object = {}>({
                     await handler(
                         filePath,
                         {
-                            onSuccess: () => {
-                                processed++;
-                            },
+                            onSuccess: () => {},
                             context,
                             clientOptions,
                         },
                         dataStore,
                     );
+
+                    processed++;
                 } catch (e) {
                     console.log(e);
                     errored++;

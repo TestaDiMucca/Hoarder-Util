@@ -102,7 +102,10 @@ export const getDateStringForFile = async (
 export const splitFileNameFromPath = (filePath: string) => {
     const SPLIT_CHAR = '/';
     const split = filePath.split(SPLIT_CHAR);
-    const fileName = split.pop();
+
+    if (split.length < 1) throw new Error('Invalid name');
+
+    const fileName = split.pop()!;
     return {
         fileName,
         rootPath: split.join(SPLIT_CHAR),

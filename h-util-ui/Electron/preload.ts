@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('electronIpc', {
         ipcRenderer.on('main-message', (_e, payload) => {
             cb(payload.message);
         }),
+    onTaskProgress: (cb: (taskInfo: string) => void) => ipcRenderer.on('task-progress', (_e, payload) => cb(payload)),
     loadData: () => ipcRenderer.invoke('load-data'),
     saveData: (data: string) => ipcRenderer.send('save-data', data),
     onAppClose: (callback: () => void) => ipcRenderer.on('close', callback),

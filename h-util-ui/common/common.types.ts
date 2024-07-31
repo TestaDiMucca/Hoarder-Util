@@ -30,7 +30,8 @@ export type TaskQueue = Array<SpawnedTask>;
 
 export type SpawnedTask = {
     id?: string;
-    pipelineId: string;
+    /** Numerical id to sort */
+    pipelineId: number;
     name: string;
     /** Percentage out of 100 */
     progress: number;

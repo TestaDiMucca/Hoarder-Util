@@ -3,10 +3,13 @@ import { randomUUID } from 'crypto';
 import { promises } from '@common/common';
 import output from '@util/output';
 import { ProcessingError } from '@util/errors';
-import { ProcessingRequest } from '@shared/common.types';
+import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
 
 import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
+import { updateTaskProgress } from '@util/ipc';
+
+let pipelineId = 0;
 
 export const handleRunPipeline = async (params: ProcessingRequest) => {
     const { filePaths, pipeline } = params;
@@ -14,13 +17,33 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
     if (filePaths.length === 0 || pipeline.processingModules.length === 0) return;
 
     const taskId = randomUUID();
-    const pipelineId = pipeline.id ?? randomUUID();
+    pipelineId++;
+
+    const mainUpdate = (moduleName: string, progress: number, subName?: string, subProgress?: number) => {
+        updateTaskProgress({
+            id: taskId,
+            pipelineId,
+            name: moduleName,
+            progress,
+            subName,
+            subProgress,
+        });
+    };
+
+    let handled = 0;
+    let currentModule: ProcessingModuleType = ProcessingModuleType.iterate;
 
     await promises.each(pipeline.processingModules, async (processingModule) => {
         const moduleHandler = MODULE_MAP[processingModule.type];
 
+        currentModule = processingModule.type;
+        const handledProgress = Math.ceil((handled / pipeline.processingModules.length) * 100);
+
+        mainUpdate(currentModule, handledProgress);
+
         if (!moduleHandler) {
             output.log(`Module ${processingModule.type} not yet supported`);
+            handled++;
             return;
         }
 
@@ -32,7 +55,9 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
                 fileList: filePaths,
                 clientOptions: processingModule.options,
                 moduleHandler,
-                onProgress: (label, progress) => {},
+                onProgress: (label, progress) => {
+                    mainUpdate(currentModule, handledProgress, label, progress);
+                },
             });
         } catch (e) {
             if (e instanceof ProcessingError) {
@@ -42,7 +67,11 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
                 throw e;
             }
         }
+
+        handled++;
     });
+
+    if (handled > 0) mainUpdate(currentModule, 100);
 };
 
 export const handleClientMessage = (message: string) => {

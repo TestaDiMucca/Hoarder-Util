@@ -31,5 +31,5 @@ export const updateTaskProgress = (data: SpawnedTask) => {
         return;
     }
 
-    mainWindow.webContents.send(IpcMessageType.taskProgress, data);
+    mainWindow.webContents.send(IpcMessageType.taskProgress, JSON.stringify(data));
 };
