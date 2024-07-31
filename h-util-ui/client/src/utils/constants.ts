@@ -45,3 +45,5 @@ export const getDefaultModule = (): ProcessingModule => ({
         value: '',
     },
 });
+
+export const MAX_TASKS = 5;

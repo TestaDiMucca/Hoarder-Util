@@ -29,9 +29,9 @@ export type Storage = {
 export type TaskQueue = Array<SpawnedTask>;
 
 export type SpawnedTask = {
-    id?: string;
+    id: number;
     /** Numerical id to sort */
-    pipelineId: number;
+    pipelineId: string;
     name: string;
     /** Percentage out of 100 */
     progress: number;

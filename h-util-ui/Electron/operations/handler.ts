@@ -9,15 +9,14 @@ import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
 import { updateTaskProgress } from '@util/ipc';
 
-let pipelineId = 0;
+let taskId = 0;
 
 export const handleRunPipeline = async (params: ProcessingRequest) => {
     const { filePaths, pipeline } = params;
 
     if (filePaths.length === 0 || pipeline.processingModules.length === 0) return;
 
-    const taskId = randomUUID();
-    pipelineId++;
+    const pipelineId = pipeline.id!;
 
     const mainUpdate = (moduleName: string, progress: number, subName?: string, subProgress?: number) => {
         updateTaskProgress({
@@ -41,9 +40,10 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
 
         mainUpdate(currentModule, handledProgress);
 
+        handled++;
+
         if (!moduleHandler) {
             output.log(`Module ${processingModule.type} not yet supported`);
-            handled++;
             return;
         }
 
@@ -67,11 +67,11 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
                 throw e;
             }
         }
-
-        handled++;
     });
 
     if (handled > 0) mainUpdate(currentModule, 100);
+
+    taskId++;
 };
 
 export const handleClientMessage = (message: string) => {

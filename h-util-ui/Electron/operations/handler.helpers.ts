@@ -44,7 +44,7 @@ export const withFileListHandling = async <T extends object = {}>({
                     // In future if option is selected, can also filter based on previous fail
                     const shouldHandle = await filter(filePath);
 
-                    onProgress?.(fileName, Math.round(i / fileList.length) * 100);
+                    onProgress?.(fileName, Math.ceil((i / fileList.length) * 100));
 
                     if (!shouldHandle) {
                         filtered++;
