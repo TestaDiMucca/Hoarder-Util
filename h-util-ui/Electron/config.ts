@@ -1,3 +1,3 @@
-const FORCE_DEV = false;
+const FORCE_PROD = false;
 
-export const isDev = FORCE_DEV || process.env.APP_IS_DEV ? true : false;
+export const isDev = process.env.APP_IS_DEV && !FORCE_PROD ? true : false;

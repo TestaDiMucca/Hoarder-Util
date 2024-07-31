@@ -14,7 +14,7 @@
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
     "serve:front": "cd client && yarn dev",
-    "serve:electron": "set ELECTRON_ENABLE_LOGGING=1 && set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build && wait-on tcp:3000 && electron --inspect=9229 .",
+    "serve:electron": "set ELECTRON_ENABLE_LOGGING=1 && set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build &&  wait-on tcp:3000 && APP_IS_DEV=yes electron --inspect=9229 .",
     "build:front": "cd client && yarn build",
     "electron:build": "yarn build",
     "electron:builder": "electron-builder",
