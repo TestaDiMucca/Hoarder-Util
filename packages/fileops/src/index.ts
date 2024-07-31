@@ -161,6 +161,24 @@ export const withUTimes = async <T>(cb: () => Promise<T>, filePath: string) => {
     return res;
 };
 
+const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return '0B';
+
+    const sizes = ['b', 'kb', 'mb', 'gb', 'tb'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+
+    const value = bytes / Math.pow(1024, i);
+    const formattedValue = value.toFixed(i === 0 ? 0 : 1); // No decimals for bytes
+
+    return `${formattedValue} ${sizes[i]}`;
+};
+
+export const getFileSize = async (filePath: string) => {
+    const meta = await fs.stat(filePath);
+
+    return formatBytes(meta.size ?? 0);
+};
+
 export const ffMeta = {
     writeTags,
     readTags,

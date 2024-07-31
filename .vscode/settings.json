@@ -5,6 +5,7 @@
         "DATETAG",
         "Deduper",
         "exif",
+        "ffmeta",
         "ffprobe",
         "fileops",
         "Jkwok",

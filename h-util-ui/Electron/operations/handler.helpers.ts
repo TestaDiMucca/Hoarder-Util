@@ -32,6 +32,9 @@ export const withFileListHandling = async <T extends object = {}>({
 
     await withTimer(
         async () => {
+            /** For handlers to persist any temporary data needed */
+            const dataStore: Record<string, any> = {};
+
             await promises.map(fileList, async (filePath, i) => {
                 try {
                     const { filter, handler } = moduleHandler;
@@ -46,9 +49,6 @@ export const withFileListHandling = async <T extends object = {}>({
                         filtered++;
                         return;
                     }
-
-                    /** For handlers to persist any temporary data needed */
-                    const dataStore: Record<string, any> = {};
 
                     await handler(
                         filePath,
@@ -66,6 +66,8 @@ export const withFileListHandling = async <T extends object = {}>({
                     errored++;
                 }
             });
+
+            await moduleHandler.onDone?.({ clientOptions }, dataStore);
         },
         (time) => {
             timeTaken = time;
