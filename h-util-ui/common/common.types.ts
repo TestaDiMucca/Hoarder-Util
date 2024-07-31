@@ -4,6 +4,7 @@ export enum ProcessingModuleType {
     compressImage = 'Compress Image',
     compressVideo = 'Compress Video',
     subfolder = 'Place in Directory',
+    iterate = 'Iterate',
 }
 
 export type ProcessingModule = {
@@ -25,13 +26,16 @@ export type Storage = {
     pipelines: Record<string, Pipeline>;
 };
 
-export type TaskQueue = Array<any>;
+export type TaskQueue = Array<SpawnedTask>;
 
 export type SpawnedTask = {
     id?: string;
+    pipelineId: string;
     name: string;
     /** Percentage out of 100 */
     progress: number;
+    subName?: string;
+    subProgress?: number;
 };
 
 export type ProcessingRequest = {

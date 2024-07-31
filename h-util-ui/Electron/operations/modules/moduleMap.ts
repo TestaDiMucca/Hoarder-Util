@@ -11,4 +11,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.metadata]: nameTagHandler,
     [ProcessingModuleType.compressImage]: null,
     [ProcessingModuleType.compressVideo]: null,
+    [ProcessingModuleType.iterate]: null,
 };
