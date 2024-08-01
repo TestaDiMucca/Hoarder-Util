@@ -121,3 +121,8 @@ export const checkFilenameExcluded = (fileName: string, pattern: string) => {
         return fileName.toLowerCase().includes(pattern.toLowerCase());
     }
 };
+
+export const parseNumber = (input: string): number | null => {
+    const num = Number(input);
+    return isNaN(num) ? null : num;
+};

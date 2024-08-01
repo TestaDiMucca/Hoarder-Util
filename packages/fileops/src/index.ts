@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs/promises';
+import Jimp = require('jimp');
 import dateFormat from 'dateformat';
 
 import { printf, chunkArray, promises, randomFromArray, withTimer } from '@common/common';
@@ -176,11 +177,15 @@ const formatBytes = (bytes: number): string => {
     return `${formattedValue} ${sizes[i]}`;
 };
 
-export const getFileSize = async (filePath: string) => {
+export function getFileSize(filePath: string, format?: 'string'): Promise<string>;
+export function getFileSize(filePath: string, format: 'number'): Promise<number>;
+export async function getFileSize(filePath: string, format?: 'string' | 'number'): Promise<number | string> {
     const meta = await fs.stat(filePath);
 
+    if (format === 'number') return meta.size;
+
     return formatBytes(meta.size ?? 0);
-};
+}
 
 export const ffMeta = {
     writeTags,
@@ -195,6 +200,26 @@ export const removeExt = (s: string) => s.replace(/\.[^/.]+$/, '');
 export const replaceFile = async (oldPath: string, newPath: string) => {
     await fs.unlink(oldPath);
     await fs.rename(newPath, oldPath);
+};
+
+export const compressToLevel = async (
+    filePath: string,
+    quality: number,
+    onProgress: (label: string, progress: number) => void
+) => {
+    onProgress('reading image', 10);
+    const img = await Jimp.read(filePath);
+
+    img.quality(quality);
+
+    onProgress('writing new image', 50);
+    const newFile = getTempName(replaceExtension(filePath, 'jpg'));
+    await img.writeAsync(newFile);
+
+    onProgress('replacing image', 90);
+    await replaceFile(filePath, newFile);
+
+    onProgress('done', 100);
 };
 
 /** General utility methods carried from common */
