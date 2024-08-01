@@ -2,11 +2,11 @@ import { promises } from '@common/common';
 import output from '@util/output';
 import { ProcessingError } from '@util/errors';
 import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
+import { updateTaskProgress } from '@util/ipc';
+import { FileOptions, FileWithMeta } from '@util/types';
 
 import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
-import { updateTaskProgress } from '@util/ipc';
-import { FileOptions, FileWithMeta } from '@util/types';
 
 let taskId = 0;
 
