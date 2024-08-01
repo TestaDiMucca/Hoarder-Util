@@ -68,6 +68,10 @@ const optionLabel = ref<string | null>(OPTION_LABELS[props.processingModule.type
         <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressVideo)" clickable v-close-popup="true">
           <q-item-section>Compress video</q-item-section>
         </q-item>
+        <q-separator />
+        <q-item @click="handleModuleTypeSelect(ProcessingModuleType.iterate)" clickable v-close-popup="true">
+          <q-item-section>Iterate</q-item-section>
+        </q-item>
       </q-list>
     </q-menu>
   </q-btn>

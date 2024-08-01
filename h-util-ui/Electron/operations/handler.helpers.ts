@@ -32,40 +32,43 @@ export const withFileListHandling = async <T extends object = {}>({
 
     await withTimer(
         async () => {
+            /** For handlers to persist any temporary data needed */
+            const dataStore: Record<string, any> = {};
+
             await promises.map(fileList, async (filePath, i) => {
                 try {
                     const { filter, handler } = moduleHandler;
 
                     const { fileName } = splitFileNameFromPath(filePath);
+
                     // In future if option is selected, can also filter based on previous fail
                     const shouldHandle = await filter(filePath);
 
-                    onProgress?.(fileName!, Math.round(i / fileList.length) * 100);
+                    onProgress?.(fileName, Math.ceil((i / fileList.length) * 100));
 
                     if (!shouldHandle) {
                         filtered++;
                         return;
                     }
 
-                    /** For handlers to persist any temporary data needed */
-                    const dataStore: Record<string, any> = {};
-
                     await handler(
                         filePath,
                         {
-                            onSuccess: () => {
-                                processed++;
-                            },
+                            onSuccess: () => {},
                             context,
                             clientOptions,
                         },
                         dataStore,
                     );
+
+                    processed++;
                 } catch (e) {
                     console.log(e);
                     errored++;
                 }
             });
+
+            await moduleHandler.onDone?.({ clientOptions }, dataStore);
         },
         (time) => {
             timeTaken = time;
