@@ -8,15 +8,25 @@ export type ModuleOptions<T extends object> = {
     clientOptions?: ProcessingModule['options'];
 };
 
+export type FileOptions = {
+    filesWithMeta: FileWithMeta[];
+};
+
 export type ModuleHandler<T extends object = ProcessingModule['options'], S = Record<string, any>> = {
-    handler: (filePath: string, opts: Partial<ModuleOptions<T>>, dataStore: S) => Promise<void>;
+    handler: (fileWithMeta: FileWithMeta, opts: Partial<ModuleOptions<T>>, dataStore: S) => Promise<void>;
     /** Return false if we shouldn't process a file */
     filter: (filePath: string) => Promise<boolean> | boolean;
     /** Hook to run on done */
-    onDone?: (opts: Partial<ModuleOptions<T>>, dataStore: S) => Promise<void>;
+    onDone?: (
+        opts: Partial<ModuleOptions<T>>,
+        dataStore: S,
+        fileOptions: { filesWithMeta: FileWithMeta[] },
+    ) => Promise<void>;
 };
 
 export type FileWithMeta = {
     filePath: string;
     previouslySkipped?: boolean;
+    /** Flag for removal at end of handler */
+    remove?: boolean;
 };

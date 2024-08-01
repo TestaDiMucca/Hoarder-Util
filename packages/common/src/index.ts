@@ -111,3 +111,13 @@ export const withTimer = async <T>(cb: () => Promise<T>, onDone: (time: number) 
 
     return result;
 };
+
+export const checkFilenameExcluded = (fileName: string, pattern: string) => {
+    try {
+        const re = new RegExp(pattern, 'i');
+
+        return fileName.search(re) >= 0;
+    } catch (e) {
+        return fileName.toLowerCase().includes(pattern.toLowerCase());
+    }
+};

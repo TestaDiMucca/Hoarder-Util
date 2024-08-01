@@ -1,13 +1,12 @@
-import { randomUUID } from 'crypto';
-
 import { promises } from '@common/common';
 import output from '@util/output';
 import { ProcessingError } from '@util/errors';
 import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
+import { updateTaskProgress } from '@util/ipc';
+import { FileOptions, FileWithMeta } from '@util/types';
 
 import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
-import { updateTaskProgress } from '@util/ipc';
 
 let taskId = 0;
 
@@ -27,6 +26,15 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
             subName,
             subProgress,
         });
+    };
+
+    /** Dup it in case we wish to modify */
+    const filesWithMeta = filePaths.map<FileWithMeta>((filePath) => ({
+        filePath,
+    }));
+
+    const fileOptions: FileOptions = {
+        filesWithMeta,
     };
 
     let handled = 0;
@@ -52,7 +60,7 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
         try {
             /** One module's processing */
             await withFileListHandling({
-                fileList: filePaths,
+                fileOptions,
                 clientOptions: processingModule.options,
                 moduleHandler,
                 onProgress: (label, progress) => {

@@ -5,6 +5,7 @@ export enum ProcessingModuleType {
     compressVideo = 'Compress Video',
     subfolder = 'Place in Directory',
     iterate = 'Iterate',
+    filter = 'Filter',
 }
 
 export type ProcessingModule = {

@@ -2,6 +2,16 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
+## Filter regexp not recognizing - Aug 1
+
+### Fix
+
+When the string was passed from an html input the escape characters were not necessary.
+
+```regexp
+^\d{1,2}\D\d{1,2}\D\d{1,2}\D\d{1,2}\D\d{1,2}
+```
+
 ## Messages not coming from client - Jul 29
 
 ### Encountered

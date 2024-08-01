@@ -11,7 +11,7 @@ type FilesScanned = {
 };
 
 const iterateHandler: ModuleHandler<ProcessingModule['options'], FilesScanned> = {
-    handler: async (filePath, _, dataStore) => {
+    handler: async ({ filePath }, _, dataStore) => {
         const { fileName } = splitFileNameFromPath(filePath);
 
         if (!dataStore.scanned) dataStore.scanned = [];
@@ -24,12 +24,18 @@ const iterateHandler: ModuleHandler<ProcessingModule['options'], FilesScanned> =
         await sleep(500);
     },
     filter: () => true,
-    onDone: async (opts, dataStore) => {
+    onDone: async (opts, dataStore, fileOpts) => {
+        const firstFile = fileOpts.filesWithMeta[0];
+
+        if (!firstFile) return;
+
+        const { rootPath } = splitFileNameFromPath(firstFile.filePath);
+
         const outputName = String(opts.clientOptions?.value ?? 'ScannedOutput_%date%').replace(
             '%date%',
             formatDateString(new Date()) ?? String(Date.now()),
         );
-        const filePath = path.join(__dirname, outputName);
+        const filePath = path.join(rootPath, outputName);
 
         if (!dataStore.scanned || dataStore.scanned.length === 0) return;
 
