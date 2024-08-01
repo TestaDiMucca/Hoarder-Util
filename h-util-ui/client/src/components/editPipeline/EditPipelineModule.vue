@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { computed, defineProps, ref } from 'vue';
 import { ProcessingModule, ProcessingModuleType } from '../../utils/types';
 import { OPTION_LABELS } from '../../utils/constants';
 
@@ -16,8 +16,6 @@ const handleModuleTypeSelect = (type: ProcessingModuleType) => {
     ...props.processingModule,
     type
   }
-
-  optionLabel.value = OPTION_LABELS[type];
 
   props.handleModuleUpdated(newData, props.index);
 }
@@ -37,7 +35,7 @@ const handleModuleOptionUpdated = (event: Event) => {
 
 const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 
-const optionLabel = ref<string | null>(OPTION_LABELS[props.processingModule.type]);
+const optionLabel = computed<string | null>(() => OPTION_LABELS[props.processingModule.type]);
 
 </script>
 
@@ -53,6 +51,9 @@ const optionLabel = ref<string | null>(OPTION_LABELS[props.processingModule.type
       <q-list style="min-width: 100px">
         <q-item @click="handleModuleTypeSelect(ProcessingModuleType.subfolder)" clickable v-close-popup="true">
           <q-item-section>Place in directory</q-item-section>
+        </q-item>
+        <q-item @click="handleModuleTypeSelect(ProcessingModuleType.filter)" clickable v-close-popup="true">
+          <q-item-section>Filter file</q-item-section>
         </q-item>
         <q-separator />
         <q-item @click="handleModuleTypeSelect(ProcessingModuleType.metadata)" clickable v-close-popup="true">

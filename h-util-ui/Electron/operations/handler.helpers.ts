@@ -1,12 +1,12 @@
 import { withTimer, promises } from '@common/common';
 import { splitFileNameFromPath } from '@common/fileops';
 
-import { ModuleHandler } from '../util/types';
+import { FileOptions, ModuleHandler } from '../util/types';
 import { ProcessingModule } from '../../common/common.types';
 import { messageWindow } from '../util/ipc';
 
 type WithFileListHandlingArgs<T extends object> = {
-    fileList: string[];
+    fileOptions: FileOptions;
     moduleHandler: ModuleHandler<T>;
     /** Information shared across modules if necessary */
     context?: T;
@@ -19,7 +19,7 @@ type WithFileListHandlingArgs<T extends object> = {
  * Take a module and iterate through with its handler over files
  */
 export const withFileListHandling = async <T extends object = {}>({
-    fileList,
+    fileOptions,
     moduleHandler,
     onProgress,
     context,
@@ -35,16 +35,17 @@ export const withFileListHandling = async <T extends object = {}>({
             /** For handlers to persist any temporary data needed */
             const dataStore: Record<string, any> = {};
 
-            await promises.map(fileList, async (filePath, i) => {
+            await promises.map(fileOptions.filesWithMeta, async (fileWithMeta, i) => {
                 try {
                     const { filter, handler } = moduleHandler;
+                    const { filePath } = fileWithMeta;
 
                     const { fileName } = splitFileNameFromPath(filePath);
 
                     // In future if option is selected, can also filter based on previous fail
                     const shouldHandle = await filter(filePath);
 
-                    onProgress?.(fileName, Math.ceil((i / fileList.length) * 100));
+                    onProgress?.(fileName, Math.ceil((i / fileOptions.filesWithMeta.length) * 100));
 
                     if (!shouldHandle) {
                         filtered++;
@@ -52,7 +53,7 @@ export const withFileListHandling = async <T extends object = {}>({
                     }
 
                     await handler(
-                        filePath,
+                        fileWithMeta,
                         {
                             onSuccess: () => {},
                             context,
@@ -68,7 +69,7 @@ export const withFileListHandling = async <T extends object = {}>({
                 }
             });
 
-            await moduleHandler.onDone?.({ clientOptions }, dataStore);
+            await moduleHandler.onDone?.({ clientOptions }, dataStore, fileOptions);
         },
         (time) => {
             timeTaken = time;

@@ -11,7 +11,7 @@ import { ProcessingError } from '../../util/errors';
 type DirectoriesScanned = Record<string, boolean>;
 
 const moveDirectoryHandler: ModuleHandler<ProcessingModule['options'], DirectoriesScanned> = {
-    handler: async (filePath, opts, dataStore) => {
+    handler: async ({ filePath }, opts, dataStore) => {
         const { rootPath, fileName } = splitFileNameFromPath(filePath);
         const { clientOptions } = opts;
 

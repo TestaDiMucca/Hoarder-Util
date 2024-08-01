@@ -6,7 +6,7 @@ import { ProcessingError } from '../../util/errors';
 import output from '../../util/output';
 
 const datePrefixHandler: ModuleHandler = {
-    handler: async (filePath, _opts) => {
+    handler: async ({ filePath }, _opts) => {
         const ext = getExt(filePath);
         const isImg = checkSupportedExt(ext, ['img']);
 

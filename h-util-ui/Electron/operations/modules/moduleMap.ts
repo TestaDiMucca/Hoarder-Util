@@ -5,6 +5,7 @@ import datePrefixHandler from './datePrefix.handler';
 import moveDirectoryHandler from './moveDirectory.handler';
 import nameTagHandler from './nameTag.handler';
 import iterateHandler from './iterate.handler';
+import filterHandler from './filter.handler';
 
 export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.datePrefix]: datePrefixHandler,
@@ -13,4 +14,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.compressImage]: null,
     [ProcessingModuleType.compressVideo]: null,
     [ProcessingModuleType.iterate]: iterateHandler,
+    [ProcessingModuleType.filter]: filterHandler,
 };

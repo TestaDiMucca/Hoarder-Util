@@ -12,7 +12,7 @@ import {
 import { ModuleHandler } from '@util/types';
 
 const nameTagHandler: ModuleHandler = {
-    handler: async (filePath, _opts) => {
+    handler: async ({ filePath }, _opts) => {
         const pattern = '%artist% - %title%';
 
         const { fileName } = splitFileNameFromPath(filePath);

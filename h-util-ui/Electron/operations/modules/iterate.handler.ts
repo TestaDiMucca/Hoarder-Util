@@ -11,7 +11,7 @@ type FilesScanned = {
 };
 
 const iterateHandler: ModuleHandler<ProcessingModule['options'], FilesScanned> = {
-    handler: async (filePath, _, dataStore) => {
+    handler: async ({ filePath }, _, dataStore) => {
         const { fileName } = splitFileNameFromPath(filePath);
 
         if (!dataStore.scanned) dataStore.scanned = [];
