@@ -17,6 +17,7 @@ import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import output from './util/output';
 import { registerMainWindow } from './util/ipc';
 import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
+import { getStatsFromStore } from '@util/stats';
 
 const DATA_FILE = 'data.json';
 
@@ -24,6 +25,7 @@ async function createWindow() {
     /** Create handlers before window is ready */
     const dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
     ipcMain.handle(IpcMessageType.loadData, () => loadJsonStore(dataFilePath));
+    ipcMain.handle(IpcMessageType.getStats, () => getStatsFromStore());
 
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const appBounds: any = appConfig.get('setting.appBounds');

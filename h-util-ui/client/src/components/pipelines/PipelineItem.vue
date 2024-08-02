@@ -20,7 +20,6 @@ const selectPipeline = () => {
   window.location.href = '#/new';
 }
 
-
 const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
   if (acceptFiles.length) {
     ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify({ filePaths: acceptFiles.map(f => (f as any).path), pipeline: props.pipelineItem })]
@@ -30,7 +29,7 @@ const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons
   }
 }
 
-const { getRootProps, getInputProps, isDragActive, open: openFileSelect } = useDropzone({ onDrop });
+const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </script>
 
 <template>
@@ -43,9 +42,6 @@ const { getRootProps, getInputProps, isDragActive, open: openFileSelect } = useD
       <p v-if="isDragActive">Drop the files here ...</p>
       <p v-else>Drag 'n' drop some files here, or click to select files</p>
     </div>
-
-
-    <button @click="openFileSelect">Choose files</button>
 
     <button @click="deletePipeline">
       Delete

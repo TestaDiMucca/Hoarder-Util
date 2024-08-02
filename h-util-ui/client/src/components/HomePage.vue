@@ -3,6 +3,7 @@ import PipelineGallery from './pipelines/PipelineGallery.vue';
 import TaskList from './TaskList.vue';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import { useQuasar } from 'quasar'
+import AboutModal from './about/AboutModal.vue';
 
 /* Auto dark for now */
 useQuasar().dark.set(true);
@@ -10,6 +11,8 @@ useQuasar().dark.set(true);
 
 <template>
   <h3>Visual H-Util</h3>
+
+  <AboutModal />
 
   <q-card class="ui-card">
     <q-card-section>

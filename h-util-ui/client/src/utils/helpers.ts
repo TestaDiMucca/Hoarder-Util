@@ -1,5 +1,5 @@
 import { IpcMessageType } from '../../../common/common.constants';
-import { Storage } from '../../../common/common.types';
+import { StatsStorage, Storage } from '../../../common/common.types';
 import { VueStore } from './store';
 
 /** Returns Electron communication channel if available */
@@ -26,6 +26,14 @@ export const loadUserData = async () => {
     if (!ipcRenderer) return null;
 
     return await ipcRenderer?.loadData<Storage>();
+};
+
+export const loadStats = async () => {
+    const ipcRenderer = getIpcRenderer();
+
+    if (!ipcRenderer) return null;
+
+    return await ipcRenderer?.loadStats<StatsStorage>();
 };
 
 export const saveUserData = (data: VueStore['pipelines']) => {

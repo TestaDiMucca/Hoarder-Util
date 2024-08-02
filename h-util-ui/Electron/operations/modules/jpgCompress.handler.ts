@@ -2,6 +2,7 @@ import { parseNumber } from '@common/common';
 import { checkSupportedExt, compressToLevel, getExt, getFileSize, splitFileNameFromPath } from '@common/fileops';
 import { ProcessingError } from '@util/errors';
 import output from '@util/output';
+import { addNumericalStat } from '@util/stats';
 import { ModuleHandler } from '@util/types';
 
 const jpgCompressHandler: ModuleHandler = {
@@ -22,6 +23,8 @@ const jpgCompressHandler: ModuleHandler = {
 
         const sizeAfter = await getFileSize(filePath, 'number');
         const reduced = sizeBefore - sizeAfter;
+
+        void addNumericalStat('bytesShaved', reduced);
 
         output.log(`${fileName} reduced by ${reduced}b`);
     },
