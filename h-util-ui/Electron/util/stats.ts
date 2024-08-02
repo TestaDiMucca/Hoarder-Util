@@ -11,12 +11,18 @@ export const getStatsFromStore = () => loadJsonStore<StatsStorage>(dataFilePath)
 
 export const writeStatsToStore = (data: Partial<StatsStorage>) => saveJsonStore(dataFilePath, JSON.stringify(data));
 
-export const addPipelineRunToStats = async (pipelineName: string) => {
+const getCurrentStateCopy = async () => {
     const current = await getStatsFromStore();
 
     const newStats = {
         ...(current ?? {}),
     } as StatsStorage;
+
+    return newStats;
+};
+
+export const addPipelineRunToStats = async (pipelineName: string) => {
+    const newStats = await getCurrentStateCopy();
 
     if (!newStats.pipelineRuns) newStats.pipelineRuns = {};
 
@@ -28,11 +34,7 @@ export const addPipelineRunToStats = async (pipelineName: string) => {
 };
 
 export const addNumericalStat = async (statName: keyof Omit<StatsStorage, 'pipelineRuns'>, statAddition: number) => {
-    const current = await getStatsFromStore();
-
-    const newStats = {
-        ...(current ?? {}),
-    } as StatsStorage;
+    const newStats = await getCurrentStateCopy();
 
     newStats[statName] = newStats[statName] ? newStats[statName] + statAddition : statAddition;
 
