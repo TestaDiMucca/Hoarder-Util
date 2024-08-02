@@ -3,12 +3,25 @@ import PipelineGallery from './pipelines/PipelineGallery.vue';
 import TaskList from './TaskList.vue';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import { useQuasar } from 'quasar'
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { loadStats } from '../utils/helpers';
+import { StatsStorage } from '../../../common/common.types';
 
 /* Auto dark for now */
 useQuasar().dark.set(true);
 
 const about = ref(false);
+const stats = ref<StatsStorage | null>(null);
+
+const getStats = () => {
+  loadStats().then(data => {
+    stats.value = data;
+  })
+}
+
+watch(about, (newValue, oldValue) => {
+  if (newValue && !oldValue) getStats();
+})
 </script>
 
 <template>
@@ -27,7 +40,8 @@ const about = ref(false);
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        H-util UI
+        H-util UI:
+        {{ JSON.stringify(stats ?? {}) }}
       </q-card-section>
 
       <q-card-actions align="right">

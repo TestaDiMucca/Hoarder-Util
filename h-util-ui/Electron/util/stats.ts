@@ -1,7 +1,8 @@
-import { StatsStorage } from '@shared/common.types';
-import { app } from 'electron';
-import { loadJsonStore, saveJsonStore } from 'Electron/ElectronStore/jsonStore';
 import { join } from 'path';
+import { app } from 'electron';
+
+import { StatsStorage } from '@shared/common.types';
+import { loadJsonStore, saveJsonStore } from '../ElectronStore/jsonStore';
 
 const DATA_FILE = 'stats.json';
 const dataFilePath = join(app.getPath('userData'), DATA_FILE);

@@ -7,6 +7,7 @@ import { FileOptions, FileWithMeta } from '@util/types';
 
 import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
+import { addPipelineRunToStats } from '@util/stats';
 
 let taskId = 0;
 
@@ -78,6 +79,8 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
     });
 
     if (handled > 0) mainUpdate(currentModule, 100);
+
+    void addPipelineRunToStats(pipeline.name);
 
     taskId++;
 };
