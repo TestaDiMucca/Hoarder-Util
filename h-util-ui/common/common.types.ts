@@ -27,6 +27,13 @@ export type Storage = {
     pipelines: Record<string, Pipeline>;
 };
 
+export type StatsStorage = {
+    /** Times each pipeline got ran */
+    pipelineRuns: Record<string, number>;
+    /** Number of bytes reduced via compression modules */
+    bytesShaved: number;
+};
+
 export type TaskQueue = Array<SpawnedTask>;
 
 export type SpawnedTask = {

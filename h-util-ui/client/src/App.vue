@@ -23,8 +23,6 @@ const currentView = computed(() => {
   return routes[currentPath.value.slice(1) || '/'] ?? HomePage
 })
 
-const electronApi = ref(!!(window as any).electronIpc)
-
 /** App setup */
 onMounted(() => {
   sendMessageToMain('App mounted');
@@ -48,7 +46,6 @@ onMounted(() => {
 
 <template>
   <component :is="currentView" />
-  <span>API ipc: {{ electronApi }}</span>
 </template>
 
 <style scoped>

@@ -15,4 +15,6 @@ export enum IpcMessageType {
     close = 'close',
     /** Confirm we are ready to close */
     confirmClose = 'confirm-close',
+    /** Get stored stats */
+    getStats = 'get-stats',
 }
