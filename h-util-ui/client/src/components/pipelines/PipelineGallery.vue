@@ -6,7 +6,6 @@ import store from '../../utils/store';
 const stateStore = ref(store.state)
 </script>
 
-
 <template>
   <div>
     Current pipelines: {{ Object.keys(stateStore.pipelines).length }}
