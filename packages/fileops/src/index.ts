@@ -1,22 +1,11 @@
 import path from 'path';
 import fs from 'fs/promises';
-import Jimp = require('jimp');
 import dateFormat from 'dateformat';
 
 import { printf, chunkArray, promises, randomFromArray, withTimer } from '@common/common';
-import { ExifResult } from './types';
+
 import { writeTags, readTags } from './ffmeta';
-
-const ExifImage = require('exif').ExifImage;
-
-/**
- * Write edited files to a temp filename so we don't mess with the original
- */
-export const getTempName = (fileName: string): string => {
-    const split = fileName.split('.');
-    split[split.length - 2] = `${split[split.length - 2]}_tmp`;
-    return split.join('.');
-};
+import { getExif } from './imgTools';
 
 /** Media files we'll operate on for the date rename util */
 export const DATETAG_SUPPORTED_EXTENSIONS: Record<'img' | 'mov', string[]> = {
@@ -40,29 +29,6 @@ export const getExt = (fileName: string) => path.extname(fileName).replace(/\./g
 /** Check if an ext matches something we can handle */
 export const checkSupportedExt = (ext: string, categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>) =>
     categories.some((cat) => DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext.toLowerCase()));
-
-/**
- * Turn two colons in a date to dashes. This makes it parseable for Date()
- * @param date A date in format such as "2017:07:14 00:00:00" as returned by EXIF
- */
-export const exifToJsDate = (date: string) => {
-    let n = 0;
-    const N = 1;
-    return date.replace(/:/g, (match) => (n++ <= N ? '-' : match)).replace(' ', ':');
-};
-
-/** Extract Exif data from an image given a path. */
-export const getExif = (image: string): Promise<Date | null> =>
-    new Promise((resolve) => {
-        new ExifImage({ image }, (err: Error, exif: ExifResult) => {
-            if (err) resolve(null);
-
-            const originalDate = exif?.exif?.DateTimeOriginal;
-            const converted = originalDate ? exifToJsDate(originalDate) : null;
-
-            resolve(originalDate && converted ? new Date(converted) : null);
-        });
-    });
 
 /**
  * Formats to: 'yy-MM-DD-HH-mm'
@@ -192,35 +158,8 @@ export const ffMeta = {
     readTags,
 };
 
-export const replaceExtension = (fileName: string, ext: string) =>
-    path.join(path.dirname(fileName), path.basename(fileName, path.extname(fileName)) + '.' + ext);
-
-export const removeExt = (s: string) => s.replace(/\.[^/.]+$/, '');
-
-export const replaceFile = async (oldPath: string, newPath: string) => {
-    await fs.unlink(oldPath);
-    await fs.rename(newPath, oldPath);
-};
-
-export const compressToLevel = async (
-    filePath: string,
-    quality: number,
-    onProgress: (label: string, progress: number) => void
-) => {
-    onProgress('reading image', 10);
-    const img = await Jimp.read(filePath);
-
-    img.quality(quality);
-
-    onProgress('writing new image', 50);
-    const newFile = getTempName(replaceExtension(filePath, 'jpg'));
-    await img.writeAsync(newFile);
-
-    onProgress('replacing image', 90);
-    await replaceFile(filePath, newFile);
-
-    onProgress('done', 100);
-};
+export { getTempName, removeExt, replaceExtension, replaceFile } from './util';
+export { compressToLevel, exifToJsDate, getExif, extractText, searchForTextInImage } from './imgTools';
 
 /** General utility methods carried from common */
 export const utils = {

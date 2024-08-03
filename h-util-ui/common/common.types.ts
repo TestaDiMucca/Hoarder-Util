@@ -6,6 +6,7 @@ export enum ProcessingModuleType {
     subfolder = 'Place in Directory',
     iterate = 'Iterate',
     filter = 'Filter',
+    ocr = 'Text Parsing (OCR)',
 }
 
 export type ProcessingModule = {
@@ -32,6 +33,10 @@ export type StatsStorage = {
     pipelineRuns: Record<string, number>;
     /** Number of bytes reduced via compression modules */
     bytesShaved: number;
+    /** Amount of time spent running tasks */
+    msRan: number;
+    /** Number of words read from parser */
+    wordsParsed: number;
 };
 
 export type TaskQueue = Array<SpawnedTask>;

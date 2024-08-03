@@ -7,6 +7,7 @@ import nameTagHandler from './nameTag.handler';
 import iterateHandler from './iterate.handler';
 import filterHandler from './filter.handler';
 import jpgCompressHandler from './jpgCompress.handler';
+import ocrHandler from './ocr.handler';
 
 export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.datePrefix]: datePrefixHandler,
@@ -16,4 +17,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.compressVideo]: null,
     [ProcessingModuleType.iterate]: iterateHandler,
     [ProcessingModuleType.filter]: filterHandler,
+    [ProcessingModuleType.ocr]: ocrHandler,
 };
