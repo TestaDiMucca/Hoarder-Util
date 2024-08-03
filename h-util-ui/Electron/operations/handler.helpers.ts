@@ -47,8 +47,9 @@ export const withFileListHandling = async <T extends object = {}>({
 
                     onProgress?.(fileName, Math.ceil((i / fileOptions.filesWithMeta.length) * 100));
 
-                    if (!shouldHandle) {
+                    if (!shouldHandle || (clientOptions?.skipPreviouslyFailed && fileWithMeta.previouslySkipped)) {
                         filtered++;
+                        if (clientOptions?.skipPreviouslyFailed) fileWithMeta.previouslySkipped = true;
                         return;
                     }
 
@@ -66,6 +67,8 @@ export const withFileListHandling = async <T extends object = {}>({
                 } catch (e) {
                     console.log(e);
                     errored++;
+
+                    if (!clientOptions?.ignoreErrors) throw e;
                 }
             });
 

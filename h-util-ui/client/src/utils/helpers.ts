@@ -2,6 +2,17 @@ import { IpcMessageType } from '../../../common/common.constants';
 import { StatsStorage, Storage } from '../../../common/common.types';
 import { VueStore } from './store';
 
+/**
+ * Sometimes structuredClone throws an error, catch and retry with caveman method
+ */
+export const cloneObject = <T extends object>(obj: T) => {
+    try {
+        return structuredClone(obj);
+    } catch (e) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+};
+
 /** Returns Electron communication channel if available */
 export const getIpcRenderer = () => {
     const ipcRenderer = window.electronIpc;

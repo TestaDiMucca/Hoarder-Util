@@ -34,7 +34,7 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
 <template>
   <q-card>
-    <div v-bind="getRootProps()">
+    <div v-bind="getRootProps()" class="cursor-pointer">
       <div class="pipeline-item">
         {{ pipelineItem.name }}
       </div>
