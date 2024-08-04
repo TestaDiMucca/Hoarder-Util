@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import { ProcessingModule } from '../../utils/types';
-import store from '../../utils/store';
-import { getDefaultModule } from '../../utils/constants';
+import { ProcessingModule } from '@utils/types';
+import store from '@utils/store';
+import { getDefaultModule } from '@utils/constants';
 import EditPipelineModule from './EditPipelineModule.vue';
 
 /** Replace with prop if any. */

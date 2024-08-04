@@ -1,4 +1,4 @@
-import { checkSupportedExt, getExt, searchForTextInImage } from '@common/fileops';
+import { checkSupportedExt, searchForTextInImage } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
 
 const ocrHandler: ModuleHandler = {
@@ -17,7 +17,7 @@ const ocrHandler: ModuleHandler = {
         const inverse = opts.clientOptions?.inverse;
         if ((!hasMatches && !inverse) || (hasMatches && inverse)) fileWithMeta.remove = true;
     },
-    filter: (fileName) => checkSupportedExt(getExt(fileName), ['img']),
+    filter: (fileName) => checkSupportedExt(fileName, ['img'], true),
 };
 
 export default ocrHandler;

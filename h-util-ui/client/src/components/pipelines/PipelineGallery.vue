@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import PipelineItem from './PipelineItem.vue';
-import store from '../../utils/store';
+import store from '@utils/store';
 
 const stateStore = ref(store.state)
 </script>

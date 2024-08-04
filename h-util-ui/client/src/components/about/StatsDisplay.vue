@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { StatsStorage } from '../../../../common/common.types';
+import { StatsStorage } from '@shared/common.types';
 
 const { stats } = defineProps<{ stats: StatsStorage }>()
 

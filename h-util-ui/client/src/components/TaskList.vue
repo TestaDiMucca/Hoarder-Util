@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { getIpcRenderer } from '../utils/helpers';
-import { SpawnedTask } from '../utils/types';
-import { MAX_TASKS } from '../utils/constants';
-import store from '../utils/store';
+import { getIpcRenderer } from '@utils/helpers';
+import { SpawnedTask } from '@utils/types';
+import { MAX_TASKS } from '@utils/constants';
+import store from '@utils/store';
 
 const existingTasks = ref<Record<number, SpawnedTask>>({});
 const lowestId = ref<number>(0);

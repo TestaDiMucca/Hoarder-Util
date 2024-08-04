@@ -1,7 +1,6 @@
 import {
     checkSupportedExt,
     ffMeta,
-    getExt,
     getTempName,
     parseStringToTags,
     removeExt,
@@ -26,7 +25,7 @@ const nameTagHandler: ModuleHandler = {
             await replaceFile(filePath, getTempName(filePath));
         }, filePath);
     },
-    filter: (filePath) => checkSupportedExt(getExt(filePath), ['mov']),
+    filter: (filePath) => checkSupportedExt(filePath, ['mov'], true),
 };
 
 export default nameTagHandler;
