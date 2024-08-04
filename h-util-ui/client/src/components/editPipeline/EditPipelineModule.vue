@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, defineProps, ref } from 'vue';
-import { ProcessingModule, ProcessingModuleType } from '../../utils/types';
-import { OPTION_LABELS } from '../../utils/constants';
-import { cloneObject } from '../../utils/helpers';
+import { ProcessingModule, ProcessingModuleType } from '@utils/types';
+import { OPTION_LABELS } from '@utils/constants';
+import { cloneObject } from '@utils/helpers';
 
 interface Props {
   processingModule: ProcessingModule;

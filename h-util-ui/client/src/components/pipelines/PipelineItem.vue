@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 
-import store from '../../utils/store';
-import { IpcMessageType } from '../../../../common/common.constants';
-import { Pipeline } from '../../utils/types';
-import { getIpcRenderer, sendMessageToMain } from '../../utils/helpers';
+import store from '@utils/store';
+import { IpcMessageType } from '@shared/common.constants';
+import { Pipeline } from '@utils/types';
+import { getIpcRenderer, sendMessageToMain } from '@utils/helpers';
 
 interface Props { pipelineItem: Pipeline }
 
