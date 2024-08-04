@@ -126,3 +126,13 @@ export const parseNumber = (input: string): number | null => {
     const num = Number(input);
     return isNaN(num) ? null : num;
 };
+
+/**
+ * Run async things detached so the parent method won't await it.
+ * Good if child methods need to run sequentially
+ */
+export const detachPromise = <T>(opts: { cb: () => Promise<T>; onDone?: () => void; onError?: (e: Error) => void }) => {
+    opts.cb()
+        .then(() => opts.onDone?.())
+        .catch((e) => opts.onError?.(e));
+};

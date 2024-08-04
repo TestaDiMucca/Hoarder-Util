@@ -36,8 +36,9 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
 
 export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.subfolder]: 'Directory name',
-    [ProcessingModuleType.compressImage]: 'Quality (%)',
-    [ProcessingModuleType.compressVideo]: 'Quality (%)',
+    [ProcessingModuleType.compressImage]: 'Quality (0-100%)',
+    /** Where 0 CRF is lossless and 23 is "standard" */
+    [ProcessingModuleType.compressVideo]: 'Quality (0-51 CRF)',
     /** Temp: accept format strings in future. */
     [ProcessingModuleType.datePrefix]: null,
     [ProcessingModuleType.metadata]: null,
