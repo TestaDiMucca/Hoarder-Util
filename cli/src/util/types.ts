@@ -2,18 +2,19 @@
  * Supported operations
  */
 export enum Operations {
-  /** Prepend date to an image based on modify or EXIF */
-  dateTag = 'date-tag',
-  /** Filename => media tags */
-  nameToTag = 'name-to-tag',
-  /** Test operation */
-  nihao = 'nihao',
-  /** Prints an umu */
-  umu = 'umu',
-  directoryTree = 'dir-tree',
-  pathAlias = 'paths',
-  opAlias = 'op-alias',
-  jpgCompress = 'jpg-compress',
+    /** Prepend date to an image based on modify or EXIF */
+    dateTag = 'date-tag',
+    /** Filename => media tags */
+    nameToTag = 'name-to-tag',
+    /** Test operation */
+    nihao = 'nihao',
+    /** Prints an umu */
+    umu = 'umu',
+    directoryTree = 'dir-tree',
+    pathAlias = 'paths',
+    opAlias = 'op-alias',
+    jpgCompress = 'jpg-compress',
+    movCompress = 'mov-compress',
 }
 
 /*
@@ -21,40 +22,35 @@ export enum Operations {
  */
 
 type UniversalFlags = {
-  operation: string;
-  verbose?: boolean;
-  commandArgs?: string[];
-  commit?: boolean;
-  saveAlias?: string;
+    operation: string;
+    verbose?: boolean;
+    commandArgs?: string[];
+    commit?: boolean;
+    saveAlias?: string;
 };
 
 export type FsOpFlags = {
-  operation: Operations.directoryTree;
-  path?: string;
+    operation: Operations.directoryTree;
+    path?: string;
 } & UniversalFlags;
 
 export type FileOpFlags = {
-  operation: Operations.nameToTag | Operations.dateTag | Operations.jpgCompress;
-  path?: string;
-  excludes?: string;
-  format?: string;
+    operation: Operations.nameToTag | Operations.dateTag | Operations.jpgCompress | Operations.movCompress;
+    path?: string;
+    excludes?: string;
+    format?: string;
 } & UniversalFlags;
 
 export type NiHaoTestFlags = {
-  operation: Operations.nihao;
-  quick?: boolean;
+    operation: Operations.nihao;
+    quick?: boolean;
 } & UniversalFlags;
 
 export type BasicFlags = {
-  operation: Operations.umu | Operations.pathAlias;
+    operation: Operations.umu | Operations.pathAlias;
 } & UniversalFlags;
 
-export type TerminalArgs =
-  | UniversalFlags
-  | FileOpFlags
-  | NiHaoTestFlags
-  | FsOpFlags
-  | BasicFlags;
+export type TerminalArgs = UniversalFlags | FileOpFlags | NiHaoTestFlags | FsOpFlags | BasicFlags;
 
 export type OperationHandler = (opts?: TerminalArgs) => void | Promise<void>;
 

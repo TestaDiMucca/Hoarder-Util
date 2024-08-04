@@ -126,3 +126,32 @@ export const parseNumber = (input: string): number | null => {
     const num = Number(input);
     return isNaN(num) ? null : num;
 };
+
+/**
+ * Run async things detached so the parent method won't await it.
+ * Good if child methods need to run sequentially
+ */
+export const detachPromise = <T>(opts: { cb: () => Promise<T>; onDone?: () => void; onError?: (e: Error) => void }) => {
+    opts.cb()
+        .then(() => opts.onDone?.())
+        .catch((e) => opts.onError?.(e));
+};
+
+export const formatMilliseconds = (ms: number): string => {
+    // Calculate hours, minutes, seconds, and milliseconds
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    ms %= 1000 * 60 * 60;
+    const minutes = Math.floor(ms / (1000 * 60));
+    ms %= 1000 * 60;
+    const seconds = Math.floor(ms / 1000);
+    const milliseconds = ms % 1000;
+
+    // Format each component to ensure correct number of digits
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+    const formattedMilliseconds = String(milliseconds).padStart(3, '0');
+
+    // Combine into desired format
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
+};

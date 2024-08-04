@@ -1,13 +1,13 @@
-import { promises } from '@common/common';
+import { detachPromise, promises, withTimer } from '@common/common';
 import output from '@util/output';
 import { ProcessingError } from '@util/errors';
 import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
-import { updateTaskProgress } from '@util/ipc';
+import { messageWindow, updateTaskProgress } from '@util/ipc';
 import { FileOptions, FileWithMeta } from '@util/types';
 
 import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
-import { addPipelineRunToStats } from '@util/stats';
+import { addNumericalStat, addPipelineRunToStats } from '@util/stats';
 
 let taskId = 0;
 
@@ -40,47 +40,62 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
 
     let handled = 0;
     let currentModule: ProcessingModuleType = ProcessingModuleType.iterate;
+    let timeTaken = 0;
 
-    await promises.each(pipeline.processingModules, async (processingModule) => {
-        const moduleHandler = MODULE_MAP[processingModule.type];
+    await withTimer(
+        async () => {
+            await promises.each(pipeline.processingModules, async (processingModule) => {
+                const moduleHandler = MODULE_MAP[processingModule.type];
 
-        currentModule = processingModule.type;
-        const handledProgress = Math.ceil((handled / pipeline.processingModules.length) * 100);
+                currentModule = processingModule.type;
+                const handledProgress = Math.ceil((handled / pipeline.processingModules.length) * 100);
 
-        mainUpdate(currentModule, handledProgress);
+                mainUpdate(currentModule, handledProgress);
 
-        handled++;
+                handled++;
 
-        if (!moduleHandler) {
-            output.log(`Module ${processingModule.type} not yet supported`);
-            return;
-        }
+                if (!moduleHandler) {
+                    output.log(`Module ${processingModule.type} not yet supported`);
+                    return;
+                }
 
-        output.log(`Processing module ${processingModule.type}`);
+                output.log(`Processing module ${processingModule.type}`);
 
-        try {
-            /** One module's processing */
-            await withFileListHandling({
-                fileOptions,
-                clientOptions: processingModule.options,
-                moduleHandler,
-                onProgress: (label, progress) => {
-                    mainUpdate(currentModule, handledProgress, label, progress);
-                },
+                try {
+                    /** One module's processing */
+                    await withFileListHandling({
+                        fileOptions,
+                        clientOptions: processingModule.options,
+                        moduleHandler,
+                        onProgress: (label, progress) => {
+                            mainUpdate(currentModule, handledProgress, label, progress);
+                        },
+                    });
+                } catch (e) {
+                    if (e instanceof ProcessingError) {
+                        // in future we may ignore
+                    } else {
+                        console.error('[runPipeline]', e);
+                        throw e;
+                    }
+                }
             });
-        } catch (e) {
-            if (e instanceof ProcessingError) {
-                // in future we may ignore
-            } else {
-                console.error('[runPipeline]', e);
-                throw e;
-            }
-        }
-    });
+        },
+        (time) => {
+            timeTaken = time;
+        },
+    );
 
     if (handled > 0) mainUpdate(currentModule, 100);
 
-    void addPipelineRunToStats(pipeline.name);
+    detachPromise({
+        cb: async () => {
+            await addPipelineRunToStats(pipeline.name);
+            await addNumericalStat('msRan', timeTaken);
+        },
+    });
+
+    messageWindow(`Operation completed in ${timeTaken}ms`);
 
     taskId++;
 };

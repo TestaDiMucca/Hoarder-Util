@@ -4,7 +4,7 @@ import dateFormat from 'dateformat';
 
 import { printf, chunkArray, promises, randomFromArray, withTimer } from '@common/common';
 
-import { writeTags, readTags } from './ffmeta';
+import { writeTags, readTags, compressVideo } from './ffmeta';
 import { getExif } from './imgTools';
 
 /** Media files we'll operate on for the date rename util */
@@ -156,6 +156,7 @@ export async function getFileSize(filePath: string, format?: 'string' | 'number'
 export const ffMeta = {
     writeTags,
     readTags,
+    compressVideo,
 };
 
 export { getTempName, removeExt, replaceExtension, replaceFile } from './util';
