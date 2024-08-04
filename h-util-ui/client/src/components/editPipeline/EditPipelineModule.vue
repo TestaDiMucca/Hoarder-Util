@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue';
+import { computed, defineProps } from 'vue';
+import MenuRight from 'vue-material-design-icons/MenuRight.vue';
 import { ProcessingModule, ProcessingModuleType } from '../../utils/types';
 import { OPTION_LABELS } from '../../utils/constants';
 import { cloneObject } from '../../utils/helpers';
@@ -87,12 +88,7 @@ const inversionAvailable = computed(() => {
           <q-item @click="handleModuleTypeSelect(ProcessingModuleType.subfolder)" clickable v-close-popup="true">
             <q-item-section>Place in directory</q-item-section>
           </q-item>
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.filter)" clickable v-close-popup="true">
-            <q-item-section>Filter file</q-item-section>
-          </q-item>
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.ocr)" clickable v-close-popup="true">
-            <q-item-section>Search image for text</q-item-section>
-          </q-item>
+
           <q-separator />
           <q-item @click="handleModuleTypeSelect(ProcessingModuleType.metadata)" clickable v-close-popup="true">
             <q-item-section>Metadata tag</q-item-section>
@@ -101,15 +97,44 @@ const inversionAvailable = computed(() => {
             <q-item-section>Date prefix</q-item-section>
           </q-item>
           <q-separator />
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressImage)" clickable v-close-popup="true">
-            <q-item-section>Compress image</q-item-section>
-          </q-item>
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressVideo)" clickable v-close-popup="true">
-            <q-item-section>Compress video</q-item-section>
-          </q-item>
           <q-separator />
           <q-item @click="handleModuleTypeSelect(ProcessingModuleType.iterate)" clickable v-close-popup="true">
             <q-item-section>Iterate</q-item-section>
+          </q-item>
+          <q-item clickable>
+            <q-item-section>Media compression</q-item-section>
+            <q-item-section side>
+              <MenuRight />
+            </q-item-section>
+            <q-menu anchor="top end" self="top start">
+              <q-list>
+                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressImage)" clickable
+                  v-close-popup="true">
+                  <q-item-section>Compress image</q-item-section>
+                </q-item>
+                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressVideo)" clickable
+                  v-close-popup="true">
+                  <q-item-section>Compress video</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-item>
+          <q-item clickable>
+            <q-item-section>Filtering</q-item-section>
+            <q-item-section side>
+              <MenuRight />
+            </q-item-section>
+
+            <q-menu anchor="top end" self="top start">
+              <q-list>
+                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.filter)" clickable v-close-popup="true">
+                  <q-item-section>Filter file</q-item-section>
+                </q-item>
+                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.ocr)" clickable v-close-popup="true">
+                  <q-item-section>Search image for text</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
           </q-item>
         </q-list>
       </q-menu>
