@@ -15,6 +15,7 @@
         "parseable",
         "tastique",
         "tauri",
+        "Tesseract",
         "uuidv4"
     ],
     "vetur.validation.template": false,

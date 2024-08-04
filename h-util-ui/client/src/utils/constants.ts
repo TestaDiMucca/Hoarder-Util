@@ -5,6 +5,7 @@ import CalendarExport from 'vue-material-design-icons/CalendarExport.vue';
 import DatabaseExport from 'vue-material-design-icons/DatabaseExport.vue';
 import Printer from 'vue-material-design-icons/Printer.vue';
 import Filter from 'vue-material-design-icons/FileCog.vue';
+import TextSearch from 'vue-material-design-icons/TextSearch.vue';
 
 import { ProcessingModule, ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
@@ -18,6 +19,7 @@ export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.metadata]: '📝',
     [ProcessingModuleType.iterate]: '🖨',
     [ProcessingModuleType.filter]: '🗑',
+    [ProcessingModuleType.ocr]: '📖',
 };
 
 /** Icon representation of the module operations */
@@ -29,6 +31,7 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
     [ProcessingModuleType.metadata]: DatabaseExport,
     [ProcessingModuleType.iterate]: Printer,
     [ProcessingModuleType.filter]: Filter,
+    [ProcessingModuleType.ocr]: TextSearch,
 };
 
 export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
@@ -40,6 +43,7 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.metadata]: null,
     [ProcessingModuleType.iterate]: 'Output file name',
     [ProcessingModuleType.filter]: 'Filename match',
+    [ProcessingModuleType.ocr]: 'Search string (CSV supported)',
 };
 
 /** Get a default starter module */

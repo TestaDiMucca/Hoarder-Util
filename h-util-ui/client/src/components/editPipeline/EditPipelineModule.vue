@@ -71,6 +71,9 @@ const optionLabel = computed<string | null>(() => OPTION_LABELS[props.processing
         <q-item @click="handleModuleTypeSelect(ProcessingModuleType.filter)" clickable v-close-popup="true">
           <q-item-section>Filter file</q-item-section>
         </q-item>
+        <q-item @click="handleModuleTypeSelect(ProcessingModuleType.ocr)" clickable v-close-popup="true">
+          <q-item-section>Search image for text</q-item-section>
+        </q-item>
         <q-separator />
         <q-item @click="handleModuleTypeSelect(ProcessingModuleType.metadata)" clickable v-close-popup="true">
           <q-item-section>Metadata tag</q-item-section>
