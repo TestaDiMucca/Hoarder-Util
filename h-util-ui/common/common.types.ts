@@ -15,6 +15,7 @@ export type ProcessingModule = {
         value: string | number;
         ignoreErrors?: boolean;
         skipPreviouslyFailed?: boolean;
+        inverse?: boolean;
     };
 };
 

@@ -48,7 +48,14 @@ watch(about, (newValue, oldValue) => {
       </q-card-section>
 
       <q-card-section v-if="tab === Tabs.about">
-        About
+        H-Util Visual
+
+        Notes on usage:
+        <ul>
+          <li>Filter modules filter files from rest of the pipeline</li>
+          <li></li>
+        </ul>
+
       </q-card-section>
 
       <q-card-section v-if="tab === Tabs.log">

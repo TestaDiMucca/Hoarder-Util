@@ -52,6 +52,9 @@ export const getDefaultModule = (): ProcessingModule => ({
     type: ProcessingModuleType.datePrefix,
     options: {
         value: '',
+        inverse: false,
+        ignoreErrors: true,
+        skipPreviouslyFailed: false,
     },
 });
 
