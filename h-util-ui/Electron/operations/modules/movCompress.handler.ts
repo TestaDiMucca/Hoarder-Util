@@ -1,5 +1,13 @@
 import { parseNumber } from '@common/common';
-import { checkSupportedExt, ffMeta, getExt, getFileSize, splitFileNameFromPath } from '@common/fileops';
+import {
+    checkSupportedExt,
+    ffMeta,
+    getExt,
+    getFileSize,
+    getTempName,
+    replaceFile,
+    splitFileNameFromPath,
+} from '@common/fileops';
 import { ProcessingError } from '@util/errors';
 import output from '@util/output';
 import { addNumericalStat } from '@util/stats';
@@ -19,6 +27,7 @@ const movCompressHandler: ModuleHandler = {
         const { fileName } = splitFileNameFromPath(filePath);
 
         await ffMeta.compressVideo(filePath, parsedQuality, (progress) => opts.onProgress?.(`${fileName}`, progress));
+        await replaceFile(filePath, getTempName(filePath));
 
         const sizeAfter = await getFileSize(filePath, 'number');
         const reduced = sizeBefore - sizeAfter;

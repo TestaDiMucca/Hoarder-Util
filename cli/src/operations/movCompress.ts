@@ -1,5 +1,5 @@
 import * as colors from 'colors/safe';
-import { checkSupportedExt, ffMeta, getExt } from '@common/fileops';
+import { checkSupportedExt, ffMeta, getExt, getTempName, replaceFile } from '@common/fileops';
 
 import { msgShortcuts } from '../util/helpers';
 import output from '../util/output';
@@ -32,6 +32,7 @@ const movCompress = async (options: FileOpFlags) => {
             const fullPath = `${rootDir}/${fileName}`;
 
             await ffMeta.compressVideo(fullPath, quality, (p) => onProgress('compressing', p));
+            await replaceFile(fullPath, getTempName(fullPath));
 
             output.log(`Completed ${colors.cyan(fileName)}`);
         },
