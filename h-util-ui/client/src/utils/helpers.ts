@@ -1,5 +1,5 @@
-import { IpcMessageType } from '../../../common/common.constants';
-import { StatsStorage, Storage } from '../../../common/common.types';
+import { IpcMessageType } from '@shared/common.constants';
+import { StatsStorage, Storage } from '@shared/common.types';
 import { VueStore } from './store';
 
 /**

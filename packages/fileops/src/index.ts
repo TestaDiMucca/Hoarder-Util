@@ -27,8 +27,14 @@ export const getDateCreated = async (filePath: string) => {
 export const getExt = (fileName: string) => path.extname(fileName).replace(/\./g, '').toLowerCase();
 
 /** Check if an ext matches something we can handle */
-export const checkSupportedExt = (ext: string, categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>) =>
-    categories.some((cat) => DATETAG_SUPPORTED_EXTENSIONS[cat].includes(ext.toLowerCase()));
+export const checkSupportedExt = (
+    input: string,
+    categories: Array<keyof typeof DATETAG_SUPPORTED_EXTENSIONS>,
+    pluckExt = false
+) =>
+    categories.some((cat) =>
+        DATETAG_SUPPORTED_EXTENSIONS[cat].includes((pluckExt ? getExt(input) : input).toLowerCase())
+    );
 
 /**
  * Formats to: 'yy-MM-DD-HH-mm'

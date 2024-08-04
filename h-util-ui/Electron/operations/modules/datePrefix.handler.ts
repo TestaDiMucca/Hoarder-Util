@@ -1,14 +1,13 @@
 import { rename as fsRename } from 'fs/promises';
-import { checkSupportedExt, getDateStringForFile, getExt, splitFileNameFromPath } from '@common/fileops';
+import { checkSupportedExt, getDateStringForFile, splitFileNameFromPath } from '@common/fileops';
 
-import { ModuleHandler } from '../../util/types';
-import { ProcessingError } from '../../util/errors';
-import output from '../../util/output';
+import { ModuleHandler } from '@util/types';
+import { ProcessingError } from '@util/errors';
+import output from '@util/output';
 
 const datePrefixHandler: ModuleHandler = {
     handler: async ({ filePath }, _opts) => {
-        const ext = getExt(filePath);
-        const isImg = checkSupportedExt(ext, ['img']);
+        const isImg = checkSupportedExt(filePath, ['img'], true);
 
         const { dateStr, exifUsed: _exifUsed } = await getDateStringForFile(filePath, isImg);
 
@@ -23,7 +22,7 @@ const datePrefixHandler: ModuleHandler = {
 
         await fsRename(filePath, newPath);
     },
-    filter: (filePath) => checkSupportedExt(getExt(filePath), ['img', 'mov']),
+    filter: (filePath) => checkSupportedExt(filePath, ['img', 'mov'], true),
 };
 
 export default datePrefixHandler;

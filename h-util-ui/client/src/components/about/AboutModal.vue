@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { StatsStorage } from '../../../../common/common.types';
-import { loadStats } from '../../utils/helpers';
+import { StatsStorage } from '@shared/common.types';
+import { loadStats } from '@utils/helpers';
 import StatsDisplay from './StatsDisplay.vue';
 
 enum Tabs {
