@@ -40,7 +40,7 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
       </div>
       <input v-bind="getInputProps()" />
       <p v-if="isDragActive">Drop the files here ...</p>
-      <p v-else>Drag 'n' drop some files here, or click to select files</p>
+      <p v-else>Drop files here, or click to browse</p>
     </div>
 
     <button @click="deletePipeline">

@@ -97,10 +97,11 @@ const inversionAvailable = computed(() => {
             <q-item-section>Date prefix</q-item-section>
           </q-item>
           <q-separator />
-          <q-separator />
+
           <q-item @click="handleModuleTypeSelect(ProcessingModuleType.iterate)" clickable v-close-popup="true">
             <q-item-section>Iterate</q-item-section>
           </q-item>
+          <q-separator />
           <q-item clickable>
             <q-item-section>Media compression</q-item-section>
             <q-item-section side>
