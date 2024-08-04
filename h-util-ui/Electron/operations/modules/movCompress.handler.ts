@@ -2,7 +2,6 @@ import { parseNumber } from '@common/common';
 import {
     checkSupportedExt,
     ffMeta,
-    getExt,
     getFileSize,
     getTempName,
     replaceFile,
@@ -37,7 +36,7 @@ const movCompressHandler: ModuleHandler = {
         if (reduced < 0) output.out(`${fileName} bloated by ${reduced}b`);
         else output.log(`${fileName} reduced by ${reduced}b`);
     },
-    filter: (fileString) => checkSupportedExt(getExt(fileString), ['mov']),
+    filter: (fileString) => checkSupportedExt(fileString, ['mov'], true),
 };
 
 export default movCompressHandler;

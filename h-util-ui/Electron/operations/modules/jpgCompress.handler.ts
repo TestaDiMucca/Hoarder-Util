@@ -1,5 +1,5 @@
 import { parseNumber } from '@common/common';
-import { checkSupportedExt, compressToLevel, getExt, getFileSize, splitFileNameFromPath } from '@common/fileops';
+import { checkSupportedExt, compressToLevel, getFileSize, splitFileNameFromPath } from '@common/fileops';
 import { ProcessingError } from '@util/errors';
 import output from '@util/output';
 import { addNumericalStat } from '@util/stats';
@@ -28,7 +28,7 @@ const jpgCompressHandler: ModuleHandler = {
 
         output.log(`${fileName} reduced by ${reduced}b`);
     },
-    filter: async (fileString) => checkSupportedExt(getExt(fileString), ['img']),
+    filter: async (fileString) => checkSupportedExt(fileString, ['img'], true),
 };
 
 export default jpgCompressHandler;
