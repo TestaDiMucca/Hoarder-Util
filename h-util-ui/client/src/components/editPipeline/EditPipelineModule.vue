@@ -104,7 +104,7 @@ const inversionAvailable = computed(() => {
           <q-item clickable>
             <q-item-section>Media compression</q-item-section>
             <q-item-section side>
-              <MenuRight />
+              <MenuRight :size="20" />
             </q-item-section>
             <q-menu anchor="top end" self="top start">
               <q-list>
@@ -122,7 +122,7 @@ const inversionAvailable = computed(() => {
           <q-item clickable>
             <q-item-section>Filtering</q-item-section>
             <q-item-section side>
-              <MenuRight />
+              <MenuRight :size="20" />
             </q-item-section>
 
             <q-menu anchor="top end" self="top start">
