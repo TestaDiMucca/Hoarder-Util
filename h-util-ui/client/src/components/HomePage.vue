@@ -16,16 +16,11 @@ useQuasar().dark.set(true);
 
   <q-card class="ui-card">
     <q-card-section>
-      <div>
-        Welcome to visual edition
-      </div>
-
       <PipelineGallery />
 
       <a href="#/new">
         <PlusBox title="Create a new pipeline" /> Create pipeline
       </a>
-
     </q-card-section>
   </q-card>
   <TaskList />

@@ -2,6 +2,7 @@
 import { computed, defineProps, ref } from 'vue';
 import { ProcessingModule, ProcessingModuleType } from '../../utils/types';
 import { OPTION_LABELS } from '../../utils/constants';
+import { cloneObject } from '../../utils/helpers';
 
 interface Props {
   processingModule: ProcessingModule;
@@ -33,10 +34,17 @@ const handleModuleOptionUpdated = (event: Event) => {
   props.handleModuleUpdated(newData, props.index);
 }
 
+const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options'], 'value'>) => {
+  const newData: ProcessingModule = cloneObject(props.processingModule);
+
+  newData.options[option] = props.processingModule.options[option] ? false : true;
+
+  props.handleModuleUpdated(newData, props.index);
+}
+
 const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 
 const optionLabel = computed<string | null>(() => OPTION_LABELS[props.processingModule.type]);
-
 </script>
 
 <template>
@@ -46,6 +54,14 @@ const optionLabel = computed<string | null>(() => OPTION_LABELS[props.processing
     <input type="text" id="module-option" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
       placeholder="Insert value here" />
   </div>
+
+  <div>
+    <q-checkbox v-model="processingModule.options.ignoreErrors" @change="handleToggleModuleOption('ignoreErrors')"
+      label="Ignore errors" />
+    <q-checkbox v-model="processingModule.options.skipPreviouslyFailed"
+      @change="handleToggleModuleOption('skipPreviouslyFailed')" label="Skip previously failed" />
+  </div>
+
   <q-btn color="primary" label="Change type">
     <q-menu>
       <q-list style="min-width: 100px">
