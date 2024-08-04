@@ -7,11 +7,24 @@ const stateStore = ref(store.state)
 </script>
 
 <template>
-  <div>
-    Current pipelines: {{ Object.keys(stateStore.pipelines).length }}
+  <div class="gallery-container">
+    <div v-for="pipeline in stateStore.pipelines" :key="pipeline.id!" class="gallery-item">
+      <PipelineItem :pipeline-item="pipeline" />
+    </div>
   </div>
 
-  <div v-for="pipeline in stateStore.pipelines" :key="pipeline.id!">
-    <PipelineItem :pipeline-item="pipeline" />
-  </div>
 </template>
+
+<style scoped>
+.gallery-container {
+  display: flex;
+  max-width: 95vw;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px
+}
+
+.gallery-item {
+  min-width: 250px;
+}
+</style>
