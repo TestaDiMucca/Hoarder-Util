@@ -43,7 +43,7 @@ export const withFileListHandling = async <T extends object = {}>({
                     const { fileName } = splitFileNameFromPath(filePath);
 
                     // In future if option is selected, can also filter based on previous fail
-                    const shouldHandle = await filter(filePath);
+                    const shouldHandle = filter ? await filter(filePath) : true;
 
                     onProgress?.(fileName, Math.ceil((i / fileOptions.filesWithMeta.length) * 100));
 

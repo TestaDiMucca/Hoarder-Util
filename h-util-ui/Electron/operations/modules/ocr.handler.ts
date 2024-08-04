@@ -14,7 +14,8 @@ const ocrHandler: ModuleHandler = {
 
         const hasMatches = await searchForTextInImage(fileWithMeta.filePath, matches);
 
-        if (!hasMatches) fileWithMeta.remove = true;
+        const inverse = opts.clientOptions?.inverse;
+        if ((!hasMatches && !inverse) || (hasMatches && inverse)) fileWithMeta.remove = true;
     },
     filter: (fileName) => checkSupportedExt(getExt(fileName), ['img']),
 };

@@ -45,6 +45,22 @@ const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options']
 const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 
 const optionLabel = computed<string | null>(() => OPTION_LABELS[props.processingModule.type]);
+
+/** Filter types can be inverted */
+const inversionAvailable = computed(() => {
+  switch (props.processingModule.type) {
+    case ProcessingModuleType.filter:
+    case ProcessingModuleType.ocr:
+      return true;
+    case ProcessingModuleType.datePrefix:
+    case ProcessingModuleType.metadata:
+    case ProcessingModuleType.compressImage:
+    case ProcessingModuleType.compressVideo:
+    case ProcessingModuleType.subfolder:
+    case ProcessingModuleType.iterate:
+      return false
+  }
+})
 </script>
 
 <template>
@@ -61,6 +77,8 @@ const optionLabel = computed<string | null>(() => OPTION_LABELS[props.processing
         label="Ignore errors" />
       <q-checkbox v-model="processingModule.options.skipPreviouslyFailed"
         @change="handleToggleModuleOption('skipPreviouslyFailed')" label="Skip previously failed" />
+      <q-checkbox v-if="inversionAvailable" v-model="processingModule.options.inverse"
+        @change="handleToggleModuleOption('inverse')" label="Invert logic" />
     </div>
 
     <q-btn color="primary" label="Change type">

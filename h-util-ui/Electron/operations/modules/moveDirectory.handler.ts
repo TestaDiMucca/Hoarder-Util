@@ -35,7 +35,6 @@ const moveDirectoryHandler: ModuleHandler<ProcessingModule['options'], Directori
 
         await fs.rename(filePath, path.join(directoryPath, fileName));
     },
-    filter: async (_filePath) => true,
 };
 
 export default moveDirectoryHandler;

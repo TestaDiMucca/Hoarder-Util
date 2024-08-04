@@ -12,9 +12,9 @@ const filterHandler: ModuleHandler = {
 
         const excluded = checkFilenameExcluded(fileName, String(stringMatch));
 
-        if (excluded) fileWithMeta.remove = true;
+        const inverse = opts.clientOptions?.inverse;
+        if ((excluded && !inverse) || (!excluded && inverse)) fileWithMeta.remove = true;
     },
-    filter: () => true,
     onDone: async (_opts, _store, fileOptions) => {
         fileOptions.filesWithMeta = fileOptions.filesWithMeta.filter((f) => !f.remove);
     },
