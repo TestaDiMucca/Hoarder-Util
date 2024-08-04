@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { StatsStorage } from '../../../../common/common.types';
 import { loadStats } from '../../utils/helpers';
+import StatsDisplay from './StatsDisplay.vue';
 
 enum Tabs {
   log = 'log',
@@ -26,11 +27,9 @@ watch(about, (newValue, oldValue) => {
 </script>
 
 <template>
-  <div>
-    <button @click="about = true">
-      About
-    </button>
-  </div>
+  <button @click="about = true">
+    About
+  </button>
 
   <q-dialog v-model="about">
     <q-card>
@@ -45,8 +44,7 @@ watch(about, (newValue, oldValue) => {
       </q-tabs>
 
       <q-card-section v-if="tab === Tabs.stats">
-        H-util UI:
-        {{ JSON.stringify(stats ?? {}) }}
+        <StatsDisplay v-if="stats" :stats="stats" />
       </q-card-section>
 
       <q-card-section v-if="tab === Tabs.about">
