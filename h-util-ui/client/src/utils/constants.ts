@@ -59,3 +59,5 @@ export const getDefaultModule = (): ProcessingModule => ({
 });
 
 export const MAX_TASKS = 5;
+
+export const DEFAULT_RANKING = 100;
