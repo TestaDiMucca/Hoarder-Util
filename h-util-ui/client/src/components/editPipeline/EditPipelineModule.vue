@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue';
+import { computed, defineProps } from 'vue';
 import MenuRight from 'vue-material-design-icons/MenuRight.vue';
 import { ProcessingModule, ProcessingModuleType } from '@utils/types';
 import { OPTION_LABELS } from '@utils/constants';
