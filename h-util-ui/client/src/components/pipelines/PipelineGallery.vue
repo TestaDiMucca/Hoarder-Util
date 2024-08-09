@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import PipelineItem from './PipelineItem.vue';
 import store from '@utils/store';
-import { SortBy, SortType } from './pipelineGallery.helpers';
+import { SortBy, sortPipelines, SortType } from './pipelineGallery.helpers';
 
 const stateStore = ref(store.state)
 const sortBy = ref(SortBy.name)
 const sortType = ref(SortType.asc)
 
+const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.value.pipelines), sortBy.value, sortType.value))
 </script>
 
 <template>
@@ -16,7 +17,7 @@ const sortType = ref(SortType.asc)
     <q-select v-model="sortType" :options="Object.values(SortType)" label="Order" :hide-dropdown-icon="true" />
   </div>
   <div class="gallery-container">
-    <div v-for="pipeline in stateStore.pipelines" :key="pipeline.id!" class="gallery-item">
+    <div v-for="pipeline in sortedPipelines" :key="pipeline.id!" class="gallery-item">
       <PipelineItem :pipeline-item="pipeline" />
     </div>
   </div>

@@ -60,3 +60,18 @@ export const saveUserData = (data: VueStore['pipelines']) => {
 
     ipcRenderer?.send(IpcMessageType.saveData, [serialized]);
 };
+
+// todo: use @common
+export const sortObjects = <T extends Record<string, any>>(list: T[], key: keyof T, ascending: boolean = true): T[] => {
+    return [
+        ...list.sort((a, b) => {
+            if (a[key] < b[key]) {
+                return ascending ? -1 : 1;
+            }
+            if (a[key] > b[key]) {
+                return ascending ? 1 : -1;
+            }
+            return 0;
+        }),
+    ];
+};

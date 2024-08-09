@@ -36,9 +36,11 @@ async function createWindow() {
             Object.keys(data.pipelines).forEach((pipelineId) => {
                 mapped.pipelines[pipelineId] = {
                     ...data.pipelines[pipelineId],
-                    timesRan: stats.pipelineRuns[pipelineId] ?? 0,
+                    timesRan: stats.pipelineRuns[data.pipelines[pipelineId]?.name] ?? 0,
                 };
             });
+
+            console.log(mapped);
 
             return mapped;
         }
