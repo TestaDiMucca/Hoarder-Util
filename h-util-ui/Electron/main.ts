@@ -32,15 +32,12 @@ async function createWindow() {
             if (!stats) return data;
 
             const mapped: Storage = { pipelines: {} };
-
             Object.keys(data.pipelines).forEach((pipelineId) => {
                 mapped.pipelines[pipelineId] = {
                     ...data.pipelines[pipelineId],
                     timesRan: stats.pipelineRuns[data.pipelines[pipelineId]?.name] ?? 0,
                 };
             });
-
-            console.log(mapped);
 
             return mapped;
         }

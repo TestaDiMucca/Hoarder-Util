@@ -155,15 +155,3 @@ export const formatMilliseconds = (ms: number): string => {
     // Combine into desired format
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
 };
-
-export const sortObjects = <T extends Record<string, any>>(list: T[], key: keyof T, ascending: boolean = true): T[] => {
-    return list.sort((a, b) => {
-        if (a[key] < b[key]) {
-            return ascending ? -1 : 1;
-        }
-        if (a[key] > b[key]) {
-            return ascending ? 1 : -1;
-        }
-        return 0;
-    });
-};

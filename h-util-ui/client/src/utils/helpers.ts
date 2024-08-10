@@ -75,3 +75,36 @@ export const sortObjects = <T extends Record<string, any>>(list: T[], key: keyof
         }),
     ];
 };
+
+// todo: use @common
+export const formatMilliseconds = (ms: number): string => {
+    // Calculate hours, minutes, seconds, and milliseconds
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    ms %= 1000 * 60 * 60;
+    const minutes = Math.floor(ms / (1000 * 60));
+    ms %= 1000 * 60;
+    const seconds = Math.floor(ms / 1000);
+    const milliseconds = ms % 1000;
+
+    // Format each component to ensure correct number of digits
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+    const formattedMilliseconds = String(milliseconds).padStart(3, '0');
+
+    // Combine into desired format
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
+};
+
+// todo: use @common
+export const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return '0B';
+
+    const sizes = ['b', 'kb', 'mb', 'gb', 'tb'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+
+    const value = bytes / Math.pow(1024, i);
+    const formattedValue = value.toFixed(i === 0 ? 0 : 1); // No decimals for bytes
+
+    return `${formattedValue} ${sizes[i]}`;
+};
