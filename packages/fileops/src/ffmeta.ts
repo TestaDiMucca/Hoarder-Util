@@ -1,5 +1,7 @@
 import * as ffmpeg from 'fluent-ffmpeg';
 import { getTempName } from '.';
+import { detachPromise } from '@common/common';
+import { unlink } from 'fs/promises';
 const ffmpegCaller = require('fluent-ffmpeg');
 
 /**
@@ -50,7 +52,12 @@ export const writeTags = async (
             .run();
     });
 
-export const compressVideo = async (filePath: string, crf: number, onProgress?: (p: number) => void) =>
+export const compressVideo = async (
+    filePath: string,
+    crf: number,
+    onProgress?: (p: number) => void,
+    destroyTempOnError = true
+) =>
     new Promise((resolve, reject) => {
         if (crf <= 0 || crf >= 51) throw new Error(`${crf} is invalid for CRF`);
 
@@ -70,7 +77,11 @@ export const compressVideo = async (filePath: string, crf: number, onProgress?: 
                 const time = parseInt(p.timemark.replace(/:/g, ''));
                 onProgress?.((time / totalTime) * 100);
             })
-            .on('error', (e: Error) => reject(e))
+            .on('error', (e: Error) => {
+                console.error(e);
+                if (destroyTempOnError) detachPromise({ cb: () => unlink(getTempName(filePath)) });
+                reject(e);
+            })
             .run();
     });
 
