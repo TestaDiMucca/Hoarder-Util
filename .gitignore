@@ -16,4 +16,6 @@ lib/
 *.bak.*
 dist/
 dist_electron/
+dist-electron/
+release/
 tsconfig.tsbuildinfo
