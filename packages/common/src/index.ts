@@ -1,6 +1,8 @@
 export const printf = (message: string) => console.log(message);
 
-export { Output } from './output';
+import { Output as OutputRaw } from './output';
+
+export const Output = OutputRaw;
 
 export const randomFromArray = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 

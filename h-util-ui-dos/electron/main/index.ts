@@ -4,8 +4,25 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import os from 'node:os';
 
+import moduleAliases from 'module-alias';
+
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+moduleAliases.addAliases({
+    '@util': path.join(__dirname, '../util'),
+    '@common': path.join(__dirname, '../../common'),
+});
+
+import { IpcMessageType } from '../../common/common.constants';
+import { loadJsonStore, saveJsonStore } from '../utils/jsonStore';
+import { getStatsFromStore } from '../utils/stats';
+import { ProcessingRequest, Storage } from '../../common/common.types';
+import { registerMainWindow } from '../utils/ipc';
+import output from '../utils/output';
+import { handleClientMessage, handleRunPipeline } from '../operations/handler';
+
+const DATA_FILE = 'data.json';
 
 // The built directory structure
 //
@@ -37,10 +54,35 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let win: BrowserWindow | null = null;
+let dataFilePath: string = '';
 const preload = path.join(__dirname, '../preload/index.js');
 const indexHtml = path.join(RENDERER_DIST, 'index.html');
 
 async function createWindow() {
+    /** Create handlers before window is ready */
+    dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
+    ipcMain.handle(IpcMessageType.loadData, async () => {
+        const data = await loadJsonStore<Storage>(dataFilePath);
+        if (data?.pipelines) {
+            const stats = await getStatsFromStore();
+
+            if (!stats) return data;
+
+            const mapped: Storage = { pipelines: {} };
+            Object.keys(data.pipelines).forEach((pipelineId) => {
+                mapped.pipelines[pipelineId] = {
+                    ...data.pipelines[pipelineId],
+                    timesRan: stats.pipelineRuns[data.pipelines[pipelineId]?.name] ?? 0,
+                };
+            });
+
+            return mapped;
+        }
+
+        return data;
+    });
+    ipcMain.handle(IpcMessageType.getStats, () => getStatsFromStore());
+
     win = new BrowserWindow({
         title: 'Main window',
         icon: path.join(process.env.VITE_PUBLIC, 'favicon.ico'),
@@ -63,6 +105,8 @@ async function createWindow() {
     } else {
         win.loadFile(indexHtml);
     }
+
+    registerMainWindow(win);
 
     // Test actively push message to the Electron-Renderer
     win.webContents.on('did-finish-load', () => {
@@ -117,3 +161,18 @@ ipcMain.handle('open-win', (_, arg) => {
         childWindow.loadFile(indexHtml, { hash: arg });
     }
 });
+
+ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {
+    if (d.length === 0) {
+        output.error('Bad format');
+        return;
+    }
+
+    const pipeline = JSON.parse(d[0]) as ProcessingRequest;
+    handleRunPipeline(pipeline);
+    output.log(`Run pipeline ${pipeline.pipeline.name} w/ ${pipeline.filePaths.length} files`);
+});
+
+ipcMain.on(IpcMessageType.confirmClose, () => app.exit());
+ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));
+ipcMain.on(IpcMessageType.saveData, (_, data: string[]) => saveJsonStore(dataFilePath, data[0]));

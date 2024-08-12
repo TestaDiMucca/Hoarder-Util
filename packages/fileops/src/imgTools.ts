@@ -2,7 +2,8 @@ import { getTempName, replaceFile, replaceExtension } from './util';
 import * as Tesseract from 'tesseract.js';
 
 const ExifImage = require('exif').ExifImage;
-import Jimp = require('jimp');
+// import Jimp = require('jimp');
+import * as Jimp from 'jimp';
 import { ExifResult } from './types';
 
 export const compressToLevel = async (
