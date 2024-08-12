@@ -22,6 +22,10 @@ export type ProcessingModule = {
 export type Pipeline = {
     id?: string;
     name: string;
+    created?: string;
+    modified?: string;
+    manualRanking?: number;
+    timesRan?: number;
     processingModules: ProcessingModule[];
 };
 

@@ -3,7 +3,7 @@ import { computed, ref, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { ProcessingModule } from '@utils/types';
 import store from '@utils/store';
-import { getDefaultModule } from '@utils/constants';
+import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
 import EditPipelineModule from './EditPipelineModule.vue';
 
 /** Replace with prop if any. */
@@ -12,6 +12,7 @@ const pipelineModules = ref<ProcessingModule[]>([
 ]);
 
 const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
+const pipelineRanking = ref(DEFAULT_RANKING);
 
 onMounted(() => {
   const selected = store.state.selectedPipeline;
@@ -19,6 +20,7 @@ onMounted(() => {
   if (!selected) return;
   pipelineModules.value = selected.processingModules;
   pipelineName.value = selected.name;
+  pipelineRanking.value = selected.manualRanking ?? DEFAULT_RANKING;
 })
 
 const handleModuleUpdated = (newData: ProcessingModule | null, index: number) => {
@@ -42,6 +44,7 @@ const handleSavePipeline = () => {
   store.upsertPipeline({
     id: store.state.selectedPipeline?.id ?? uuidv4(),
     name: pipelineName.value,
+    manualRanking: pipelineRanking.value,
     processingModules: pipelineModules.value
   })
 
@@ -56,6 +59,12 @@ const handlePipelineNameUpdated = (event: Event) => {
   pipelineName.value = newValue;
 }
 
+const handlePipelineRankingUpdated = (event: Event) => {
+  const newValue = (event.target as HTMLInputElement).value;
+
+  pipelineRanking.value = +newValue;
+}
+
 const hasNoModules = computed(() => pipelineModules.value.length === 0)
 const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' : 'New pipeline');
 </script>
@@ -65,6 +74,7 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
     <h3>{{ header }}</h3>
 
     <input type="text" v-model="pipelineName" @input="handlePipelineNameUpdated" />
+    <input type="number" v-model="pipelineRanking" @input="handlePipelineRankingUpdated" />
 
     <q-card-section v-for="(pipelineModule, index) in pipelineModules">
       <EditPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"

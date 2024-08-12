@@ -12,7 +12,7 @@ import { IpcMessageType } from '@shared/common.constants';
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
-import { ProcessingRequest } from '@shared/common.types';
+import { ProcessingRequest, Storage } from '@shared/common.types';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import output from './util/output';
 import { registerMainWindow } from './util/ipc';
@@ -24,7 +24,26 @@ const DATA_FILE = 'data.json';
 async function createWindow() {
     /** Create handlers before window is ready */
     const dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
-    ipcMain.handle(IpcMessageType.loadData, () => loadJsonStore(dataFilePath));
+    ipcMain.handle(IpcMessageType.loadData, async () => {
+        const data = await loadJsonStore<Storage>(dataFilePath);
+        if (data?.pipelines) {
+            const stats = await getStatsFromStore();
+
+            if (!stats) return data;
+
+            const mapped: Storage = { pipelines: {} };
+            Object.keys(data.pipelines).forEach((pipelineId) => {
+                mapped.pipelines[pipelineId] = {
+                    ...data.pipelines[pipelineId],
+                    timesRan: stats.pipelineRuns[data.pipelines[pipelineId]?.name] ?? 0,
+                };
+            });
+
+            return mapped;
+        }
+
+        return data;
+    });
     ipcMain.handle(IpcMessageType.getStats, () => getStatsFromStore());
 
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;

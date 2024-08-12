@@ -22,7 +22,12 @@ const onPipelinesUpdated = () => {
 };
 
 const upsertPipeline = (pipeline: Pipeline) => {
-    if (!pipeline.id) pipeline.id = uuidV4();
+    if (!pipeline.id) {
+        pipeline.id = uuidV4();
+        pipeline.created = new Date().toISOString();
+    }
+
+    pipeline.modified = new Date().toISOString();
 
     state.pipelines[pipeline.id!] = pipeline;
 

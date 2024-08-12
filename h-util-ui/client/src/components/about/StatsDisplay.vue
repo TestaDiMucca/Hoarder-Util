@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { StatsStorage } from '@shared/common.types';
+import { formatBytes, formatMilliseconds } from '@utils/helpers';
 
 const { stats } = defineProps<{ stats: StatsStorage }>()
 
@@ -17,9 +18,9 @@ const pipelineRunData = computed(() => Object.entries(stats.pipelineRuns)
   </div>
   <h4>Other</h4>
   <div>
-    Time spent processing: {{ stats.msRan }}
+    Time spent processing: {{ formatMilliseconds(stats.msRan) }}
   </div>
   <div>
-    Space saved: {{ stats.bytesShaved }}
+    Space saved: {{ formatBytes(stats.bytesShaved) }}
   </div>
 </template>

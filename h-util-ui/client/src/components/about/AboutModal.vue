@@ -33,7 +33,7 @@ watch(about, (newValue, oldValue) => {
 
   <q-dialog v-model="about">
     <q-card>
-      <q-card-section>
+      <q-card-section style="width: 70vw;">
         <div class="text-h6">About</div>
       </q-card-section>
 
