@@ -82,5 +82,9 @@
       "buildResources": "assets",
       "output": "dist_electron"
     }
+  },
+  "engines": {
+    "npm": ">=10.0.0",
+    "node": ">=20.0.0"
   }
 }

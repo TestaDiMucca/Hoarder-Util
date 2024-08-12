@@ -2,6 +2,27 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
+## Build errors - Aug 12
+
+### Encountered
+
+Error threw after starting up project ever since rebooting system.
+
+```bash
+[PACKARINO]
+[PACKARINO] /Users/admin/Documents/GitHub/Hoarder-Util/node_modules/vue-tsc/bin/vue-tsc.js:68
+[PACKARINO] 			throw err;
+[PACKARINO] 			^
+[PACKARINO] Search string not found: "for (const existingRoot of buildInfoVersionMap.roots) {"
+[PACKARINO] (Use `node --trace-uncaught ...` to show where the exception was thrown)
+[PACKARINO]
+[PACKARINO] Node.js v18.18.2
+```
+
+### Fix
+
+Was on node 18 lol
+
 ## Filter regexp not recognizing - Aug 1
 
 ### Fix
