@@ -2,6 +2,23 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
+## Build blew up - Aug 12
+
+### Encountered
+
+Simply restarting terminal, looks like the setup and links were too duct-taped.
+
+```bash
+[PACKARINO]
+[PACKARINO] /Users/admin/Documents/GitHub/Hoarder-Util/node_modules/vue-tsc/bin/vue-tsc.js:68
+[PACKARINO] 			throw err;
+[PACKARINO] 			^
+[PACKARINO] Search string not found: "for (const existingRoot of buildInfoVersionMap.roots) {"
+[PACKARINO] (Use `node --trace-uncaught ...` to show where the exception was thrown)
+[PACKARINO]
+[PACKARINO] Node.js v18.18.2
+```
+
 ## Filter regexp not recognizing - Aug 1
 
 ### Fix
