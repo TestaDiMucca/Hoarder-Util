@@ -17,4 +17,6 @@ export enum IpcMessageType {
     confirmClose = 'confirm-close',
     /** Get stored stats */
     getStats = 'get-stats',
+    /** Call an electron dialog from the client to save file */
+    saveFile = 'save-file',
 }

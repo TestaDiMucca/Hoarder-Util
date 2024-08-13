@@ -60,6 +60,9 @@ watch(about, (newValue, oldValue) => {
 
       <q-card-section v-if="tab === Tabs.log">
         Logs
+        <button>
+          Export pipelines
+        </button>
       </q-card-section>
 
       <q-card-actions align="right">
