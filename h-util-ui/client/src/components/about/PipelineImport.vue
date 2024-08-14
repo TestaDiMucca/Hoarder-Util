@@ -2,21 +2,21 @@
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 
 import { Storage } from '@shared/common.types';
-import { computed, ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import store from '@utils/store';
+import { readTextFileAndParseJson } from '@utils/helpers';
 
 const pipelines = ref<Storage['pipelines']>({});
 const selectedIds = ref<Record<string, boolean>>({});
 
+const reset = () => {
+  pipelines.value = {};
+  selectedIds.value = {};
+}
+
 const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
   if (acceptFiles.length) {
-    const reader = new FileReader();
-
-    reader.readAsText(acceptFiles[0]);
-
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      const parsed = JSON.parse(content) as Storage['pipelines'];
+    readTextFileAndParseJson<Storage['pipelines']>(acceptFiles[0]).then(parsed => {
       // Needs validation.
       const pipelineList = Object.values(parsed);
       pipelines.value = parsed;
@@ -24,21 +24,20 @@ const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons
         if (v.id) a[v.id] = true;
         return a;
       }, {});
-    }
-
-    reader.onerror = () => {
-      // Error catch/report here
-    }
+    })
   }
 }
 
 const handleImport = () => {
   Object.keys(selectedIds.value).forEach(pId => {
     if (!selectedIds.value[pId]) return;
+
     store.upsertPipeline({
-      ...pipelines[pId]
+      ...pipelines.value[pId]
     })
   })
+
+  reset();
 };
 
 const handleToggleSelection = (id: string) => {
@@ -48,13 +47,15 @@ const handleToggleSelection = (id: string) => {
 }
 
 const numSelected = computed(() => Object.values(selectedIds.value).filter(v => v).length)
-const pipelineList = computed(() => Object.values(pipelines));
+const pipelineList = computed(() => Object.values(pipelines.value ?? {}));
+
+onUnmounted(reset);
 
 const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </script>
 
 <template>
-  <div v-if="pipelineList.length === 0" v-bind="getRootProps()" class="cursor-pointer">
+  <div v-if="pipelineList.length <= 0" v-bind="getRootProps()" class="cursor-pointer">
     <input v-bind="getInputProps()" />
     <p v-if="isDragActive">Drop the files here ...</p>
     <p v-else>Drop files here, or click to browse</p>
