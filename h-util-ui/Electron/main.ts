@@ -6,7 +6,7 @@ moduleAliases.addAliases({
     '@shared': path.join(__dirname, '../common'),
 });
 
-import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, screen } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, screen } from 'electron';
 
 import { IpcMessageType } from '@shared/common.constants';
 import { isDev } from './config';
@@ -18,6 +18,7 @@ import output from './util/output';
 import { registerMainWindow } from './util/ipc';
 import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
 import { getStatsFromStore } from '@util/stats';
+import { writeFile } from 'fs/promises';
 
 const DATA_FILE = 'data.json';
 
@@ -104,6 +105,22 @@ async function createWindow() {
             version: app.getVersion(),
             name: app.getName(),
         };
+    });
+
+    ipcMain.handle(IpcMessageType.saveFile, async (e, content) => {
+        const { filePath } = await dialog.showSaveDialog({
+            title: 'Save pipeline data',
+            defaultPath: path.join(app.getPath('downloads'), `h-util-pipelines_${Date.now()}.json`),
+            buttonLabel: 'Save',
+            filters: [
+                { name: 'Json files', extensions: ['json'] },
+                { name: 'All files', extensions: ['*'] },
+            ],
+        });
+
+        if (filePath) {
+            writeFile(filePath, content, 'utf-8');
+        }
     });
 
     ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {

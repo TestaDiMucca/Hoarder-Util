@@ -19,6 +19,7 @@ type IpcRendererExposed = {
     onTaskProgress: (cb: (task: string) => void) => void;
     loadData: <T>() => Promise<T>;
     loadStats: <T>() => Promise<T>;
+    saveFile: (content: string) => Promise<void>;
     saveData: (data: string[]) => Promise<void>;
 };
 

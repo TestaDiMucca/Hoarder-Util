@@ -108,3 +108,22 @@ export const formatBytes = (bytes: number): string => {
 
     return `${formattedValue} ${sizes[i]}`;
 };
+
+export const readTextFileAndParseJson = <T>(file: File): Promise<T> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.readAsText(file);
+
+        reader.onload = (e) => {
+            const content = e.target?.result as string;
+            const parsed = JSON.parse(content) as T;
+            // Needs validation.
+            resolve(parsed);
+        };
+
+        reader.onerror = (e) => {
+            // Error catch/report here
+            reject(e);
+        };
+    });

@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { StatsStorage } from '@shared/common.types';
-import { loadStats } from '@utils/helpers';
+import { getIpcRenderer, loadStats, loadUserData } from '@utils/helpers';
 import StatsDisplay from './StatsDisplay.vue';
+import InternalsDisplay from './InternalsDisplay.vue';
+import PipelineImport from './PipelineImport.vue';
 
 enum Tabs {
-  log = 'log',
+  internals = 'internals',
   stats = 'stat',
-  about = 'about'
+  about = 'about',
+  import = 'import'
 }
 
 const tab = ref(Tabs.about);
@@ -20,6 +23,16 @@ const getStats = () => {
     stats.value = data;
   })
 }
+
+const handleExportPipelines = () => {
+  loadUserData().then(data => {
+    if (!data?.pipelines) return;
+
+    getIpcRenderer()?.saveFile(JSON.stringify(data.pipelines));
+  })
+}
+
+const handleImportPipelines = () => tab.value = Tabs.import;
 
 watch(about, (newValue, oldValue) => {
   if (newValue && !oldValue) getStats();
@@ -40,7 +53,7 @@ watch(about, (newValue, oldValue) => {
       <q-tabs v-model="tab">
         <q-tab name="about" label="About" />
         <q-tab name="stat" label="Stats" />
-        <q-tab name="log" label="Internals" />
+        <q-tab name="internals" label="Internals" />
       </q-tabs>
 
       <q-card-section v-if="tab === Tabs.stats">
@@ -58,8 +71,10 @@ watch(about, (newValue, oldValue) => {
 
       </q-card-section>
 
-      <q-card-section v-if="tab === Tabs.log">
-        Logs
+      <q-card-section v-if="tab === Tabs.internals || tab === Tabs.import">
+        <InternalsDisplay v-if="tab === Tabs.internals" :handle-export-pipelines="handleExportPipelines"
+          :handle-import-pipelines="handleImportPipelines" />
+        <PipelineImport v-if="tab === Tabs.import" />
       </q-card-section>
 
       <q-card-actions align="right">
