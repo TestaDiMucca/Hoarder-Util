@@ -21,14 +21,12 @@ const getCurrentStateCopy = async () => {
     return newStats;
 };
 
-export const addPipelineRunToStats = async (pipelineName: string) => {
+export const addPipelineRunToStats = async (pipelineId: string) => {
     const newStats = await getCurrentStateCopy();
 
     if (!newStats.pipelineRuns) newStats.pipelineRuns = {};
 
-    newStats.pipelineRuns[pipelineName] = newStats.pipelineRuns[pipelineName]
-        ? newStats.pipelineRuns[pipelineName] + 1
-        : 1;
+    newStats.pipelineRuns[pipelineId] = newStats.pipelineRuns[pipelineId] ? newStats.pipelineRuns[pipelineId] + 1 : 1;
 
     await writeStatsToStore(newStats);
 };

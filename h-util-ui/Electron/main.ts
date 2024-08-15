@@ -36,7 +36,7 @@ async function createWindow() {
             Object.keys(data.pipelines).forEach((pipelineId) => {
                 mapped.pipelines[pipelineId] = {
                     ...data.pipelines[pipelineId],
-                    timesRan: stats.pipelineRuns[data.pipelines[pipelineId]?.name] ?? 0,
+                    timesRan: stats.pipelineRuns[pipelineId] ?? 0,
                 };
             });
 
@@ -45,7 +45,28 @@ async function createWindow() {
 
         return data;
     });
-    ipcMain.handle(IpcMessageType.getStats, () => getStatsFromStore());
+    ipcMain.handle(IpcMessageType.getStats, async () => {
+        const stats = await getStatsFromStore();
+        const data = await loadJsonStore<Storage>(dataFilePath);
+        // replace the id with name
+
+        if (!stats || !data) return {};
+
+        const pipelineRuns = Object.entries(stats?.pipelineRuns).reduce<Record<string, number>>(
+            (a, [pipelineId, runCount], i) => {
+                const pipelineName = data.pipelines[pipelineId]?.name ?? `Unknown/Deleted ${i}`;
+
+                a[pipelineName] = runCount;
+                return a;
+            },
+            {},
+        );
+
+        return {
+            ...stats,
+            pipelineRuns,
+        };
+    });
 
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const appBounds: any = appConfig.get('setting.appBounds');
