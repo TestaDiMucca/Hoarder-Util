@@ -18,7 +18,8 @@ export const readTags = async (filePath: string): Promise<null | ffmpeg.FfprobeD
 export const writeTags = async (
     filePath: string,
     tags: Record<string, string | number>,
-    onProgress?: (p: number) => void
+    onProgress?: (p: number) => void,
+    destroyTempOnError = true
 ): Promise<void> =>
     new Promise((resolve, reject) => {
         const meta: string[] = [];
@@ -48,7 +49,11 @@ export const writeTags = async (
                 const time = parseInt(p.timemark.replace(/:/g, ''));
                 onProgress?.((time / totalTime) * 100);
             })
-            .on('error', (e: Error) => reject(e))
+            .on('error', (e: Error) => {
+                console.error(e);
+                if (destroyTempOnError) detachPromise({ cb: () => unlink(getTempName(filePath)) });
+                reject(e);
+            })
             .run();
     });
 
