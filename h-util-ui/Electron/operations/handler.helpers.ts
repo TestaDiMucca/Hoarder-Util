@@ -65,7 +65,7 @@ export const withFileListHandling = async <T extends object = {}>({
 
                     processed++;
                 } catch (e) {
-                    console.log(e);
+                    console.log('Error with handler:', e);
                     errored++;
 
                     if (!clientOptions?.ignoreErrors) throw e;
