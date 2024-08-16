@@ -90,7 +90,7 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
 
     detachPromise({
         cb: async () => {
-            await addPipelineRunToStats(pipeline.name);
+            await addPipelineRunToStats(pipeline.id!);
             await addNumericalStat('msRan', timeTaken);
         },
     });
