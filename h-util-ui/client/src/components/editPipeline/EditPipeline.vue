@@ -71,7 +71,7 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
 
 <template>
   <q-card class="ui-card">
-    <h3>{{ header }}</h3>
+    <h5>{{ header }}</h5>
 
     <input type="text" v-model="pipelineName" @input="handlePipelineNameUpdated" />
     <input type="number" v-model="pipelineRanking" @input="handlePipelineRankingUpdated" />
@@ -94,3 +94,10 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
     Cancel
   </a>
 </template>
+
+<style scoped>
+.ui-card {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+</style>

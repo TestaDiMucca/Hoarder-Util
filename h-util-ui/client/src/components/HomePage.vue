@@ -12,17 +12,63 @@ const handleNewPipeline = () => window.location.href = '#/new';
 </script>
 
 <template>
-  <h3>Visual H-Util</h3>
+  <section class="header-bar">
+    <span>Visual H-Util</span>
+  </section>
 
-  <AboutModal />
-  <button @click="handleNewPipeline">
-    <PlusBox title="Create a new pipeline" /> Create pipeline
-  </button>
+  <section class="main-content">
+    <nav class="home-options">
+      <AboutModal />
+      <button class="create-button" @click="handleNewPipeline">
+        <PlusBox title="Create a new pipeline" />
+        <span>Create pipeline</span>
+      </button>
+    </nav>
 
-  <q-card class="ui-card">
-    <q-card-section>
-      <PipelineGallery />
-    </q-card-section>
-  </q-card>
-  <TaskList />
+
+    <q-card class="ui-card">
+      <q-card-section>
+        <PipelineGallery />
+      </q-card-section>
+    </q-card>
+  </section>
+
+
+  <section class="task-list-container">
+    <TaskList />
+  </section>
 </template>
+
+<style scoped>
+.header-bar {
+  height: 40px;
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 95vw;
+}
+
+.main-content .home-options {
+  display: flex;
+  height: 40px;
+  justify-content: flex-end;
+}
+
+.main-content .ui-card {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.task-list-container {
+  position: fixed;
+  bottom: 1em;
+  width: 100vw;
+}
+
+.create-button {
+  display: flex;
+}
+</style>

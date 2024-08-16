@@ -65,8 +65,8 @@ const inversionAvailable = computed(() => {
 </script>
 
 <template>
-  <q-card class="p-2">
-    <span>Selected : {{ processingModule.type }}</span>
+  <q-card class="p-2 editor-card">
+    <span class="module-name">{{ processingModule.type }}</span>
     <div v-if="optionLabel">
       <label for="module-option">{{ OPTION_LABELS[processingModule.type] }}:</label>
       <input type="text" id="module-option" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
@@ -146,3 +146,13 @@ const inversionAvailable = computed(() => {
     </button>
   </q-card>
 </template>
+
+<style scoped>
+.editor-card {
+  padding: 1em
+}
+
+.module-name {
+  font-weight: 700;
+}
+</style>

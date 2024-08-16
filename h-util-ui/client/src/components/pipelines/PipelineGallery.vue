@@ -12,10 +12,12 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
 </script>
 
 <template>
-  <div>
-    <q-select v-model="sortBy" :options="Object.values(SortBy)" label="Sort by" :hide-dropdown-icon="true" />
-    <q-select v-model="sortType" :options="Object.values(SortType)" label="Order" :hide-dropdown-icon="true" />
-  </div>
+  <nav class="sort-opts">
+    <q-select class="dropdown" v-model="sortBy" :options="Object.values(SortBy)" label="Sort by"
+      :hide-dropdown-icon="true" />
+    <q-select class="dropdown" v-model="sortType" :options="Object.values(SortType)" label="Order"
+      :hide-dropdown-icon="true" />
+  </nav>
   <div class="gallery-container">
     <div v-for="pipeline in sortedPipelines" :key="pipeline.id!" class="gallery-item">
       <PipelineItem :pipeline-item="pipeline" />
@@ -25,14 +27,22 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
 
 <style scoped>
 .gallery-container {
-  display: flex;
-  max-width: 95vw;
-  flex-wrap: wrap;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   justify-content: center;
   gap: 10px
 }
 
 .gallery-item {
   min-width: 250px;
+}
+
+.sort-opts {
+  display: flex;
+}
+
+.sort-opts .dropdown {
+  width: 100px
 }
 </style>
