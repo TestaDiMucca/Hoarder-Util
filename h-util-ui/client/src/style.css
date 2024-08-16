@@ -61,6 +61,7 @@ button:focus-visible {
 }
 
 #app {
+  width: 100vw;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -78,4 +79,8 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.icon-button {
+  cursor: pointer;
 }

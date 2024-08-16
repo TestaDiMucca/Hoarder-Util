@@ -2,6 +2,7 @@
 import PipelineGallery from './pipelines/PipelineGallery.vue';
 import TaskList from './TaskList.vue';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
+import Information from 'vue-material-design-icons/Information.vue'
 import { useQuasar } from 'quasar'
 import AboutModal from './about/AboutModal.vue';
 
@@ -14,25 +15,20 @@ const handleNewPipeline = () => window.location.href = '#/new';
 <template>
   <section class="header-bar">
     <span>Visual H-Util</span>
+    <nav class="controls">
+      <AboutModal :open-button="Information" />
+      <PlusBox class="icon-button create-button" @click="handleNewPipeline" title="Create a new pipeline" />
+    </nav>
+
   </section>
 
   <section class="main-content">
-    <nav class="home-options">
-      <AboutModal />
-      <button class="create-button" @click="handleNewPipeline">
-        <PlusBox title="Create a new pipeline" />
-        <span>Create pipeline</span>
-      </button>
-    </nav>
-
-
     <q-card class="ui-card">
       <q-card-section>
         <PipelineGallery />
       </q-card-section>
     </q-card>
   </section>
-
 
   <section class="task-list-container">
     <TaskList />
@@ -42,19 +38,21 @@ const handleNewPipeline = () => window.location.href = '#/new';
 <style scoped>
 .header-bar {
   height: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-bar .controls {
+  display: flex;
+  gap: 0.5em;
 }
 
 .main-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  width: 95vw;
-}
-
-.main-content .home-options {
-  display: flex;
-  height: 40px;
-  justify-content: flex-end;
+  width: 100%;
 }
 
 .main-content .ui-card {
