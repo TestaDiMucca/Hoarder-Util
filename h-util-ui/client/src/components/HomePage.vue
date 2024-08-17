@@ -68,5 +68,6 @@ const handleNewPipeline = () => window.location.href = '#/new';
 
 .create-button {
   display: flex;
+  color: var(--q-lightColor);
 }
 </style>

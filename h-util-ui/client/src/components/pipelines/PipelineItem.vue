@@ -22,8 +22,12 @@ const selectPipeline = () => {
 
 const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
   if (acceptFiles.length) {
-    ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify({ filePaths: acceptFiles.map(f => (f as any).path), pipeline: props.pipelineItem })]
-    )
+    const payload = {
+      filePaths: acceptFiles.map(f => (f as any).path),
+      pipeline: props.pipelineItem
+    }
+
+    ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify(payload)])
   } else {
     sendMessageToMain('No files detected')
   }
@@ -33,7 +37,7 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </script>
 
 <template>
-  <q-card>
+  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true }">
     <div v-bind="getRootProps()" class="cursor-pointer">
       <div class="pipeline-item">
         {{ pipelineItem.name }}
@@ -57,5 +61,15 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 .pipeline-item {
   padding: 1em;
   font-weight: 500;
+}
+
+.pipeline-drop {
+  color: var(--q-lightColor);
+  transform: scale(1.05);
+  transform-origin: center;
+}
+
+.pipeline-card {
+  transition: transform 0.5s;
 }
 </style>

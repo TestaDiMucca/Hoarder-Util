@@ -2,8 +2,9 @@
 import { computed, defineProps } from 'vue';
 import MenuRight from 'vue-material-design-icons/MenuRight.vue';
 import { ProcessingModule, ProcessingModuleType } from '@utils/types';
-import { OPTION_LABELS } from '@utils/constants';
+import { MODULE_MATERIAL_ICONS, OPTION_LABELS } from '@utils/constants';
 import { cloneObject } from '@utils/helpers';
+import { getModuleCanInvert } from '@utils/module.helpers';
 
 interface Props {
   processingModule: ProcessingModule;
@@ -45,38 +46,25 @@ const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options']
 
 const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 
-const optionLabel = computed<string | null>(() => OPTION_LABELS[props.processingModule.type]);
-
 /** Filter types can be inverted */
-const inversionAvailable = computed(() => {
-  switch (props.processingModule.type) {
-    case ProcessingModuleType.filter:
-    case ProcessingModuleType.ocr:
-      return true;
-    case ProcessingModuleType.datePrefix:
-    case ProcessingModuleType.metadata:
-    case ProcessingModuleType.compressImage:
-    case ProcessingModuleType.compressVideo:
-    case ProcessingModuleType.subfolder:
-    case ProcessingModuleType.iterate:
-      return false
-  }
-})
+const inversionAvailable = computed(() => getModuleCanInvert(props.processingModule.type))
+const iconSignifier = computed(() => MODULE_MATERIAL_ICONS[props.processingModule.type])
 </script>
 
 <template>
   <q-card class="p-2 editor-card">
-    <span class="module-name">{{ processingModule.type }}</span>
-    <div v-if="optionLabel">
-      <label for="module-option">{{ OPTION_LABELS[processingModule.type] }}:</label>
-      <input type="text" id="module-option" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
-        placeholder="Insert value here" />
+    <div class="module-header">
+      <span class="module-name">{{ processingModule.type }}</span>
+      <component :is="iconSignifier" />
     </div>
+
+    <q-input type="text" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
+      :label="OPTION_LABELS[processingModule.type] ?? ''" />
 
     <div>
       <q-checkbox v-model="processingModule.options.ignoreErrors" @change="handleToggleModuleOption('ignoreErrors')"
         label="Ignore errors" />
-      <q-checkbox v-model="processingModule.options.skipPreviouslyFailed"
+      <q-checkbox v-model="(processingModule.options.skipPreviouslyFailed)"
         @change="handleToggleModuleOption('skipPreviouslyFailed')" label="Skip previously failed" />
       <q-checkbox v-if="inversionAvailable" v-model="processingModule.options.inverse"
         @change="handleToggleModuleOption('inverse')" label="Invert logic" />
@@ -154,5 +142,12 @@ const inversionAvailable = computed(() => {
 
 .module-name {
   font-weight: 700;
+}
+
+.module-header {
+  display: flex;
+  justify-content: center;
+  gap: 0.2em;
+  align-items: start;
 }
 </style>

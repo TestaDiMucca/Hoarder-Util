@@ -50,8 +50,12 @@ const handleSavePipeline = () => {
 
   store.setSelectedPipeline(null);
 
-  window.location.href = '#/';
+  returnHome()
 };
+
+const returnHome = () => {
+  window.location.href = '#/';
+}
 
 const handlePipelineNameUpdated = (event: Event) => {
   const newValue = (event.target as HTMLInputElement).value;
@@ -73,31 +77,68 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
   <q-card class="ui-card">
     <h5>{{ header }}</h5>
 
-    <input type="text" v-model="pipelineName" @input="handlePipelineNameUpdated" />
-    <input type="number" v-model="pipelineRanking" @input="handlePipelineRankingUpdated" />
+    <section class="pipeline-opts">
+      <q-input type="text" class="text-input input-field" label="Pipeline name" v-model="pipelineName"
+        @input="handlePipelineNameUpdated" />
+      <q-input type="number" class="number-input input-field" label="Pipeline rank" v-model="pipelineRanking"
+        @input="handlePipelineRankingUpdated" />
+    </section>
 
-    <q-card-section v-for="(pipelineModule, index) in pipelineModules">
+    <q-card-section class="modules-container" v-for="(pipelineModule, index) in pipelineModules">
       <EditPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
         :index="index" />
+      <div v-if="index < pipelineModules.length - 1" class="line" />
     </q-card-section>
 
     <button @click="handleNewModules">
       Add a module
     </button>
+  </q-card>
 
+  <nav>
+    <button @click="returnHome">
+      Cancel
+    </button>
     <button :disabled="hasNoModules" @click="handleSavePipeline">
       Save pipeline
     </button>
-  </q-card>
-
-  <a href="#/">
-    Cancel
-  </a>
+  </nav>
 </template>
 
 <style scoped>
 .ui-card {
   max-height: 90vh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pipeline-opts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 1em;
+  width: 100%;
+  padding: 0 10em;
+}
+
+.pipeline-opts .text {
+  min-width: 150px;
+}
+
+.modules-container {
+  min-width: 300px;
+  width: 70%;
+  position: relative;
+}
+
+.line {
+  height: 20px;
+  width: 2px;
+  background: var(--q-lightColor);
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateY(50%);
 }
 </style>

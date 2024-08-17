@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import Menu from 'vue-material-design-icons/Menu.vue'
 import PipelineItem from './PipelineItem.vue';
 import store from '@utils/store';
 import { SortBy, sortPipelines, SortType } from './pipelineGallery.helpers';
@@ -13,10 +14,18 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
 
 <template>
   <nav class="sort-opts">
-    <q-select class="dropdown" v-model="sortBy" :options="Object.values(SortBy)" label="Sort by"
-      :hide-dropdown-icon="true" />
-    <q-select class="dropdown" v-model="sortType" :options="Object.values(SortType)" label="Order"
-      :hide-dropdown-icon="true" />
+    <button class="expand-opts-btn">
+      <Menu class="icon-button" />
+      <q-popup-proxy>
+        <q-card class="opts-card">
+          <q-select class="dropdown" v-model="sortBy" :options="Object.values(SortBy)" label="Sort by"
+            :hide-dropdown-icon="true" />
+          <q-select class="dropdown" v-model="sortType" :options="Object.values(SortType)" label="Order"
+            :hide-dropdown-icon="true" />
+        </q-card>
+      </q-popup-proxy>
+    </button>
+
   </nav>
   <div class="gallery-container">
     <div v-for="pipeline in sortedPipelines" :key="pipeline.id!" class="gallery-item">
@@ -40,9 +49,20 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
 
 .sort-opts {
   display: flex;
+  justify-content: flex-end;
 }
 
 .sort-opts .dropdown {
   width: 100px
+}
+
+.expand-opts-btn {
+  font-size: 0.5em;
+  padding-top: 0
+}
+
+.opts-card {
+  min-width: 150px;
+  padding: 1em;
 }
 </style>
