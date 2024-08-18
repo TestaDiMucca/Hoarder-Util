@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onBeforeMount } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
+import cloneDeep from 'lodash/cloneDeep';
+
 import { ProcessingModule } from '@utils/types';
 import store from '@utils/store';
 import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
@@ -15,11 +17,11 @@ const pipelineModules = ref<ProcessingModule[]>([
 const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
 const pipelineRanking = ref(DEFAULT_RANKING);
 
-onMounted(() => {
+onBeforeMount(() => {
   const selected = store.state.selectedPipeline;
 
   if (!selected) return;
-  pipelineModules.value = selected.processingModules;
+  pipelineModules.value = cloneDeep(selected.processingModules);
   pipelineName.value = selected.name;
   pipelineRanking.value = selected.manualRanking ?? DEFAULT_RANKING;
 })
@@ -49,12 +51,11 @@ const handleSavePipeline = () => {
     processingModules: pipelineModules.value
   })
 
-  store.setSelectedPipeline(null);
-
   returnHome()
 };
 
 const returnHome = () => {
+  store.setSelectedPipeline(null);
   window.location.href = '#/';
 }
 

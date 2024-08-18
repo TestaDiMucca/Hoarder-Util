@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
-import Menu from 'vue-material-design-icons/Menu.vue'
+import Menu from 'vue-material-design-icons/DotsVertical.vue'
 
 import store from '@utils/store';
 import { IpcMessageType } from '@shared/common.constants';
@@ -57,7 +57,7 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
     </div>
 
     <button class="sub-menu button-with-icon-child">
-      <Menu class="icon-button" />
+      <Menu class="icon-button" :size="18" />
       <q-menu>
         <q-list style="min-width: 100px">
           <q-item clickable v-close-popup="true" @click="selectPipeline">
@@ -109,7 +109,7 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
 .sub-menu {
   position: absolute;
-  top: 4px;
+  top: 8px;
   right: 0;
 }
 </style>
