@@ -1,0 +1,34 @@
+/**
+ * For global component styling
+ */
+
+.icon-button {
+  cursor: pointer;
+  transform-origin: center;
+  transition: transform 0.5s;
+}
+
+.icon-button:hover {
+  transform: scale(1.1);
+}
+
+.button-with-icon-child {
+  background: none;
+  border: none;
+  box-sizing: content-box;
+}
+
+.button-with-icon-child:hover {
+  outline: none;
+  border: none;
+}
+
+.button-with-icon-child:focus {
+  outline: none;
+  text-decoration: underline;
+}
+
+.helper-text {
+  font-size: 0.8em;
+  opacity: 0.75;
+}

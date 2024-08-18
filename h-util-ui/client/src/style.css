@@ -37,6 +37,12 @@ h1 {
   line-height: 1.1;
 }
 
+h4 {
+  line-height: 1.1;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -61,6 +67,7 @@ button:focus-visible {
 }
 
 #app {
+  width: 100vw;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;

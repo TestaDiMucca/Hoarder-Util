@@ -17,6 +17,11 @@ const tab = ref(Tabs.about);
 const about = ref(false);
 const stats = ref<StatsStorage | null>(null);
 
+// Define props using the defineProps function
+defineProps<{
+  openButton: any;
+  openButtonProps?: Record<string, any>;
+}>();
 
 const getStats = () => {
   loadStats().then(data => {
@@ -40,9 +45,7 @@ watch(about, (newValue, oldValue) => {
 </script>
 
 <template>
-  <button @click="about = true">
-    About
-  </button>
+  <component class="icon-button" @click="about = true" :is="openButton" v-bind="openButtonProps ?? {}" />
 
   <q-dialog v-model="about">
     <q-card>
@@ -78,7 +81,7 @@ watch(about, (newValue, oldValue) => {
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" v-close-popup="true" />
+        <q-btn flat label="Close" color="primary" v-close-popup="true" />
       </q-card-actions>
     </q-card>
   </q-dialog>

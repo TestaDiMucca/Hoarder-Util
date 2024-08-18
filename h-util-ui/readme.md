@@ -4,15 +4,17 @@ A UI version of H-util to support dragging and dropping files and pipeline build
 
 ## Setup
 
-Run `yarn setup`
+Run `npm run setup`
+
+(As a side note, project was bootstrapped with `yarn` but migrated into an npm workspace, which caused some funky incompatibilities)
 
 ## Development mode
 
 You can start development mode by running. For more scripts you can review the script property in the package.json
 ```bash
-yarn start
+npm run start
 ```
-Run `yarn app:build` for production or you can run `yarn app:build:nightly` for nightly version.
+Run `npm run app:build` for production or you can run `npm run app:build:nightly` for nightly version.
 
 when running `build commands` make sure to add github repository property on your package.json, and add your repository link as the value.
 
