@@ -1,8 +1,8 @@
 import { withTimer, promises } from '@common/common';
 import { splitFileNameFromPath } from '@common/fileops';
 
-import { FileOptions, ModuleHandler } from '../util/types';
-import { ProcessingModule } from '../../common/common.types';
+import { FileOptions, ModuleHandler } from '@util/types';
+import { ProcessingModule } from '@shared/common.types';
 import output from '@util/output';
 
 type WithFileListHandlingArgs<T extends object> = {
