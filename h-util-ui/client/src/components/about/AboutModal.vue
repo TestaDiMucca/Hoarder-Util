@@ -47,7 +47,7 @@ watch(about, (newValue, oldValue) => {
 <template>
   <component class="icon-button" @click="about = true" :is="openButton" v-bind="openButtonProps ?? {}" />
 
-  <q-dialog v-model="about">
+  <q-dialog v-model="about" backdrop-filter="blur(5px)">
     <q-card>
       <q-card-section style="width: 70vw;">
         <div class="text-h6">About</div>
