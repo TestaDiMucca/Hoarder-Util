@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 import Menu from 'vue-material-design-icons/DotsVertical.vue'
 
@@ -7,11 +8,13 @@ import { IpcMessageType } from '@shared/common.constants';
 import { Pipeline } from '@utils/types';
 import { getIpcRenderer, sendMessageToMain } from '@utils/helpers';
 import { MODULE_MATERIAL_ICONS } from '@utils/constants';
+import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
 
 interface Props { pipelineItem: Pipeline }
 
 const props = defineProps<Props>()
 const ipcRenderer = getIpcRenderer();
+const confirmDelete = ref(false);
 
 const deletePipeline = () =>
   store.removePipeline(props.pipelineItem.id!)
@@ -63,12 +66,14 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
           <q-item clickable v-close-popup="true" @click="selectPipeline">
             <q-item-section>Edit</q-item-section>
           </q-item>
-          <q-item clickable v-close-popup="true" @click="deletePipeline">
+          <q-item clickable v-close-popup="true" @click="confirmDelete = true">
             <q-item-section style="color: red;">Delete</q-item-section>
           </q-item>
         </q-list>
       </q-menu>
     </button>
+
+    <DeleteConfirmModal v-model="confirmDelete" :onConfirm="deletePipeline" :deleteTargetName="pipelineItem.name" />
   </q-card>
 </template>
 

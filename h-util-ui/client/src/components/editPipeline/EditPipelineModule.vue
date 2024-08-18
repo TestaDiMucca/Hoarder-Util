@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineProps } from 'vue';
+import { computed, defineProps, ref } from 'vue';
 import MenuRight from 'vue-material-design-icons/MenuRight.vue';
 import Delete from 'vue-material-design-icons/Delete.vue'
 
@@ -7,6 +7,7 @@ import { ProcessingModule, ProcessingModuleType } from '@utils/types';
 import { MODULE_MATERIAL_ICONS, OPTION_LABELS } from '@utils/constants';
 import { cloneObject } from '@utils/helpers';
 import { getModuleCanInvert } from '@utils/module.helpers';
+import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
 
 interface Props {
   processingModule: ProcessingModule;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const confirmDelete = ref(false);
 
 const handleModuleTypeSelect = (type: ProcessingModuleType) => {
   const newData: ProcessingModule = {
@@ -119,9 +121,12 @@ const optionLabel = computed(() => OPTION_LABELS[props.processingModule.type])
       </button>
 
       <span class="module-tools">
-        <Delete @click="handleRemoveModule" class="icon-button" :size="18" />
+        <Delete @click="confirmDelete = true" class="icon-button" :size="18" />
       </span>
     </div>
+
+    <DeleteConfirmModal v-model="confirmDelete" :onConfirm="handleRemoveModule"
+      :deleteTargetName="processingModule.type" />
 
     <q-input v-if="optionLabel" type="text" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
       :label="optionLabel ?? ''" />
