@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, defineProps } from 'vue';
 import MenuRight from 'vue-material-design-icons/MenuRight.vue';
+import Delete from 'vue-material-design-icons/Delete.vue'
+
 import { ProcessingModule, ProcessingModuleType } from '@utils/types';
 import { MODULE_MATERIAL_ICONS, OPTION_LABELS } from '@utils/constants';
 import { cloneObject } from '@utils/helpers';
@@ -49,17 +51,80 @@ const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 /** Filter types can be inverted */
 const inversionAvailable = computed(() => getModuleCanInvert(props.processingModule.type))
 const iconSignifier = computed(() => MODULE_MATERIAL_ICONS[props.processingModule.type])
+const optionLabel = computed(() => OPTION_LABELS[props.processingModule.type])
 </script>
 
 <template>
   <q-card class="p-2 editor-card">
     <div class="module-header">
-      <span class="module-name">{{ processingModule.type }}</span>
-      <component :is="iconSignifier" />
+      <button class="module-title expand-opts-btn button-with-icon-child">
+        <component :is="iconSignifier" />
+        <span class="module-name">{{ processingModule.type }} <span class="helper-text">(Click to change)</span></span>
+        <q-menu>
+          <q-list style="min-width: 100px">
+            <q-item @click="handleModuleTypeSelect(ProcessingModuleType.subfolder)" clickable v-close-popup="true">
+              <q-item-section>Place in directory</q-item-section>
+            </q-item>
+
+            <q-separator />
+            <q-item @click="handleModuleTypeSelect(ProcessingModuleType.metadata)" clickable v-close-popup="true">
+              <q-item-section>Metadata tag</q-item-section>
+            </q-item>
+            <q-item @click="handleModuleTypeSelect(ProcessingModuleType.datePrefix)" clickable v-close-popup="true">
+              <q-item-section>Date prefix</q-item-section>
+            </q-item>
+            <q-separator />
+
+            <q-item @click="handleModuleTypeSelect(ProcessingModuleType.iterate)" clickable v-close-popup="true">
+              <q-item-section>Iterate</q-item-section>
+            </q-item>
+            <q-separator />
+            <q-item clickable>
+              <q-item-section>Media compression</q-item-section>
+              <q-item-section side>
+                <MenuRight :size="20" />
+              </q-item-section>
+              <q-menu anchor="top end" self="top start">
+                <q-list>
+                  <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressImage)" clickable
+                    v-close-popup="true">
+                    <q-item-section>Compress image</q-item-section>
+                  </q-item>
+                  <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressVideo)" clickable
+                    v-close-popup="true">
+                    <q-item-section>Compress video</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-item>
+            <q-item clickable>
+              <q-item-section>Filtering</q-item-section>
+              <q-item-section side>
+                <MenuRight :size="20" />
+              </q-item-section>
+
+              <q-menu anchor="top end" self="top start">
+                <q-list>
+                  <q-item @click="handleModuleTypeSelect(ProcessingModuleType.filter)" clickable v-close-popup="true">
+                    <q-item-section>Filter file</q-item-section>
+                  </q-item>
+                  <q-item @click="handleModuleTypeSelect(ProcessingModuleType.ocr)" clickable v-close-popup="true">
+                    <q-item-section>Search image for text</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </button>
+
+      <span class="module-tools">
+        <Delete @click="handleRemoveModule" class="icon-button" :size="18" />
+      </span>
     </div>
 
-    <q-input type="text" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
-      :label="OPTION_LABELS[processingModule.type] ?? ''" />
+    <q-input v-if="optionLabel" type="text" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
+      :label="optionLabel ?? ''" />
 
     <div>
       <q-checkbox v-model="processingModule.options.ignoreErrors" @change="handleToggleModuleOption('ignoreErrors')"
@@ -69,69 +134,6 @@ const iconSignifier = computed(() => MODULE_MATERIAL_ICONS[props.processingModul
       <q-checkbox v-if="inversionAvailable" v-model="processingModule.options.inverse"
         @change="handleToggleModuleOption('inverse')" label="Invert logic" />
     </div>
-
-    <q-btn color="primary" label="Change type">
-      <q-menu>
-        <q-list style="min-width: 100px">
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.subfolder)" clickable v-close-popup="true">
-            <q-item-section>Place in directory</q-item-section>
-          </q-item>
-
-          <q-separator />
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.metadata)" clickable v-close-popup="true">
-            <q-item-section>Metadata tag</q-item-section>
-          </q-item>
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.datePrefix)" clickable v-close-popup="true">
-            <q-item-section>Date prefix</q-item-section>
-          </q-item>
-          <q-separator />
-
-          <q-item @click="handleModuleTypeSelect(ProcessingModuleType.iterate)" clickable v-close-popup="true">
-            <q-item-section>Iterate</q-item-section>
-          </q-item>
-          <q-separator />
-          <q-item clickable>
-            <q-item-section>Media compression</q-item-section>
-            <q-item-section side>
-              <MenuRight :size="20" />
-            </q-item-section>
-            <q-menu anchor="top end" self="top start">
-              <q-list>
-                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressImage)" clickable
-                  v-close-popup="true">
-                  <q-item-section>Compress image</q-item-section>
-                </q-item>
-                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.compressVideo)" clickable
-                  v-close-popup="true">
-                  <q-item-section>Compress video</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-item>
-          <q-item clickable>
-            <q-item-section>Filtering</q-item-section>
-            <q-item-section side>
-              <MenuRight :size="20" />
-            </q-item-section>
-
-            <q-menu anchor="top end" self="top start">
-              <q-list>
-                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.filter)" clickable v-close-popup="true">
-                  <q-item-section>Filter file</q-item-section>
-                </q-item>
-                <q-item @click="handleModuleTypeSelect(ProcessingModuleType.ocr)" clickable v-close-popup="true">
-                  <q-item-section>Search image for text</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-item>
-        </q-list>
-      </q-menu>
-    </q-btn>
-
-    <button @click="handleRemoveModule">
-      Remove module
-    </button>
   </q-card>
 </template>
 
@@ -146,8 +148,14 @@ const iconSignifier = computed(() => MODULE_MATERIAL_ICONS[props.processingModul
 
 .module-header {
   display: flex;
+  justify-content: space-between;
+}
+
+.module-title {
+  display: flex;
   justify-content: center;
   gap: 0.2em;
   align-items: start;
+  padding-left: 0;
 }
 </style>

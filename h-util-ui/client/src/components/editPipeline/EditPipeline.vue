@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
+import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import { ProcessingModule } from '@utils/types';
 import store from '@utils/store';
 import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
@@ -88,11 +89,15 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
       <EditPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
         :index="index" />
       <div v-if="index < pipelineModules.length - 1" class="line" />
+      <div v-if="index === pipelineModules.length - 1" class="line line-end" />
     </q-card-section>
 
-    <button @click="handleNewModules">
-      Add a module
-    </button>
+    <q-card-section @click="handleNewModules" class="modules-container">
+      <q-card class="new-module-card p-2">
+        <PlusBox class="icon-button" />
+        <span>Add a module</span>
+      </q-card>
+    </q-card-section>
   </q-card>
 
   <nav>
@@ -140,5 +145,18 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
   bottom: 0;
   left: 50%;
   transform: translateY(50%);
+}
+
+.line-end {
+  opacity: 0.4;
+}
+
+.new-module-card {
+  padding: 1em;
+  width: 100%;
+  cursor: pointer;
+  justify-content: center;
+  display: flex;
+  gap: 5px;
 }
 </style>

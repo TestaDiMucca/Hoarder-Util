@@ -46,7 +46,9 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
       </div>
       <input v-bind="getInputProps()" />
       <p v-if="isDragActive">Drop the files here ...</p>
-      <p v-else>Drop files here, or click to browse</p>
+      <p v-else>Drop files here, or
+        <span class="pipeline-drop-click-text">click to browse</span>
+      </p>
       <nav class="icon-bar">
         <div class="module-icon-container" v-for="pipelineModule in pipelineItem.processingModules">
           <component :is="MODULE_MATERIAL_ICONS[pipelineModule.type]" />
@@ -80,6 +82,14 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   color: var(--q-lightColor);
   transform: scale(1.05);
   transform-origin: center;
+}
+
+.pipeline-drop-click-text {
+  transition: color 0.5s;
+}
+
+.pipeline-card:hover .pipeline-drop-click-text {
+  color: var(--q-lightColor);
 }
 
 .pipeline-card {

@@ -1,4 +1,15 @@
+/**
+ * CSS color vars
+ * Quasar sass injections appear to require quasar-cli
+ */
+
 body {
   --q-backingColor: #660000;
   --q-lightColor: #efc648;
 }
+
+/* .body--dark {
+}
+
+.body--light {
+} */

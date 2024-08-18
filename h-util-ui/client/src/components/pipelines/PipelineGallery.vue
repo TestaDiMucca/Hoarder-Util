@@ -40,7 +40,9 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
   width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   justify-content: center;
-  gap: 10px
+  gap: 10px;
+  overflow-y: auto;
+  padding: 0.5em;
 }
 
 .gallery-item {

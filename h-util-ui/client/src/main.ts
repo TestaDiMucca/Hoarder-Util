@@ -3,6 +3,7 @@ import { Quasar } from 'quasar';
 import Notify from 'quasar/src/plugins/notify/Notify';
 
 import './style.css';
+import './global.css';
 import './colors.css';
 import App from './App.vue';
 

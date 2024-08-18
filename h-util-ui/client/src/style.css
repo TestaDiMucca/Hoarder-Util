@@ -62,12 +62,6 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* .body--dark {
-}
-
-.body--light {
-} */
-
 .card {
   padding: 2em;
 }
@@ -91,25 +85,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
-
-.icon-button {
-  cursor: pointer;
-  transform-origin: center;
-  transition: transform 0.5s;
-}
-
-.icon-button:hover {
-  transform: scale(1.1);
-}
-
-.button-with-icon-child {
-  background: none;
-  border: none;
-  box-sizing: content-box;
-}
-
-.button-with-icon-child:hover {
-  outline: none;
-  border: none;
 }
