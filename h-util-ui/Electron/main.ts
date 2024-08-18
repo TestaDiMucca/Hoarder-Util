@@ -3,6 +3,7 @@ import moduleAliases from 'module-alias';
 
 moduleAliases.addAliases({
     '@util': path.join(__dirname, 'util'),
+    '@common': path.join(__dirname, 'packages'),
     '@shared': path.join(__dirname, '../common'),
 });
 

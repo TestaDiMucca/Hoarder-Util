@@ -8,6 +8,14 @@ Run `npm run setup`
 
 (As a side note, project was bootstrapped with `yarn` but migrated into an npm workspace, which caused some funky incompatibilities)
 
+Because npm workspace support isn't baked into electron builder, and npm link does not bring in all the dependencies, we're using a lousy workaround by importing the packages source and adding the packages dependencies as dependencies here as well. Will need to run the sync script.
+
+```bash
+npm run packages:sync
+```
+
+Because of this, do not make modifications to the shared packages here. Instead, go to `~/packages/*` and edit the source files included there, and run the sync which will bring the files over.
+
 ## Development mode
 
 You can start development mode by running. For more scripts you can review the script property in the package.json

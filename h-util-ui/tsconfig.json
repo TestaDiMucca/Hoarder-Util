@@ -12,18 +12,11 @@
         "baseUrl": ".",
         "paths": {
             "@util/*": ["Electron/util/*"],
-            "@shared/*": ["common/*"]
+            "@shared/*": ["common/*"],
+            "@common/*": ["Electron/packages/*"]
         }
     },
     "include": ["Electron/**/*.ts", "common/*.ts"],
-    "references": [
-        {
-            "path": "../packages/fileops"
-        },
-        {
-            "path": "../packages/common"
-        }
-    ],
     "ts-node": {
         "require": ["tsconfig-paths/register"]
     }

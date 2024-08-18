@@ -14,6 +14,10 @@ npm run build
 
 This will update the packages for use in other projects.
 
+## Extending
+
+If new libraries are added unfortunately they will need to also be added to the `package.json` of the h-util-ui, since the electron builder cannot currently supported dependencies from npm workspaces.
+
 ## Improvements
 
 Files were simply moved into their respective directories, meaning they each still individually manage their own packages and scripts. So running the following for root directory `node_modules` may be an eventual goal but is not currently.
