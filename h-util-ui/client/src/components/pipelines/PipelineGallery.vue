@@ -14,7 +14,7 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
 
 <template>
   <nav class="sort-opts">
-    <button class="expand-opts-btn">
+    <button class="expand-opts-btn button-with-icon-child">
       <Menu class="icon-button" />
       <q-popup-proxy>
         <q-card class="opts-card">

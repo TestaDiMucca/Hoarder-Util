@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
+import Menu from 'vue-material-design-icons/Menu.vue'
 
 import store from '@utils/store';
 import { IpcMessageType } from '@shared/common.constants';
 import { Pipeline } from '@utils/types';
 import { getIpcRenderer, sendMessageToMain } from '@utils/helpers';
+import { MODULE_MATERIAL_ICONS } from '@utils/constants';
 
 interface Props { pipelineItem: Pipeline }
 
@@ -45,14 +47,25 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
       <input v-bind="getInputProps()" />
       <p v-if="isDragActive">Drop the files here ...</p>
       <p v-else>Drop files here, or click to browse</p>
+      <nav class="icon-bar">
+        <div class="module-icon-container" v-for="pipelineModule in pipelineItem.processingModules">
+          <component :is="MODULE_MATERIAL_ICONS[pipelineModule.type]" />
+        </div>
+      </nav>
     </div>
 
-    <button @click="deletePipeline">
-      Delete
-    </button>
-
-    <button @click="selectPipeline">
-      Edit
+    <button class="sub-menu button-with-icon-child">
+      <Menu class="icon-button" />
+      <q-menu>
+        <q-list style="min-width: 100px">
+          <q-item clickable v-close-popup="true" @click="selectPipeline">
+            <q-item-section>Edit</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup="true" @click="deletePipeline">
+            <q-item-section style="color: red;">Delete</q-item-section>
+          </q-item>
+        </q-list>
+      </q-menu>
     </button>
   </q-card>
 </template>
@@ -71,5 +84,22 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
 .pipeline-card {
   transition: transform 0.5s;
+  position: relative;
+}
+
+.icon-bar {
+  font-size: smaller;
+  display: flex;
+  position: relative;
+  width: 100%;
+  justify-content: center;
+  gap: 5px;
+  padding: 0.5em;
+}
+
+.sub-menu {
+  position: absolute;
+  top: 4px;
+  right: 0;
 }
 </style>
