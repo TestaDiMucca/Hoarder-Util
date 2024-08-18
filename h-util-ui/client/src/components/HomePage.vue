@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import PipelineGallery from './pipelines/PipelineGallery.vue';
-import TaskList from './TaskList.vue';
+import PipelineGallery from './Pipelines/PipelineGallery.vue';
+import TaskList from './TaskList/TaskList.vue';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import Information from 'vue-material-design-icons/Information.vue'
 import { useQuasar } from 'quasar'
-import AboutModal from './about/AboutModal.vue';
+import AboutModal from './About/AboutModal.vue';
 
 /* Auto dark for now */
 useQuasar().dark.set(true);
@@ -62,8 +62,8 @@ const handleNewPipeline = () => window.location.href = '#/new';
 
 .task-list-container {
   position: fixed;
-  bottom: 1em;
-  width: 100vw;
+  bottom: 0;
+  width: calc(100% - 4rem);
 }
 
 .create-button {

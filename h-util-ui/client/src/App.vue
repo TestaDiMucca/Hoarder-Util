@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import HomePage from './components/HomePage.vue'
-import EditPipeline from './components/editPipeline/EditPipeline.vue'
+import EditPipeline from './components/EditPipeline/EditPipeline.vue'
 import { VueComponent } from './utils/util.types'
 import { getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
 import store from './utils/store'
