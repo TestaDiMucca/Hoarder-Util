@@ -65,7 +65,7 @@
   "type": "commonjs",
   "build": {
     "appId": "com.official-h-util-ui.app",
-    "productName": "H-Util UI",
+    "productName": "H-Util UI Nightly",
     "copyright": "Copyright © TdM",
     "publish": [
       {
