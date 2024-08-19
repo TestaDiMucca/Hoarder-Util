@@ -12,6 +12,10 @@ export class BaseError extends Error {
     }
 }
 
+/**
+ * Processing error is something thrown by the handler on a specific file
+ * Likely it is not config related, but a particular instance's problem
+ */
 export class ProcessingError extends BaseError {
     constructor(message = 'Error processing file') {
         super(message);

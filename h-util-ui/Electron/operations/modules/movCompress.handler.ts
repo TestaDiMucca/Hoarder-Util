@@ -11,11 +11,11 @@ import { ProcessingError } from '@util/errors';
 import output from '@util/output';
 import { addNumericalStat } from '@util/stats';
 import { ModuleHandler } from '@util/types';
+import { addEventLogForReport } from '../handler.helpers';
 
 const movCompressHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
         const parsedQuality = parseNumber(String(opts.clientOptions?.value ?? 'null'));
-
         if (!parsedQuality || parsedQuality <= 0 || parsedQuality >= 100)
             throw new ProcessingError(`${parsedQuality} is not a valid quality number`);
 
@@ -35,6 +35,8 @@ const movCompressHandler: ModuleHandler = {
 
         if (reduced < 0) output.out(`${fileName} bloated by ${reduced}b`);
         else output.log(`${fileName} reduced by ${reduced}b`);
+
+        addEventLogForReport(opts, fileName, 'compressed', `${reduced}b`);
     },
     filter: (fileString) => checkSupportedExt(fileString, ['mov'], true),
 };

@@ -21,6 +21,7 @@ type IpcRendererExposed = {
     loadStats: <T>() => Promise<T>;
     saveFile: (content: string) => Promise<void>;
     saveData: (data: string[]) => Promise<void>;
+    selectFolder: () => Promise<string>;
 };
 
 interface Window {

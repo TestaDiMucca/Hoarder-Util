@@ -3,7 +3,7 @@ import output from '@util/output';
 import { ProcessingError } from '@util/errors';
 import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
 import { messageWindow, updateTaskProgress } from '@util/ipc';
-import { FileOptions, FileWithMeta } from '@util/types';
+import { CommonContext, FileOptions, FileWithMeta } from '@util/types';
 
 import { withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
@@ -38,9 +38,15 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
         filesWithMeta,
     };
 
+    const hasReporter = pipeline.processingModules.find((m) => m.type === ProcessingModuleType.report);
+
     let handled = 0;
     let currentModule: ProcessingModuleType = ProcessingModuleType.iterate;
     let timeTaken = 0;
+
+    const commonContext: CommonContext | undefined = hasReporter
+        ? { eventLog: [], pipelineName: pipeline.name }
+        : undefined;
 
     await withTimer(
         async () => {
@@ -70,6 +76,7 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
                         onProgress: (label, progress) => {
                             mainUpdate(currentModule, handledProgress, label, progress);
                         },
+                        context: commonContext,
                     });
                 } catch (e) {
                     if (e instanceof ProcessingError) {

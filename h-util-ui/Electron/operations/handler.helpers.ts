@@ -1,7 +1,7 @@
 import { withTimer, promises } from '@common/common';
 import { splitFileNameFromPath } from '@common/fileops';
 
-import { FileOptions, ModuleHandler } from '@util/types';
+import { FileOptions, ModuleHandler, ModuleOptions } from '@util/types';
 import { ProcessingModule } from '@shared/common.types';
 import output from '@util/output';
 
@@ -13,6 +13,7 @@ type WithFileListHandlingArgs<T extends object> = {
     onProgress?: (label: string, progress: number) => void;
     /** Configurations passed from the client: module configs */
     clientOptions?: ProcessingModule['options'];
+    onEvent?: (message: string) => void;
 };
 
 /**
@@ -25,59 +26,70 @@ export const withFileListHandling = async <T extends object = {}>({
     context,
     clientOptions,
 }: WithFileListHandlingArgs<T>) => {
+    const { filter, handler } = moduleHandler;
+
     let processed = 0;
     let filtered = 0;
     let errored = 0;
     let timeTaken = 0;
 
-    await withTimer(
-        async () => {
-            /** For handlers to persist any temporary data needed */
-            const dataStore: Record<string, any> = {};
+    /** For handlers to persist any temporary data needed */
+    const dataStore: Record<string, any> = {};
 
-            await promises.map(fileOptions.filesWithMeta, async (fileWithMeta, i) => {
-                try {
-                    const { filter, handler } = moduleHandler;
-                    const { filePath } = fileWithMeta;
+    if (handler)
+        await withTimer(
+            async () => {
+                await promises.map(fileOptions.filesWithMeta, async (fileWithMeta, i) => {
+                    let topFileName = 'Unknown file';
+                    try {
+                        const { filePath } = fileWithMeta;
 
-                    const { fileName } = splitFileNameFromPath(filePath);
+                        const { fileName } = splitFileNameFromPath(filePath);
+                        topFileName = fileName;
 
-                    // In future if option is selected, can also filter based on previous fail
-                    const shouldHandle = filter ? await filter(filePath) : true;
+                        const shouldHandle = filter ? await filter(filePath) : true;
 
-                    onProgress?.(fileName, Math.ceil((i / fileOptions.filesWithMeta.length) * 100));
+                        onProgress?.(fileName, Math.ceil((i / fileOptions.filesWithMeta.length) * 100));
 
-                    if (!shouldHandle || (clientOptions?.skipPreviouslyFailed && fileWithMeta.previouslySkipped)) {
-                        filtered++;
-                        if (clientOptions?.skipPreviouslyFailed) fileWithMeta.previouslySkipped = true;
-                        return;
+                        /**
+                         * If this file has been previously marked to skip, or we determine that now
+                         */
+                        if (!shouldHandle || (clientOptions?.skipPreviouslyFailed && fileWithMeta.previouslySkipped)) {
+                            filtered++;
+                            if (clientOptions?.skipPreviouslyFailed) fileWithMeta.previouslySkipped = true;
+                            return;
+                        }
+
+                        await handler(
+                            fileWithMeta,
+                            {
+                                onSuccess: () => {},
+                                context,
+                                clientOptions,
+                            },
+                            dataStore,
+                        );
+
+                        processed++;
+                    } catch (e: any) {
+                        console.log('Error with handler:', e);
+                        addEventLogForReport({ context }, topFileName, 'errored', e.message);
+
+                        errored++;
+
+                        if (!clientOptions?.ignoreErrors) throw e;
                     }
+                });
 
-                    await handler(
-                        fileWithMeta,
-                        {
-                            onSuccess: () => {},
-                            context,
-                            clientOptions,
-                        },
-                        dataStore,
-                    );
+                await moduleHandler.onDone?.({ clientOptions, context }, dataStore, fileOptions);
+            },
+            (time) => {
+                timeTaken = time;
+            },
+        );
 
-                    processed++;
-                } catch (e) {
-                    console.log('Error with handler:', e);
-                    errored++;
-
-                    if (!clientOptions?.ignoreErrors) throw e;
-                }
-            });
-
-            await moduleHandler.onDone?.({ clientOptions }, dataStore, fileOptions);
-        },
-        (time) => {
-            timeTaken = time;
-        },
-    );
+    if (!handler && moduleHandler.onDone)
+        await moduleHandler.onDone({ clientOptions, context }, dataStore, fileOptions);
 
     output.log(`Module ran in ${timeTaken}ms, ${fileOptions.filesWithMeta.length} files`);
 
@@ -87,4 +99,19 @@ export const withFileListHandling = async <T extends object = {}>({
         filtered,
         processed,
     };
+};
+
+export const addEventLogForReport = (
+    opts: Partial<ModuleOptions<{}>>,
+    fileName: string,
+    operation: string,
+    target = '-',
+) => {
+    if (!opts?.context?.eventLog) return;
+
+    const timestamp = new Date().toISOString();
+
+    const fullLog = `${timestamp},${fileName},${operation},${target}`;
+
+    opts.context.eventLog.push(fullLog);
 };

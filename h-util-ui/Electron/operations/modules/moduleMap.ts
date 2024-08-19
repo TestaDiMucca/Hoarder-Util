@@ -9,6 +9,7 @@ import filterHandler from './filter.handler';
 import jpgCompressHandler from './jpgCompress.handler';
 import ocrHandler from './ocr.handler';
 import movCompressHandler from './movCompress.handler';
+import reportHandler from './report.handler';
 
 export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.datePrefix]: datePrefixHandler,
@@ -19,4 +20,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.iterate]: iterateHandler,
     [ProcessingModuleType.filter]: filterHandler,
     [ProcessingModuleType.ocr]: ocrHandler,
+    [ProcessingModuleType.report]: reportHandler,
 };

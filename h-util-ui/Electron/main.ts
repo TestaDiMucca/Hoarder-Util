@@ -68,6 +68,16 @@ async function createWindow() {
             pipelineRuns,
         };
     });
+    ipcMain.handle(IpcMessageType.selectDirectory, async () => {
+        const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+            properties: ['openDirectory'],
+        });
+        if (canceled) {
+            return;
+        } else {
+            return filePaths[0];
+        }
+    });
 
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const appBounds: any = appConfig.get('setting.appBounds');

@@ -6,6 +6,7 @@ import DatabaseExport from 'vue-material-design-icons/DatabaseExport.vue';
 import Printer from 'vue-material-design-icons/Printer.vue';
 import Filter from 'vue-material-design-icons/FileCog.vue';
 import TextSearch from 'vue-material-design-icons/TextSearch.vue';
+import FileDocument from 'vue-material-design-icons/FileDocumentArrowRight.vue';
 
 import { ProcessingModule, ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
@@ -20,6 +21,7 @@ export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.iterate]: '🖨',
     [ProcessingModuleType.filter]: '🗑',
     [ProcessingModuleType.ocr]: '📖',
+    [ProcessingModuleType.report]: '📉',
 };
 
 /** Icon representation of the module operations */
@@ -32,8 +34,12 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
     [ProcessingModuleType.iterate]: Printer,
     [ProcessingModuleType.filter]: Filter,
     [ProcessingModuleType.ocr]: TextSearch,
+    [ProcessingModuleType.report]: FileDocument,
 };
 
+/**
+ * Providing no label means this module has no option
+ */
 export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.subfolder]: 'Directory name',
     [ProcessingModuleType.compressImage]: 'Quality (0-100%)',
@@ -45,6 +51,7 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.iterate]: 'Output file name',
     [ProcessingModuleType.filter]: 'Filename match',
     [ProcessingModuleType.ocr]: 'Search string (CSV supported)',
+    [ProcessingModuleType.report]: 'Save directory',
 };
 
 /** Get a default starter module */

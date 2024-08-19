@@ -4,9 +4,10 @@ import { checkSupportedExt, getDateStringForFile, splitFileNameFromPath } from '
 import { ModuleHandler } from '@util/types';
 import { ProcessingError } from '@util/errors';
 import output from '@util/output';
+import { addEventLogForReport } from '../handler.helpers';
 
 const datePrefixHandler: ModuleHandler = {
-    handler: async ({ filePath }, _opts) => {
+    handler: async ({ filePath }, opts) => {
         const isImg = checkSupportedExt(filePath, ['img'], true);
 
         const { dateStr, exifUsed: _exifUsed } = await getDateStringForFile(filePath, isImg);
@@ -21,6 +22,8 @@ const datePrefixHandler: ModuleHandler = {
         output.log(`rename ${fileName} to ${newName}`);
 
         await fsRename(filePath, newPath);
+
+        addEventLogForReport(opts, fileName, 'renamed', newName);
     },
     filter: (filePath) => checkSupportedExt(filePath, ['img', 'mov'], true),
 };

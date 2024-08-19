@@ -7,6 +7,7 @@ export enum ProcessingModuleType {
     iterate = 'Iterate',
     filter = 'Filter',
     ocr = 'Text Parsing (OCR)',
+    report = 'Report output',
 }
 
 export type ProcessingModule = {
@@ -61,3 +62,9 @@ export type ProcessingRequest = {
     pipeline: Pipeline;
     filePaths: string[];
 };
+
+export enum ModuleOptionType {
+    string = 'string',
+    dir = 'dir',
+    null = 'null',
+}
