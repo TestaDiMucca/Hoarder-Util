@@ -19,4 +19,6 @@ export enum IpcMessageType {
     getStats = 'get-stats',
     /** Call an electron dialog from the client to save file */
     saveFile = 'save-file',
+    /** Open dialog to select a directory */
+    selectDirectory = 'select-dir',
 }

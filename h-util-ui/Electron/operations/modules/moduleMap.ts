@@ -19,4 +19,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.iterate]: iterateHandler,
     [ProcessingModuleType.filter]: filterHandler,
     [ProcessingModuleType.ocr]: ocrHandler,
+    [ProcessingModuleType.report]: null,
 };

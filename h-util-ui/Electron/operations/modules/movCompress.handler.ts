@@ -15,7 +15,6 @@ import { ModuleHandler } from '@util/types';
 const movCompressHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
         const parsedQuality = parseNumber(String(opts.clientOptions?.value ?? 'null'));
-
         if (!parsedQuality || parsedQuality <= 0 || parsedQuality >= 100)
             throw new ProcessingError(`${parsedQuality} is not a valid quality number`);
 

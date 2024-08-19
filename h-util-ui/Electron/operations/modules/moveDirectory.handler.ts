@@ -10,7 +10,7 @@ import { ProcessingError } from '../../util/errors';
 /** Directories we know we created, or already exist */
 type DirectoriesScanned = Record<string, boolean>;
 
-const moveDirectoryHandler: ModuleHandler<ProcessingModule['options'], DirectoriesScanned> = {
+const moveDirectoryHandler: ModuleHandler<{}, DirectoriesScanned> = {
     handler: async ({ filePath }, opts, dataStore) => {
         const { rootPath, fileName } = splitFileNameFromPath(filePath);
         const { clientOptions } = opts;

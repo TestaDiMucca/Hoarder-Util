@@ -5,9 +5,10 @@ import Delete from 'vue-material-design-icons/Delete.vue'
 
 import { ProcessingModule, ProcessingModuleType } from '@utils/types';
 import { MODULE_MATERIAL_ICONS, OPTION_LABELS } from '@utils/constants';
-import { cloneObject } from '@utils/helpers';
-import { getModuleCanInvert } from '@utils/module.helpers';
+import { cloneObject, getIpcRenderer } from '@utils/helpers';
+import { getModuleCanInvert, getModuleOptionType } from '@utils/module.helpers';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
+import { ModuleOptionType } from '@shared/common.types';
 
 interface Props {
   processingModule: ProcessingModule;
@@ -27,9 +28,7 @@ const handleModuleTypeSelect = (type: ProcessingModuleType) => {
   props.handleModuleUpdated(newData, props.index);
 }
 
-const handleModuleOptionUpdated = (event: Event) => {
-  const newValue = (event.target as HTMLInputElement).value;
-
+const updateOptionValue = (newValue: string) => {
   const newData: ProcessingModule = {
     ...props.processingModule,
     options: {
@@ -38,6 +37,12 @@ const handleModuleOptionUpdated = (event: Event) => {
   }
 
   props.handleModuleUpdated(newData, props.index);
+}
+
+const handleModuleOptionUpdated = (event: Event) => {
+  const newValue = (event.target as HTMLInputElement).value;
+
+  updateOptionValue(newValue);
 }
 
 const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options'], 'value'>) => {
@@ -50,10 +55,22 @@ const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options']
 
 const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 
+const handleDirPrompt = async () => {
+  const ipcRenderer = getIpcRenderer();
+
+  if (!ipcRenderer) return;
+
+  const folder = await ipcRenderer.selectFolder();
+  updateOptionValue(folder)
+}
+
+const directoryDisplay = computed(() => String(props.processingModule.options.value ?? '').length ? props.processingModule.options.value : 'Select a directory')
+
 /** Filter types can be inverted */
 const inversionAvailable = computed(() => getModuleCanInvert(props.processingModule.type))
 const iconSignifier = computed(() => MODULE_MATERIAL_ICONS[props.processingModule.type])
 const optionLabel = computed(() => OPTION_LABELS[props.processingModule.type])
+const optionType = computed(() => getModuleOptionType(props.processingModule.type))
 </script>
 
 <template>
@@ -79,6 +96,9 @@ const optionLabel = computed(() => OPTION_LABELS[props.processingModule.type])
 
             <q-item @click="handleModuleTypeSelect(ProcessingModuleType.iterate)" clickable v-close-popup="true">
               <q-item-section>Iterate</q-item-section>
+            </q-item>
+            <q-item @click="handleModuleTypeSelect(ProcessingModuleType.report)" clickable v-close-popup="true">
+              <q-item-section>Log results</q-item-section>
             </q-item>
             <q-separator />
             <q-item clickable>
@@ -128,8 +148,11 @@ const optionLabel = computed(() => OPTION_LABELS[props.processingModule.type])
     <DeleteConfirmModal v-model="confirmDelete" :onConfirm="handleRemoveModule"
       :deleteTargetName="processingModule.type" />
 
-    <q-input v-if="optionLabel" type="text" v-model="processingModule.options.value" @input="handleModuleOptionUpdated"
-      :label="optionLabel ?? ''" />
+    <q-input v-if="optionLabel && optionType === ModuleOptionType.string" type="text"
+      v-model="processingModule.options.value" @input="handleModuleOptionUpdated" :label="optionLabel ?? ''" />
+
+    <div class="select-directory" v-if="optionType === ModuleOptionType.dir" @click="handleDirPrompt">{{
+      directoryDisplay }}</div>
 
     <div>
       <q-checkbox v-model="processingModule.options.ignoreErrors" @change="handleToggleModuleOption('ignoreErrors')"
@@ -162,5 +185,9 @@ const optionLabel = computed(() => OPTION_LABELS[props.processingModule.type])
   gap: 0.2em;
   align-items: start;
   padding-left: 0;
+}
+
+.select-directory {
+  cursor: pointer;
 }
 </style>

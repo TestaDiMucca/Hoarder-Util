@@ -6,7 +6,9 @@ contextBridge.exposeInMainWorld('browserWindow', {
 
 /**
  * Note: Importing common types is causing issues. Make sure to refer to IpcMessageType
- *   until this is fixed
+ *
+ * Thread: https://github.com/electron/electron/issues/35587
+ * Preload scripts cannot support importing modules. Molto trieste
  */
 
 contextBridge.exposeInMainWorld('electronIpc', {
@@ -23,4 +25,5 @@ contextBridge.exposeInMainWorld('electronIpc', {
     saveData: (data: string) => ipcRenderer.send('save-data', data),
     onAppClose: (callback: () => void) => ipcRenderer.on('close', callback),
     confirmAppClose: () => ipcRenderer.send('confirm-close'),
+    selectFolder: () => ipcRenderer.invoke('select-dir'),
 });
