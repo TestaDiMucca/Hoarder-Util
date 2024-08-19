@@ -4,6 +4,7 @@ import { ProcessingError } from '@util/errors';
 import output from '@util/output';
 import { addNumericalStat } from '@util/stats';
 import { ModuleHandler } from '@util/types';
+import { addEventLogForReport } from '../handler.helpers';
 
 const jpgCompressHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
@@ -27,6 +28,8 @@ const jpgCompressHandler: ModuleHandler = {
         void addNumericalStat('bytesShaved', reduced);
 
         output.log(`${fileName} reduced by ${reduced}b`);
+
+        addEventLogForReport(opts, fileName, 'compressed', `${reduced}b`);
     },
     filter: async (fileString) => checkSupportedExt(fileString, ['img'], true),
 };

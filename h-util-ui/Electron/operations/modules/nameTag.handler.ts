@@ -9,9 +9,10 @@ import {
     withUTimes,
 } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
+import { addEventLogForReport } from '../handler.helpers';
 
 const nameTagHandler: ModuleHandler = {
-    handler: async ({ filePath }, _opts) => {
+    handler: async ({ filePath }, opts) => {
         const pattern = '%artist% - %title%';
 
         const { fileName } = splitFileNameFromPath(filePath);
@@ -24,6 +25,8 @@ const nameTagHandler: ModuleHandler = {
             await ffMeta.writeTags(filePath, { ...parsedTags });
             await replaceFile(filePath, getTempName(filePath));
         }, filePath);
+
+        addEventLogForReport(opts, fileName, 'tagged', JSON.stringify(parsedTags));
     },
     filter: (filePath) => checkSupportedExt(filePath, ['mov'], true),
 };

@@ -1,7 +1,7 @@
 import { withTimer, promises } from '@common/common';
 import { splitFileNameFromPath } from '@common/fileops';
 
-import { FileOptions, ModuleHandler } from '@util/types';
+import { FileOptions, ModuleHandler, ModuleOptions } from '@util/types';
 import { ProcessingModule } from '@shared/common.types';
 import output from '@util/output';
 
@@ -40,10 +40,12 @@ export const withFileListHandling = async <T extends object = {}>({
         await withTimer(
             async () => {
                 await promises.map(fileOptions.filesWithMeta, async (fileWithMeta, i) => {
+                    let topFileName = 'Unknown file';
                     try {
                         const { filePath } = fileWithMeta;
 
                         const { fileName } = splitFileNameFromPath(filePath);
+                        topFileName = fileName;
 
                         const shouldHandle = filter ? await filter(filePath) : true;
 
@@ -69,22 +71,25 @@ export const withFileListHandling = async <T extends object = {}>({
                         );
 
                         processed++;
-                    } catch (e) {
+                    } catch (e: any) {
                         console.log('Error with handler:', e);
+                        addEventLogForReport({ context }, topFileName, 'errored', e.message);
+
                         errored++;
 
                         if (!clientOptions?.ignoreErrors) throw e;
                     }
                 });
 
-                await moduleHandler.onDone?.({ clientOptions }, dataStore, fileOptions);
+                await moduleHandler.onDone?.({ clientOptions, context }, dataStore, fileOptions);
             },
             (time) => {
                 timeTaken = time;
             },
         );
 
-    if (!handler && moduleHandler.onDone) await moduleHandler.onDone({ clientOptions }, dataStore, fileOptions);
+    if (!handler && moduleHandler.onDone)
+        await moduleHandler.onDone({ clientOptions, context }, dataStore, fileOptions);
 
     output.log(`Module ran in ${timeTaken}ms, ${fileOptions.filesWithMeta.length} files`);
 
@@ -94,4 +99,19 @@ export const withFileListHandling = async <T extends object = {}>({
         filtered,
         processed,
     };
+};
+
+export const addEventLogForReport = (
+    opts: Partial<ModuleOptions<{}>>,
+    fileName: string,
+    operation: string,
+    target = '-',
+) => {
+    if (!opts?.context?.eventLog) return;
+
+    const timestamp = new Date().toISOString();
+
+    const fullLog = `${timestamp},${fileName},${operation},${target}`;
+
+    opts.context.eventLog.push(fullLog);
 };

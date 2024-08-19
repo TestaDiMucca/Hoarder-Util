@@ -4,6 +4,7 @@ import path from 'path';
 import { formatDateString, getFileSize, splitFileNameFromPath } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
 import { sleep } from '@common/common';
+import { addEventLogForReport } from '../handler.helpers';
 
 type FilesScanned = {
     scanned?: string[];
@@ -40,6 +41,8 @@ const iterateHandler: ModuleHandler<{}, FilesScanned> = {
 
         const content = dataStore.scanned.join('\n');
         await fs.writeFile(filePath + '.log', content);
+
+        addEventLogForReport(opts, outputName, 'written');
     },
 };
 

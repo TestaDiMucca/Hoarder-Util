@@ -1,5 +1,6 @@
-import { checkSupportedExt, searchForTextInImage } from '@common/fileops';
+import { checkSupportedExt, searchForTextInImage, splitFileNameFromPath } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
+import { addEventLogForReport } from '../handler.helpers';
 
 const ocrHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
@@ -14,8 +15,13 @@ const ocrHandler: ModuleHandler = {
 
         const hasMatches = await searchForTextInImage(fileWithMeta.filePath, matches);
 
+        const { fileName } = splitFileNameFromPath(fileWithMeta.filePath);
+
         const inverse = opts.clientOptions?.inverse;
-        if ((!hasMatches && !inverse) || (hasMatches && inverse)) fileWithMeta.remove = true;
+        if ((!hasMatches && !inverse) || (hasMatches && inverse)) {
+            fileWithMeta.remove = true;
+            addEventLogForReport(opts, fileName, 'ocr filtered');
+        }
     },
     filter: (fileName) => checkSupportedExt(fileName, ['img'], true),
 };

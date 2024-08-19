@@ -1,11 +1,16 @@
 import { ProcessingModule } from '@shared/common.types';
 
+export type CommonContext = {
+    eventLog?: string[];
+    pipelineName?: string;
+};
+
 export type ModuleOptions<T extends object> = {
     onProgress: (label: string, progress: number) => void;
     /** Push a message up when done */
     onSuccess: (message?: string) => void;
     /** Additional info, such as template strings */
-    context: T;
+    context: CommonContext & T;
     /** Passed from the pipeline's module configuration */
     clientOptions?: ProcessingModule['options'];
 };

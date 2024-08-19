@@ -6,6 +6,7 @@ import output from '../../util/output';
 import { ModuleHandler } from '../../util/types';
 import { ProcessingModule } from '../../../common/common.types';
 import { ProcessingError } from '../../util/errors';
+import { addEventLogForReport } from '../handler.helpers';
 
 /** Directories we know we created, or already exist */
 type DirectoriesScanned = Record<string, boolean>;
@@ -34,6 +35,8 @@ const moveDirectoryHandler: ModuleHandler<{}, DirectoriesScanned> = {
         output.log(`Moving ${fileName} into ${targetDirectoryName}/`);
 
         await fs.rename(filePath, path.join(directoryPath, fileName));
+
+        addEventLogForReport(opts, fileName, 'moved', targetDirectoryName);
     },
 };
 
