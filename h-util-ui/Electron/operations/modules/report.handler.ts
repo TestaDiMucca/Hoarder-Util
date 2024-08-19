@@ -12,7 +12,7 @@ const reportHandler: ModuleHandler = {
         const { context, clientOptions } = opts;
 
         /** No dir set */
-        if (!clientOptions?.value) return;
+        if (!clientOptions?.value) throw new ProcessingError('No directory provided');
 
         const outDir = String(clientOptions.value);
         const dirExists = await checkDirectoryExists(outDir);
@@ -20,7 +20,7 @@ const reportHandler: ModuleHandler = {
         if (!dirExists) throw new ProcessingError(`${clientOptions.value} is not a valid directory`);
 
         /** No log found */
-        if (!context?.eventLog || !context?.pipelineName) return;
+        if (!context?.eventLog || !context?.pipelineName) throw new ProcessingError('No event log found in context');
 
         const outputName = `${slugify(context.pipelineName)}_${formatDate(new Date())}.csv`;
 
