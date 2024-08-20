@@ -5,7 +5,7 @@ import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
 import { messageWindow, updateTaskProgress } from '@util/ipc';
 import { CommonContext, FileOptions, FileWithMeta } from '@util/types';
 
-import { withFileListHandling } from './handler.helpers';
+import { fileListToFileOptions, withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
 import { addNumericalStat, addPipelineRunToStats } from '@util/stats';
 
@@ -30,13 +30,7 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
     };
 
     /** Dup it in case we wish to modify */
-    const filesWithMeta = filePaths.map<FileWithMeta>((filePath) => ({
-        filePath,
-    }));
-
-    const fileOptions: FileOptions = {
-        filesWithMeta,
-    };
+    const fileOptions: FileOptions = fileListToFileOptions(filePaths);
 
     const hasReporter = pipeline.processingModules.find((m) => m.type === ProcessingModuleType.report);
 

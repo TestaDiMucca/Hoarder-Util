@@ -22,6 +22,12 @@ type IpcRendererExposed = {
     saveFile: (content: string) => Promise<void>;
     saveData: (data: string[]) => Promise<void>;
     selectFolder: () => Promise<string>;
+    testFilter: (request: {
+        moduleType?: string;
+        filter: string;
+        invert: boolean;
+        filePaths: string[];
+    }) => Promise<string[]>;
 };
 
 interface Window {

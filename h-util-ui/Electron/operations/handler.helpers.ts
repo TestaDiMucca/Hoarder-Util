@@ -1,7 +1,7 @@
 import { withTimer, promises } from '@common/common';
 import { splitFileNameFromPath } from '@common/fileops';
 
-import { FileOptions, ModuleHandler, ModuleOptions } from '@util/types';
+import { FileOptions, FileWithMeta, ModuleHandler, ModuleOptions } from '@util/types';
 import { ProcessingModule } from '@shared/common.types';
 import output from '@util/output';
 
@@ -115,3 +115,7 @@ export const addEventLogForReport = (
 
     opts.context.eventLog.push(fullLog);
 };
+
+export const fileListToFileOptions = (fileList: string[]): FileOptions => ({
+    filesWithMeta: fileList.map<FileWithMeta>((filePath) => ({ filePath })),
+});

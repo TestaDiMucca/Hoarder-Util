@@ -20,6 +20,7 @@ import { registerMainWindow } from './util/ipc';
 import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
 import { getStatsFromStore } from '@util/stats';
 import { writeFile } from 'fs/promises';
+import { filterTest } from './operations/filterTest';
 
 const DATA_FILE = 'data.json';
 
@@ -153,6 +154,12 @@ async function createWindow() {
         if (filePath) {
             writeFile(filePath, content, 'utf-8');
         }
+    });
+
+    ipcMain.handle(IpcMessageType.testFilter, async (_e, filterTestRequest) => {
+        const filtered = await filterTest(filterTestRequest);
+
+        return filtered;
     });
 
     ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {

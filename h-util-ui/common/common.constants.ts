@@ -21,4 +21,6 @@ export enum IpcMessageType {
     saveFile = 'save-file',
     /** Open dialog to select a directory */
     selectDirectory = 'select-dir',
+    /** Receive a file list and test against it, returning results */
+    testFilter = 'test-filter',
 }

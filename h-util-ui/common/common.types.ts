@@ -63,8 +63,9 @@ export type ProcessingRequest = {
     filePaths: string[];
 };
 
-export enum ModuleOptionType {
-    string = 'string',
-    dir = 'dir',
-    null = 'null',
-}
+export type FilterTestRequest = {
+    filter: string;
+    invert: boolean;
+    filePaths: string[];
+    moduleType?: ProcessingModuleType;
+};
