@@ -46,7 +46,7 @@ const sortedTaskList = computed(() => {
       No tasks at this moment
     </span>
     <div v-if="sortedTaskList.length > 0">
-      <div v-for="spawnedTask in sortedTaskList">
+      <div v-for="spawnedTask in sortedTaskList" :key="spawnedTask.id">
         <TaskListItem :task="spawnedTask" />
       </div>
     </div>
