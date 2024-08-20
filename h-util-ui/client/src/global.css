@@ -32,3 +32,9 @@
   font-size: 0.8em;
   opacity: 0.75;
 }
+
+.loader-container {
+  display: flex;
+    justify-content: center;
+    align-items: center;
+}

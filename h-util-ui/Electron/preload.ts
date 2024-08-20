@@ -1,3 +1,4 @@
+import { FilterTestRequest } from '@shared/common.types';
 import { contextBridge, ipcRenderer } from 'electron/renderer';
 
 contextBridge.exposeInMainWorld('browserWindow', {
@@ -26,4 +27,5 @@ contextBridge.exposeInMainWorld('electronIpc', {
     onAppClose: (callback: () => void) => ipcRenderer.on('close', callback),
     confirmAppClose: () => ipcRenderer.send('confirm-close'),
     selectFolder: () => ipcRenderer.invoke('select-dir'),
+    testFilter: (request: FilterTestRequest) => ipcRenderer.invoke('test-filter', request),
 });

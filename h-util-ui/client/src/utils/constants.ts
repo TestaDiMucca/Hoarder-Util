@@ -4,7 +4,7 @@ import VideoMinus from 'vue-material-design-icons/VideoMinus.vue';
 import CalendarExport from 'vue-material-design-icons/CalendarExport.vue';
 import DatabaseExport from 'vue-material-design-icons/DatabaseExport.vue';
 import Printer from 'vue-material-design-icons/Printer.vue';
-import Filter from 'vue-material-design-icons/FileCog.vue';
+import Filter from 'vue-material-design-icons/Filter.vue';
 import TextSearch from 'vue-material-design-icons/TextSearch.vue';
 import FileDocument from 'vue-material-design-icons/FileDocumentArrowRight.vue';
 
@@ -12,6 +12,7 @@ import { ProcessingModule, ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
 import OptionsStandard from 'src/components/EditPipeline/PipelineOptions/OptionsStandard.vue';
 import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/OptionsDirectory.vue';
+import OptionsFilter from 'src/components/EditPipeline/PipelineOptions/OptionsFilter.vue';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -63,6 +64,8 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
             return null;
         case ProcessingModuleType.report:
             return OptionsDirectory;
+        case ProcessingModuleType.filter:
+            return OptionsFilter;
         default:
             return OptionsStandard;
     }
