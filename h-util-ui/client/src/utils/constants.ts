@@ -4,7 +4,7 @@ import VideoMinus from 'vue-material-design-icons/VideoMinus.vue';
 import CalendarExport from 'vue-material-design-icons/CalendarExport.vue';
 import DatabaseExport from 'vue-material-design-icons/DatabaseExport.vue';
 import Printer from 'vue-material-design-icons/Printer.vue';
-import Filter from 'vue-material-design-icons/FileCog.vue';
+import Filter from 'vue-material-design-icons/Filter.vue';
 import TextSearch from 'vue-material-design-icons/TextSearch.vue';
 import FileDocument from 'vue-material-design-icons/FileDocumentArrowRight.vue';
 
