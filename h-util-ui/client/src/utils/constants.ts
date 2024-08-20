@@ -10,6 +10,8 @@ import FileDocument from 'vue-material-design-icons/FileDocumentArrowRight.vue';
 
 import { ProcessingModule, ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
+import OptionsStandard from 'src/components/EditPipeline/PipelineOptions/OptionsStandard.vue';
+import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/OptionsDirectory.vue';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -52,6 +54,18 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.filter]: 'Filename match',
     [ProcessingModuleType.ocr]: 'Search string (CSV supported)',
     [ProcessingModuleType.report]: 'Save directory',
+};
+
+export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
+    switch (moduleType) {
+        case ProcessingModuleType.datePrefix:
+        case ProcessingModuleType.metadata:
+            return null;
+        case ProcessingModuleType.report:
+            return OptionsDirectory;
+        default:
+            return OptionsStandard;
+    }
 };
 
 /** Get a default starter module */
