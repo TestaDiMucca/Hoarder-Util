@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('browserWindow', {
 
 contextBridge.exposeInMainWorld('electronIpc', {
     send: ipcRenderer.send,
+    invoke: ipcRenderer.invoke,
     on: ipcRenderer.on,
     onMainMessage: (cb: (message: string) => void) =>
         ipcRenderer.on('main-message', (_e, payload) => {

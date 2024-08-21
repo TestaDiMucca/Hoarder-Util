@@ -1,5 +1,6 @@
 import path from 'path';
 import moduleAliases from 'module-alias';
+import { writeFile } from 'fs/promises';
 
 moduleAliases.addAliases({
     '@util': path.join(__dirname, 'util'),
@@ -10,19 +11,25 @@ moduleAliases.addAliases({
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, screen } from 'electron';
 
 import { IpcMessageType } from '@shared/common.constants';
+import logger from '@util/logger';
+import { ProcessingRequest, Storage } from '@shared/common.types';
+import { getStatsFromStore } from '@util/stats';
+
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
-import { ProcessingRequest, Storage } from '@shared/common.types';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import output from './util/output';
 import { registerMainWindow } from './util/ipc';
 import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
-import { getStatsFromStore } from '@util/stats';
-import { writeFile } from 'fs/promises';
+
 import { filterTest } from './operations/filterTest';
 
 const DATA_FILE = 'data.json';
+
+const handleErrorMessage = (message: string, stack?: string) => {
+    logger.error(`[err] Error: ${message}`, stack);
+};
 
 async function createWindow() {
     /** Create handlers before window is ready */
@@ -140,7 +147,11 @@ async function createWindow() {
         };
     });
 
-    ipcMain.handle(IpcMessageType.saveFile, async (e, content) => {
+    ipcMain.handle(IpcMessageType.errorReport, async (_e, content: string) => {
+        handleErrorMessage(content);
+    });
+
+    ipcMain.handle(IpcMessageType.saveFile, async (_e, content) => {
         const { filePath } = await dialog.showSaveDialog({
             title: 'Save pipeline data',
             defaultPath: path.join(app.getPath('downloads'), `h-util-pipelines_${Date.now()}.json`),
@@ -211,4 +222,14 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('Unhandled Exception:', error);
+    handleErrorMessage(error.message);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    handleErrorMessage(String(reason));
 });

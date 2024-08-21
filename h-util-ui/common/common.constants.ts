@@ -23,4 +23,6 @@ export enum IpcMessageType {
     selectDirectory = 'select-dir',
     /** Receive a file list and test against it, returning results */
     testFilter = 'test-filter',
+    /** Send a renderer error to the main process */
+    errorReport = 'errorReport',
 }
