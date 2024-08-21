@@ -14,6 +14,7 @@ declare module 'vue-material-design-icons/*.vue' {
 
 type IpcRendererExposed = {
     send: <T>(channel: string, data: T[]) => void;
+    invoke: <T>(channel: string, data: T) => void;
     on: <T>(channel: string, cb: (event: unknown, message: T) => void) => void;
     onMainMessage: (cb: (msg: string) => void) => void;
     onTaskProgress: (cb: (task: string) => void) => void;

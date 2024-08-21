@@ -127,3 +127,17 @@ export const readTextFileAndParseJson = <T>(file: File): Promise<T> =>
             reject(e);
         };
     });
+
+export const addErrorListeners = () => {
+    const ipcRenderer = getIpcRenderer();
+
+    window.onerror = (message, _source, lineno) => {
+        ipcRenderer?.invoke(IpcMessageType.errorReport, message);
+        console.error('An error occurred:', message, 'at line:', lineno);
+    };
+
+    window.onunhandledrejection = (event) => {
+        ipcRenderer?.invoke(IpcMessageType.errorReport, event.reason);
+        console.error('Unhandled Promise Rejection:', event.reason);
+    };
+};

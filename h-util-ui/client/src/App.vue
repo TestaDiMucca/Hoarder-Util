@@ -4,7 +4,7 @@ import { useQuasar } from 'quasar'
 import HomePage from './components/HomePage.vue'
 import EditPipeline from './components/EditPipeline/EditPipeline.vue'
 import { VueComponent } from './utils/util.types'
-import { getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
+import { addErrorListeners, getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
 import store from './utils/store'
 
 const $q = useQuasar();
@@ -41,6 +41,8 @@ onMounted(() => {
 
     store.setAllPipelines(data.pipelines);
   })
+
+  addErrorListeners();
 })
 </script>
 
