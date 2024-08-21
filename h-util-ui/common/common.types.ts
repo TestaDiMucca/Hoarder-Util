@@ -8,6 +8,7 @@ export enum ProcessingModuleType {
     filter = 'Filter',
     ocr = 'Text Parsing (OCR)',
     report = 'Report output',
+    dynamicRename = 'Dynamic Rename',
 }
 
 export type ProcessingModule = {

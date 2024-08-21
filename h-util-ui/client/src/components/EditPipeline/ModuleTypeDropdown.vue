@@ -23,6 +23,9 @@ defineProps<Props>();
       <q-item @click="handleModuleTypeSelect(ProcessingModuleType.datePrefix)" clickable v-close-popup="true">
         <q-item-section>Date prefix</q-item-section>
       </q-item>
+      <q-item @click="handleModuleTypeSelect(ProcessingModuleType.dynamicRename)" clickable v-close-popup="true">
+        <q-item-section>Dynamic renaming</q-item-section>
+      </q-item>
       <q-separator />
 
       <q-item @click="handleModuleTypeSelect(ProcessingModuleType.iterate)" clickable v-close-popup="true">

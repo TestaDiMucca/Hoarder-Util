@@ -26,3 +26,16 @@ export enum IpcMessageType {
     /** Send a renderer error to the main process */
     errorReport = 'errorReport',
 }
+
+export enum RenameTemplates {
+    ParentFolder = 'parentFolder',
+    ExifTaken = 'exifTaken',
+    DateCreated = 'dateCreated',
+    DateModified = 'dateModified',
+    Originalname = 'original',
+    SlugifiedName = 'slugified',
+    MetaArtist = 'metaArtist',
+    MetaAlbum = 'metaAlbum',
+    MetaTitle = 'metaTitle',
+    MetaTrackNo = 'metaTrackNo',
+}
