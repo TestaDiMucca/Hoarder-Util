@@ -46,7 +46,7 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 <template>
   <section class="filter-options">
     <q-input v-if="optionLabel" type="text" v-model="currentOptions.value" @input="handleModuleOptionUpdated"
-      :label="optionLabel ?? ''" />
+      :label="optionLabel ?? '%original%'" placeholder="example: %original%_tagged" />
 
     <div class="dropzone" v-if="currentOptions.value" v-bind="getRootProps()">
       <input v-bind="getInputProps()" />

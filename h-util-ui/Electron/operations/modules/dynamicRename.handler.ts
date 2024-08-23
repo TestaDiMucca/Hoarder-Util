@@ -36,17 +36,20 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
         // Replace using data from the map
         const { fileName } = splitFileNameFromPath(filePath);
 
+        const ext = path.extname(fileName);
+
         let newName = String(stringTemplate);
         tags.forEach((tag) => {
-            newName.replace(`%${tag}%`, dataDict[tag] ?? 'unknown');
+            newName = newName.replace(`%${tag}%`, dataDict[tag] ?? 'unknown');
         });
 
-        const newPath = filePath.replace(fileName, newName);
+        const newNameWithExt = `${newName}${ext}`;
+        const newPath = filePath.replace(fileName, newNameWithExt);
 
         if (!opts.context?.testMode) await fs.rename(filePath, newPath);
         else fileWithMeta.newFilePath = newPath;
 
-        addEventLogForReport(opts, fileName, 'renamed', newName);
+        addEventLogForReport(opts, fileName, 'renamed', newNameWithExt);
     },
 };
 
@@ -54,7 +57,9 @@ export default dynamicRenameHandler;
 
 const populateDataDict = async (dataDict: DataDict, tag: string, filePath: string, mask?: string) => {
     const castTag = tag as RenameTemplates;
-    const { fileName } = splitFileNameFromPath(filePath);
+    const { fileName: rawFileName } = splitFileNameFromPath(filePath);
+    const ext = path.extname(rawFileName);
+    const fileName = rawFileName.replace(ext, '');
 
     switch (castTag) {
         /** Do both at once so if both are used we only stat once */
