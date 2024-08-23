@@ -34,7 +34,7 @@ export enum RenameTemplates {
     ExifTaken = 'exifTaken',
     DateCreated = 'dateCreated',
     DateModified = 'dateModified',
-    Originalname = 'original',
+    OriginalName = 'original',
     SlugifiedName = 'slugified',
     MetaArtist = 'metaArtist',
     MetaAlbum = 'metaAlbum',

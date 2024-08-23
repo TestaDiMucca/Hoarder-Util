@@ -9,6 +9,7 @@ import { Pipeline } from '@utils/types';
 import { getIpcRenderer, sendMessageToMain } from '@utils/helpers';
 import { MODULE_MATERIAL_ICONS } from '@utils/constants';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
+import DropdownMenu from '../common/DropdownMenu.vue';
 
 interface Props { pipelineItem: Pipeline }
 

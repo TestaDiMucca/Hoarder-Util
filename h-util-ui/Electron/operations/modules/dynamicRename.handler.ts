@@ -40,7 +40,7 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
 
         let newName = String(stringTemplate);
         tags.forEach((tag) => {
-            newName = newName.replace(`%${tag}%`, dataDict[tag] ?? 'unknown');
+            newName = newName.replaceAll(`%${tag}%`, dataDict[tag] ?? 'unknown');
         });
 
         const newNameWithExt = `${newName}${ext}`;
@@ -55,7 +55,7 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
 
 export default dynamicRenameHandler;
 
-const populateDataDict = async (dataDict: DataDict, tag: string, filePath: string, mask?: string) => {
+const populateDataDict = async (dataDict: DataDict, tag: string, filePath: string, mask = 'yy-mm-dd-HH-MM') => {
     const castTag = tag as RenameTemplates;
     const { fileName: rawFileName } = splitFileNameFromPath(filePath);
     const ext = path.extname(rawFileName);
@@ -79,7 +79,7 @@ const populateDataDict = async (dataDict: DataDict, tag: string, filePath: strin
             dataDict[RenameTemplates.ExifTaken] = dateStr;
 
             return;
-        case RenameTemplates.Originalname:
+        case RenameTemplates.OriginalName:
             dataDict[castTag] = fileName;
             return;
         case RenameTemplates.ParentFolder:
