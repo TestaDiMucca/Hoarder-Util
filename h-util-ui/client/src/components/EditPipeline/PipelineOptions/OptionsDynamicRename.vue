@@ -2,21 +2,44 @@
 import { computed, ref } from 'vue';
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 
-import { PipelineOptionsProps } from './pipelineOptions.common';
+import { extractStringTemplate, PipelineOptionsProps } from './pipelineOptions.common';
 import { OPTION_LABELS } from '@utils/constants';
 import { getIpcRenderer } from '@utils/helpers';
 import UmuLoader from 'src/components/common/UmuLoader.vue';
-import { IpcMessageType } from '@shared/common.constants';
+import { IpcMessageType, RenameTemplates } from '@shared/common.constants';
 import { RenameTestRequest } from '@shared/common.types';
 
 const props = defineProps<PipelineOptionsProps>();
 const showList = ref(false);
 const fileList = ref<string[] | null>(null);
+const templateOptions = ref(Object.values(RenameTemplates))
+const filteredTemplateOptions = ref<RenameTemplates[]>([]);
 
 const handleModuleOptionUpdated = (event: Event) => {
   const newValue = (event.target as HTMLInputElement).value;
 
   props.handleOptionChange('value', newValue);
+
+  onInput();
+}
+
+const onInput = () => {
+  const lastToken = extractStringTemplate(String(props.currentOptions.value));
+  if (lastToken && lastToken.length > 1) {
+    const query = lastToken.toLowerCase();
+    console.log('q', query)
+    filteredTemplateOptions.value = templateOptions.value.filter(s =>
+      s.toLowerCase().startsWith(query.toLowerCase())
+    );
+  } else {
+    filteredTemplateOptions.value = [];
+  }
+}
+
+const selectSuggestion = (suggestion) => {
+  const base = String(props.currentOptions.value).substring(0, String(props.currentOptions.value).lastIndexOf('%') + 1);
+  props.handleOptionChange('value', base + suggestion + '%')
+  filteredTemplateOptions.value = [];
 }
 
 const onDrop: FileUploadOptions['onDrop'] = async (acceptFiles: File[], _rejectReasons) => {
@@ -45,8 +68,19 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
 <template>
   <section class="filter-options">
-    <q-input v-if="optionLabel" type="text" v-model="currentOptions.value" @input="handleModuleOptionUpdated"
-      :label="optionLabel ?? '%original%'" placeholder="example: %original%_tagged" />
+    <div class="autocomplete">
+      <q-input v-if="optionLabel" type="text" v-model="currentOptions.value" @input="handleModuleOptionUpdated"
+        @update:model-value="onInput" :label="optionLabel ?? '%original%'" placeholder="example: %original%_tagged" />
+      <q-card v-if="filteredTemplateOptions.length > 0" class="suggestion-list">
+        <q-card-section>
+          <div v-for="suggestion in filteredTemplateOptions" :key="suggestion" @click="selectSuggestion(suggestion)">
+            {{ suggestion }}
+          </div>
+        </q-card-section>
+      </q-card>
+
+    </div>
+
 
     <div class="dropzone" v-if="currentOptions.value" v-bind="getRootProps()">
       <input v-bind="getInputProps()" />
@@ -76,3 +110,13 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
     </q-card>
   </q-dialog>
 </template>
+
+<style scoped>
+.autocomplete {
+  position: relative;
+}
+
+.suggestion-list {
+  position: absolute;
+}
+</style>

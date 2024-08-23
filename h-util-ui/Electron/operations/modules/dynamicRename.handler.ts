@@ -55,7 +55,7 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
 
 export default dynamicRenameHandler;
 
-const populateDataDict = async (dataDict: DataDict, tag: string, filePath: string, mask?: string) => {
+const populateDataDict = async (dataDict: DataDict, tag: string, filePath: string, mask = 'yy-mm-dd-HH-MM') => {
     const castTag = tag as RenameTemplates;
     const { fileName: rawFileName } = splitFileNameFromPath(filePath);
     const ext = path.extname(rawFileName);
