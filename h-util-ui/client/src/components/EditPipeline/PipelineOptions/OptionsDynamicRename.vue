@@ -8,6 +8,7 @@ import { IpcMessageType, RenameTemplates } from '@shared/common.constants';
 import { RenameTestRequest } from '@shared/common.types';
 import FileListModal from './FileListModal.vue';
 import MiniFileDrop from 'src/components/common/MiniFileDrop.vue';
+import { previewRenamedFile } from './pipelineOptions.util';
 
 const props = defineProps<PipelineOptionsProps>();
 const showList = ref(false);
@@ -59,6 +60,8 @@ const clearFiles = () => {
 }
 
 const optionLabel = computed(() => OPTION_LABELS[props.moduleType]);
+
+const exampleName = computed(() => previewRenamedFile(String(props.currentOptions.value)));
 </script>
 
 <template>
@@ -66,6 +69,7 @@ const optionLabel = computed(() => OPTION_LABELS[props.moduleType]);
     <div class="autocomplete">
       <q-input v-if="optionLabel" type="text" v-model="currentOptions.value" @input="handleModuleOptionUpdated"
         @update:model-value="onInput" :label="optionLabel ?? '%original%'" placeholder="example: %original%_tagged" />
+      <div class="example">{{ exampleName }}</div>
       <q-card v-if="filteredTemplateOptions.length > 0" class="suggestion-list">
         <q-card-section>
           <div v-for="suggestion in filteredTemplateOptions" :key="suggestion" @click="selectSuggestion(suggestion)">

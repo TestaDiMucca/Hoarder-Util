@@ -40,7 +40,7 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
 
         let newName = String(stringTemplate);
         tags.forEach((tag) => {
-            newName = newName.replace(`%${tag}%`, dataDict[tag] ?? 'unknown');
+            newName = newName.replaceAll(`%${tag}%`, dataDict[tag] ?? 'unknown');
         });
 
         const newNameWithExt = `${newName}${ext}`;
@@ -79,7 +79,7 @@ const populateDataDict = async (dataDict: DataDict, tag: string, filePath: strin
             dataDict[RenameTemplates.ExifTaken] = dateStr;
 
             return;
-        case RenameTemplates.Originalname:
+        case RenameTemplates.OriginalName:
             dataDict[castTag] = fileName;
             return;
         case RenameTemplates.ParentFolder:
