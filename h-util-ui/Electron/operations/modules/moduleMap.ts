@@ -21,4 +21,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.filter]: filterHandler,
     [ProcessingModuleType.ocr]: ocrHandler,
     [ProcessingModuleType.report]: reportHandler,
+    [ProcessingModuleType.dynamicRename]: null,
 };

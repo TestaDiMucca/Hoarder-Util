@@ -21,3 +21,12 @@ export class ProcessingError extends BaseError {
         super(message);
     }
 }
+
+/**
+ * Configuration sent by client is not valid
+ */
+export class ConfigError extends BaseError {
+    constructor(message = 'Error with config') {
+        super(message);
+    }
+}

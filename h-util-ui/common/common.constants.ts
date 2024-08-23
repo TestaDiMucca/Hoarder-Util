@@ -25,4 +25,19 @@ export enum IpcMessageType {
     testFilter = 'test-filter',
     /** Send a renderer error to the main process */
     errorReport = 'errorReport',
+    /** Test dynamic renaming */
+    testRename = 'test-rename',
+}
+
+export enum RenameTemplates {
+    ParentFolder = 'parentFolder',
+    ExifTaken = 'exifTaken',
+    DateCreated = 'dateCreated',
+    DateModified = 'dateModified',
+    Originalname = 'original',
+    SlugifiedName = 'slugified',
+    MetaArtist = 'metaArtist',
+    MetaAlbum = 'metaAlbum',
+    MetaTitle = 'metaTitle',
+    MetaTrackNo = 'metaTrackNo',
 }

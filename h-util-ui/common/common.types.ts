@@ -8,6 +8,7 @@ export enum ProcessingModuleType {
     filter = 'Filter',
     ocr = 'Text Parsing (OCR)',
     report = 'Report output',
+    dynamicRename = 'Dynamic Rename',
 }
 
 export type ProcessingModule = {
@@ -68,4 +69,9 @@ export type FilterTestRequest = {
     invert: boolean;
     filePaths: string[];
     moduleType?: ProcessingModuleType;
+};
+
+export type RenameTestRequest = {
+    templateString: string;
+    filePaths: string[];
 };

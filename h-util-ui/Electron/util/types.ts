@@ -34,6 +34,7 @@ export type ModuleHandler<T extends object = {}, S = Record<string, any>> = {
 
 export type FileWithMeta = {
     filePath: string;
+    newFilePath?: string;
     previouslySkipped?: boolean;
     /** Flag for removal at end of handler */
     remove?: boolean;

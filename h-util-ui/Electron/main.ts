@@ -24,6 +24,7 @@ import { registerMainWindow } from './util/ipc';
 import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
 
 import { filterTest } from './operations/filterTest';
+import { renameTest } from './operations/renameTest';
 
 const DATA_FILE = 'data.json';
 
@@ -171,6 +172,12 @@ async function createWindow() {
         const filtered = await filterTest(filterTestRequest);
 
         return filtered;
+    });
+
+    ipcMain.handle(IpcMessageType.testRename, async (_e, renameTestRequest) => {
+        const renamed = await renameTest(renameTestRequest);
+
+        return renamed;
     });
 
     ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {
