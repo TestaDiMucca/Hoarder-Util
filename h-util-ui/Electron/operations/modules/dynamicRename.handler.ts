@@ -13,12 +13,14 @@ type RequiredDataContext = {
     requiredData?: Set<DataNeeded>;
     /** Tags used */
     tags?: string[];
+    testMode?: boolean;
 };
 
 type DataDict = Partial<Record<RenameTemplates, string>>;
 
 const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
-    handler: async ({ filePath }, opts) => {
+    handler: async (fileWithMeta, opts) => {
+        const { filePath } = fileWithMeta;
         const stringTemplate = opts.clientOptions?.value;
 
         if (!stringTemplate) throw new ConfigError('No string template provided');
@@ -41,7 +43,8 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
 
         const newPath = filePath.replace(fileName, newName);
 
-        await fs.rename(filePath, newPath);
+        if (!opts.context?.testMode) await fs.rename(filePath, newPath);
+        else fileWithMeta.newFilePath = newPath;
 
         addEventLogForReport(opts, fileName, 'renamed', newName);
     },

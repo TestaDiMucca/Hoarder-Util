@@ -14,6 +14,7 @@ import { VueComponent } from './util.types';
 import OptionsStandard from 'src/components/EditPipeline/PipelineOptions/OptionsStandard.vue';
 import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/OptionsDirectory.vue';
 import OptionsFilter from 'src/components/EditPipeline/PipelineOptions/OptionsFilter.vue';
+import OptionsDynamicRename from 'src/components/EditPipeline/PipelineOptions/OptionsDynamicRename.vue';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -70,6 +71,8 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
             return OptionsDirectory;
         case ProcessingModuleType.filter:
             return OptionsFilter;
+        case ProcessingModuleType.dynamicRename:
+            return OptionsDynamicRename;
         default:
             return OptionsStandard;
     }

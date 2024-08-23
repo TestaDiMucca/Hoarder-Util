@@ -25,6 +25,8 @@ export enum IpcMessageType {
     testFilter = 'test-filter',
     /** Send a renderer error to the main process */
     errorReport = 'errorReport',
+    /** Test dynamic renaming */
+    testRename = 'test-rename',
 }
 
 export enum RenameTemplates {

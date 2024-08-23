@@ -70,3 +70,8 @@ export type FilterTestRequest = {
     filePaths: string[];
     moduleType?: ProcessingModuleType;
 };
+
+export type RenameTestRequest = {
+    templateString: string;
+    filePaths: string[];
+};

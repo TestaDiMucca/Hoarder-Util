@@ -53,8 +53,6 @@ const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options']
 
 const handleRemoveModule = () => props.handleModuleUpdated(null, props.index)
 
-const directoryDisplay = computed(() => String(props.processingModule.options.value ?? '').length ? props.processingModule.options.value : 'Select a directory')
-
 /** Filter types can be inverted */
 const inversionAvailable = computed(() => getModuleCanInvert(props.processingModule.type))
 const iconSignifier = computed(() => MODULE_MATERIAL_ICONS[props.processingModule.type])
