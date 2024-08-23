@@ -3,7 +3,7 @@ import output from '@util/output';
 import { ProcessingError } from '@util/errors';
 import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
 import { messageWindow, updateTaskProgress } from '@util/ipc';
-import { CommonContext, FileOptions, FileWithMeta } from '@util/types';
+import { CommonContext, FileOptions } from '@util/types';
 
 import { fileListToFileOptions, withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
