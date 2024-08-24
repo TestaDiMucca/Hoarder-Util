@@ -46,6 +46,7 @@
     "wait-on": "^7.0.1"
   },
   "dependencies": {
+    "@ffprobe-installer/ffprobe": "^2.1.2",
     "colors": "^1.4.0",
     "dateformat": "^4.6.3",
     "electron-log": "^4.4.8",

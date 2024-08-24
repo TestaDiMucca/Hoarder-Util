@@ -4,6 +4,9 @@ import { detachPromise } from '@common/common';
 import { unlink } from 'fs/promises';
 const ffmpegCaller = require('fluent-ffmpeg');
 
+const ffprobePath = require('@ffprobe-installer/ffprobe').path;
+ffmpeg.setFfprobePath(ffprobePath);
+
 /**
  * Get hash of existing metadata in a media obj
  */

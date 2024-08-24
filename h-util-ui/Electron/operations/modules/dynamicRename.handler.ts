@@ -2,7 +2,13 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { promises } from '@common/common';
-import { checkSupportedExt, formatDateString, getDateStringForFile, splitFileNameFromPath } from '@common/fileops';
+import {
+    checkSupportedExt,
+    ffMeta,
+    formatDateString,
+    getDateStringForFile,
+    splitFileNameFromPath,
+} from '@common/fileops';
 import { RenameTemplates } from '@shared/common.constants';
 import { ConfigError } from '@util/errors';
 import { ModuleHandler, ModuleOptions } from '@util/types';
@@ -94,7 +100,16 @@ const populateDataDict = async (dataDict: DataDict, tag: string, filePath: strin
         case RenameTemplates.MetaArtist:
         case RenameTemplates.MetaTitle:
         case RenameTemplates.MetaTrackNo:
-        // to be implemented with ffmpeg
+            if (dataDict[castTag]) return;
+
+            const probeData = await ffMeta.readTags(filePath);
+            const tags = probeData?.format.tags;
+
+            dataDict[RenameTemplates.MetaAlbum] = String(tags?.album) ?? 'UnknownAlbum';
+            dataDict[RenameTemplates.MetaTrackNo] = String(tags?.track) ?? '0';
+            dataDict[RenameTemplates.MetaTitle] = String(tags?.title) ?? 'UnknownTitle';
+            dataDict[RenameTemplates.MetaArtist] = String(tags?.artist) ?? 'UnknownArtist';
+            return;
         default:
             return;
     }
