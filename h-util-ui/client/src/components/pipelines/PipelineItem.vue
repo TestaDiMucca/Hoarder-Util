@@ -26,6 +26,19 @@ const selectPipeline = () => {
   window.location.href = '#/new';
 }
 
+const duplicatePipeline = () => {
+  const { id, ...pipelineData } = props.pipelineItem;
+
+  const created = store.upsertPipeline({ ...pipelineData, name: `${pipelineData.name} - copy` });
+
+  if (!created) return;
+
+  setTimeout(() => {
+    store.setSelectedPipeline(created);
+    window.location.href = '#/new';
+  }, 1000);
+}
+
 const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
   if (acceptFiles.length) {
     const payload = {
@@ -67,6 +80,10 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
           <q-item clickable v-close-popup="true" @click="selectPipeline">
             <q-item-section>Edit</q-item-section>
           </q-item>
+          <q-item clickable v-close-popup="true" @click="duplicatePipeline">
+            <q-item-section>Duplicate</q-item-section>
+          </q-item>
+          <q-separator />
           <q-item clickable v-close-popup="true" @click="confirmDelete = true">
             <q-item-section style="color: red;">Delete</q-item-section>
           </q-item>

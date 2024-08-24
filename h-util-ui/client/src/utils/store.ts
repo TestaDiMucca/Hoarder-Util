@@ -32,6 +32,8 @@ const upsertPipeline = (pipeline: Pipeline) => {
     state.pipelines[pipeline.id!] = pipeline;
 
     onPipelinesUpdated();
+
+    return pipeline;
 };
 
 const removePipeline = (pipelineId: string) => {
