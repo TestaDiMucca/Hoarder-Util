@@ -32,6 +32,7 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
     /** Dup it in case we wish to modify */
     const fileOptions: FileOptions = fileListToFileOptions(filePaths);
 
+    /** Track log only if we need to */
     const hasReporter = pipeline.processingModules.find((m) => m.type === ProcessingModuleType.report);
 
     let handled = 0;
