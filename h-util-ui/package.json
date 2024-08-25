@@ -18,7 +18,10 @@
     "build:front": "cd client && yarn build",
     "electron:build": "yarn build",
     "electron:builder": "electron-builder",
-    "app:build": "yarn prod:rename && yarn build:front && yarn electron:build && yarn electron:builder",
+    "electron:builder:win": "electron-builder build --win --x64",
+    "app:build:base": "yarn prod:rename && yarn build:front && yarn electron:build",
+    "app:build": "yarn app:build:base && yarn electron:builder",
+    "app:build:win": "yarn app:build:base && yarn electron:builder:win",
     "app:build:nightly": "set APP_IS_NIGHTLY=yes && set APP_IS_DEV=no && yarn nightly:rename && yarn build:front && yarn electron:build && yarn electron:builder",
     "nightly:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI Nightly'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
     "prod:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
@@ -29,6 +32,7 @@
     "packages:sync": "cd .. && cp ./packages/common/src/* ./h-util-ui/Electron/packages/common/ && cp ./packages/fileops/src/* ./h-util-ui/Electron/packages/fileops/"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/module-alias": "^2.0.4",
     "concurrently": "^7.6.0",
     "electron": "^22.3.27",
@@ -38,6 +42,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-vue": "^9.27.0",
+    "jest": "^29.7.0",
     "json": "^11.0.0",
     "nodemon": "^2.0.20",
     "prettier": "^3.3.3",
@@ -67,7 +72,7 @@
   "type": "commonjs",
   "build": {
     "appId": "com.official-h-util-ui.app",
-    "productName": "H-Util UI Nightly",
+    "productName": "H-Util UI",
     "copyright": "Copyright © TdM",
     "publish": [
       {
