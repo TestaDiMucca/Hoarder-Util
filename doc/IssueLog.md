@@ -2,6 +2,48 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
+## Build errors - Aug 25
+
+### Encountered
+
+Installing the dev environment on Windows attempting to create the Windows package.
+
+### Fixes
+
+Built package with `app:build:win` creates an executable but it doesn't launch a window when opening in Windows.
+
+Set up Windows dev environment instead. Note, WSL does not solve this issue as it will build for ubuntu.
+
+```
+Error: TS1261: Already included file name .... differs from file name ....
+```
+
+Changes to casing in the directories did not get committed into repository. In this case, it was the directories:
+
+- client/components/About
+- client/components/EditPipeline
+
+Changing the casing for the directories fixed.
+
+TS and vue-tsc versions were also updated to 5 and 2 respectively as there may be an incompatibility that wasn't noticed in an older dev environment with certain global installs.
+
+After updating, vue dropzone may be broken. May want to check this soon.
+
+
+**Below notes are for WSL, which is not so relevant after all**
+
+```
+Error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
+```
+
+Run:
+
+```bash
+apt-get install libnss
+apt-get install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev libasound2
+# and so on according to errors
+```
+
 ## Build errors - Aug 12
 
 ### Encountered
