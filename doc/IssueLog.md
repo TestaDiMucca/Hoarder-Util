@@ -25,6 +25,12 @@ Changes to casing in the directories did not get committed into repository. In t
 
 Changing the casing for the directories fixed.
 
+TS and vue-tsc versions were also updated to 5 and 2 respectively as there may be an incompatibility that wasn't noticed in an older dev environment with certain global installs.
+
+After updating, vue dropzone may be broken. May want to check this soon.
+
+
+**Below notes are for WSL, which is not so relevant after all**
 
 ```
 Error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
