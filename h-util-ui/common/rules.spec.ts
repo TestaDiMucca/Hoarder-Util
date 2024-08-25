@@ -169,4 +169,114 @@ describe('le rules system', () => {
 
         expect(result).toEqual(scenario.result);
     });
+
+    test.each(
+        createRuleTestScenario([
+            {
+                rule: {
+                    type: 'AND',
+                    rules: [
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'name',
+                            value: 'IMG0000.txt',
+                        },
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'name',
+                            value: 'IMG0001.txt',
+                        },
+                    ],
+                },
+                result: false,
+                data: {
+                    name: 'IMG0000.txt',
+                },
+            },
+            {
+                rule: {
+                    type: 'AND',
+                    rules: [
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'name',
+                            value: 'IMG0000.txt',
+                        },
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'author',
+                            value: 'Nero',
+                        },
+                    ],
+                },
+                result: true,
+                data: {
+                    name: 'IMG0000.txt',
+                    author: 'Nero',
+                },
+            },
+            {
+                rule: {
+                    type: 'OR',
+                    rules: [
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'name',
+                            value: 'IMG0000.txt',
+                        },
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'name',
+                            value: 'IMG0001.txt',
+                        },
+                    ],
+                },
+                result: true,
+                data: {
+                    name: 'IMG0000.txt',
+                },
+            },
+            {
+                rule: {
+                    type: 'OR',
+                    rules: [
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'name',
+                            value: 'IMG0000.txt',
+                        },
+                        {
+                            type: 'basic',
+                            attributeType: AttributeType.string,
+                            operator: Operator.eq,
+                            attribute: 'name',
+                            value: 'IMG0001.txt',
+                        },
+                    ],
+                },
+                result: false,
+                data: {
+                    name: 'IMG0003.txt',
+                },
+            },
+        ]),
+    )('AND/OR', (scenario) => {
+        const result = evaluateRule(scenario.rule, scenario.data);
+
+        expect(result).toEqual(scenario.result);
+    });
 });
