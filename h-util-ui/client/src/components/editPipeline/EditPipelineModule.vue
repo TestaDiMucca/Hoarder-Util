@@ -3,7 +3,7 @@ import { computed, defineProps, ref } from 'vue';
 import Delete from 'vue-material-design-icons/Delete.vue'
 
 import { ProcessingModule, ProcessingModuleType } from '@utils/types';
-import { getOptionsComponent, MODULE_MATERIAL_ICONS, OPTION_LABELS } from '@utils/constants';
+import { getDefaultModule, getOptionsComponent, MODULE_MATERIAL_ICONS } from '@utils/constants';
 import { cloneObject } from '@utils/helpers';
 import { getModuleCanInvert } from '@utils/module.helpers';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
@@ -20,7 +20,7 @@ const confirmDelete = ref(false);
 
 const handleModuleTypeSelect = (type: ProcessingModuleType) => {
   const newData: ProcessingModule = {
-    ...props.processingModule,
+    ...getDefaultModule(),
     type
   }
 
@@ -82,11 +82,15 @@ const optionsComponent = computed(() => getOptionsComponent(props.processingModu
 
     <div>
       <q-checkbox v-model="processingModule.options.ignoreErrors" @change="handleToggleModuleOption('ignoreErrors')"
-        label="Ignore errors" />
+        label="Ignore errors"><q-tooltip :delay="500" :offset="[0, 10]">Continue processing if a particular file
+          errors.</q-tooltip></q-checkbox>
       <q-checkbox v-model="(processingModule.options.skipPreviouslyFailed)"
-        @change="handleToggleModuleOption('skipPreviouslyFailed')" label="Skip previously failed" />
+        @change="handleToggleModuleOption('skipPreviouslyFailed')" label="Skip previously failed"><q-tooltip
+          :delay="500" :offset="[0, 10]">Next module will ignore files that weren't processed in the
+          last.</q-tooltip></q-checkbox>
       <q-checkbox v-if="inversionAvailable" v-model="processingModule.options.inverse"
-        @change="handleToggleModuleOption('inverse')" label="Invert logic" />
+        @change="handleToggleModuleOption('inverse')" label="Invert logic"><q-tooltip :delay="500"
+          :offset="[0, 10]">Invert any logical decisions in this module as a whole.</q-tooltip></q-checkbox>
     </div>
   </q-card>
 </template>

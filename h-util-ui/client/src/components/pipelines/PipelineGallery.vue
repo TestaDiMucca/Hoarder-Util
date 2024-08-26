@@ -16,6 +16,7 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
   <nav class="sort-opts">
     <button class="expand-opts-btn button-with-icon-child">
       <Menu class="icon-button" />
+      <q-tooltip :delay="500" :offset="[0, 10]">Display/sort options</q-tooltip>
       <q-popup-proxy>
         <q-card class="opts-card">
           <q-select class="dropdown" v-model="sortBy" :options="Object.values(SortBy)" label="Sort by"
