@@ -20,6 +20,7 @@
         "tastique",
         "tauri",
         "Tesseract",
+        "uncast",
         "uuidv4"
     ],
     "vetur.validation.template": false,
