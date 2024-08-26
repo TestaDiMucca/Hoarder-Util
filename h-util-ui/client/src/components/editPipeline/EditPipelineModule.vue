@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, defineProps, ref } from 'vue';
 import Delete from 'vue-material-design-icons/Delete.vue'
+import Help from 'vue-material-design-icons/HelpCircle.vue'
 
 import { ProcessingModule, ProcessingModuleType } from '@utils/types';
-import { getDefaultModule, getOptionsComponent, MODULE_MATERIAL_ICONS } from '@utils/constants';
+import { getDefaultModule, getOptionsComponent, MODULE_MATERIAL_ICONS, OPTION_TOOLTIP } from '@utils/constants';
 import { cloneObject } from '@utils/helpers';
 import { getModuleCanInvert } from '@utils/module.helpers';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
@@ -58,6 +59,7 @@ const inversionAvailable = computed(() => getModuleCanInvert(props.processingMod
 const iconSignifier = computed(() => MODULE_MATERIAL_ICONS[props.processingModule.type])
 
 const optionsComponent = computed(() => getOptionsComponent(props.processingModule.type));
+const optionTooltip = computed(() => OPTION_TOOLTIP[props.processingModule.type]);
 </script>
 
 <template>
@@ -72,6 +74,11 @@ const optionsComponent = computed(() => getOptionsComponent(props.processingModu
       <span class="module-tools">
         <Delete @click="confirmDelete = true" class="icon-button" :size="18" />
       </span>
+    </div>
+
+    <div v-if="!!optionsComponent"><span class="options-header">Options</span>
+      <Help v-if="!!optionTooltip" :size="12" />
+      <q-tooltip :delay="500" :offset="[0, 10]">{{ optionTooltip }}</q-tooltip>
     </div>
 
     <component v-if="!!optionsComponent" :is="optionsComponent" :currentOptions="processingModule.options"
@@ -115,5 +122,10 @@ const optionsComponent = computed(() => getOptionsComponent(props.processingModu
   gap: 0.2em;
   align-items: start;
   padding-left: 0;
+}
+
+.options-header {
+  font-weight: 600;
+  margin-right: 5px;
 }
 </style>
