@@ -68,6 +68,7 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
       <nav class="icon-bar">
         <div class="module-icon-container" v-for="pipelineModule in pipelineItem.processingModules">
           <component :is="MODULE_MATERIAL_ICONS[pipelineModule.type]" />
+          <q-tooltip :delay="500" :offset="[0, 10]">{{ pipelineModule.type }}</q-tooltip>
         </div>
       </nav>
     </div>

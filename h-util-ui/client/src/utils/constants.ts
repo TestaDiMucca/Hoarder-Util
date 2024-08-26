@@ -62,6 +62,11 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.dynamicRename]: 'Rename string template',
 };
 
+export const OPTION_TOOLTIP: Partial<Record<ProcessingModuleType, string>> = {
+    [ProcessingModuleType.compressVideo]: 'For quality, 0 CRF is lossless and 23 is "standard"',
+    [ProcessingModuleType.iterate]: 'File will be outputted in the directory of the input files.',
+};
+
 export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
     switch (moduleType) {
         case ProcessingModuleType.datePrefix:
