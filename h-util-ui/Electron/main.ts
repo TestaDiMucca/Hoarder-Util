@@ -1,6 +1,5 @@
 import path from 'path';
 import moduleAliases from 'module-alias';
-import { writeFile } from 'fs/promises';
 
 moduleAliases.addAliases({
     '@util': path.join(__dirname, 'util'),
@@ -11,82 +10,16 @@ moduleAliases.addAliases({
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, screen } from 'electron';
 
 import { IpcMessageType } from '@shared/common.constants';
-import logger from '@util/logger';
-import { ProcessingRequest, Storage } from '@shared/common.types';
-import { getStatsFromStore } from '@util/stats';
 
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
-import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import output from './util/output';
-import { registerMainWindow } from './util/ipc';
-import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
-
-import { filterTest } from './operations/filterTest';
-import { renameTest } from './operations/renameTest';
-
-const DATA_FILE = 'data.json';
-
-const handleErrorMessage = (message: string, stack?: string) => {
-    logger.error(`[err] Error: ${message}`, stack);
-};
+import { handleErrorMessage, registerMainWindow } from './util/ipc';
+import { addListenersToIpc } from './ipcListeners';
 
 async function createWindow() {
-    /** Create handlers before window is ready */
-    const dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
-    ipcMain.handle(IpcMessageType.loadData, async () => {
-        const data = await loadJsonStore<Storage>(dataFilePath);
-        if (data?.pipelines) {
-            const stats = await getStatsFromStore();
-
-            if (!stats) return data;
-
-            const mapped: Storage = { pipelines: {} };
-            Object.keys(data.pipelines).forEach((pipelineId) => {
-                mapped.pipelines[pipelineId] = {
-                    ...data.pipelines[pipelineId],
-                    timesRan: stats.pipelineRuns[pipelineId] ?? 0,
-                };
-            });
-
-            return mapped;
-        }
-
-        return data;
-    });
-    ipcMain.handle(IpcMessageType.getStats, async () => {
-        const stats = await getStatsFromStore();
-        const data = await loadJsonStore<Storage>(dataFilePath);
-        // replace the id with name
-
-        if (!stats || !data) return {};
-
-        const pipelineRuns = Object.entries(stats?.pipelineRuns).reduce<Record<string, number>>(
-            (a, [pipelineId, runCount], i) => {
-                const pipelineName = data.pipelines[pipelineId]?.name ?? `Unknown/Deleted ${i}`;
-
-                a[pipelineName] = runCount;
-                return a;
-            },
-            {},
-        );
-
-        return {
-            ...stats,
-            pipelineRuns,
-        };
-    });
-    ipcMain.handle(IpcMessageType.selectDirectory, async () => {
-        const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-            properties: ['openDirectory'],
-        });
-        if (canceled) {
-            return;
-        } else {
-            return filePaths[0];
-        }
-    });
+    addListenersToIpc(ipcMain);
 
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const appBounds: any = appConfig.get('setting.appBounds');
@@ -137,63 +70,6 @@ async function createWindow() {
     mainWindow.on('close', () => {
         mainWindow.webContents.send(IpcMessageType.close);
     });
-
-    ipcMain.handle('versions', () => {
-        return {
-            node: process.versions.chrome,
-            chrome: process.versions.chrome,
-            electron: process.versions.electron,
-            version: app.getVersion(),
-            name: app.getName(),
-        };
-    });
-
-    ipcMain.handle(IpcMessageType.errorReport, async (_e, content: string) => {
-        handleErrorMessage(content);
-    });
-
-    ipcMain.handle(IpcMessageType.saveFile, async (_e, content) => {
-        const { filePath } = await dialog.showSaveDialog({
-            title: 'Save pipeline data',
-            defaultPath: path.join(app.getPath('downloads'), `h-util-pipelines_${Date.now()}.json`),
-            buttonLabel: 'Save',
-            filters: [
-                { name: 'Json files', extensions: ['json'] },
-                { name: 'All files', extensions: ['*'] },
-            ],
-        });
-
-        if (filePath) {
-            writeFile(filePath, content, 'utf-8');
-        }
-    });
-
-    ipcMain.handle(IpcMessageType.testFilter, async (_e, filterTestRequest) => {
-        const filtered = await filterTest(filterTestRequest);
-
-        return filtered;
-    });
-
-    ipcMain.handle(IpcMessageType.testRename, async (_e, renameTestRequest) => {
-        const renamed = await renameTest(renameTestRequest);
-
-        return renamed;
-    });
-
-    ipcMain.on(IpcMessageType.runPipeline, (_e, d: string[]) => {
-        if (d.length === 0) {
-            output.error('Bad format');
-            return;
-        }
-
-        const pipeline = JSON.parse(d[0]) as ProcessingRequest;
-        handleRunPipeline(pipeline);
-        output.log(`Run pipeline ${pipeline.pipeline.name} w/ ${pipeline.filePaths.length} files`);
-    });
-
-    ipcMain.on(IpcMessageType.confirmClose, () => app.exit());
-    ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));
-    ipcMain.on(IpcMessageType.saveData, (_, data: string[]) => saveJsonStore(dataFilePath, data[0]));
 }
 
 // This method will be called when Electron has finished
