@@ -3,7 +3,7 @@ import { app, dialog } from 'electron';
 import { IpcMessageType } from '@shared/common.constants';
 import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
 import { getStatsFromStore } from '@util/stats';
-import { ProcessingRequest, Storage } from '@shared/common.types';
+import { ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
 import { getMainWindow, handleErrorMessage } from '@util/ipc';
 import { writeFile } from 'fs/promises';
 import { filterTest } from './operations/filterTest';
@@ -103,12 +103,25 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         }
     });
 
+    ipcMain.handle(IpcMessageType.runTest, async (_e, testRequest: RunTestRequest) => {
+        switch (testRequest.type) {
+            case ProcessingModuleType.dynamicRename:
+                return await renameTest(testRequest);
+            case ProcessingModuleType.filter:
+                return await filterTest(testRequest);
+            default:
+                return [];
+        }
+    });
+
+    /** @deprecated use runTest */
     ipcMain.handle(IpcMessageType.testFilter, async (_e, filterTestRequest) => {
         const filtered = await filterTest(filterTestRequest);
 
         return filtered;
     });
 
+    /** @deprecated use runTest */
     ipcMain.handle(IpcMessageType.testRename, async (_e, renameTestRequest) => {
         const renamed = await renameTest(renameTestRequest);
 
@@ -126,7 +139,6 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         output.log(`Run pipeline ${pipeline.pipeline.name} w/ ${pipeline.filePaths.length} files`);
     });
 
-    ipcMain.on(IpcMessageType.confirmClose, () => app.exit());
     ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));
     ipcMain.on(IpcMessageType.saveData, (_, data: string[]) => saveJsonStore(dataFilePath, data[0]));
 };

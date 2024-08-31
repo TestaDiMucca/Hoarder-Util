@@ -25,8 +25,5 @@ contextBridge.exposeInMainWorld('electronIpc', {
     loadStats: () => ipcRenderer.invoke('get-stats'),
     saveFile: (content: string) => ipcRenderer.invoke('save-file', content),
     saveData: (data: string) => ipcRenderer.send('save-data', data),
-    onAppClose: (callback: () => void) => ipcRenderer.on('close', callback),
-    confirmAppClose: () => ipcRenderer.send('confirm-close'),
     selectFolder: () => ipcRenderer.invoke('select-dir'),
-    testFilter: (request: FilterTestRequest) => ipcRenderer.invoke('test-filter', request),
 });

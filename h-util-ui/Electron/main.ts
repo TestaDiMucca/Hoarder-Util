@@ -7,9 +7,7 @@ moduleAliases.addAliases({
     '@shared': path.join(__dirname, '../common'),
 });
 
-import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, screen } from 'electron';
-
-import { IpcMessageType } from '@shared/common.constants';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, screen } from 'electron';
 
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
@@ -66,10 +64,6 @@ async function createWindow() {
     }
 
     registerMainWindow(mainWindow);
-
-    mainWindow.on('close', () => {
-        mainWindow.webContents.send(IpcMessageType.close);
-    });
 }
 
 // This method will be called when Electron has finished
