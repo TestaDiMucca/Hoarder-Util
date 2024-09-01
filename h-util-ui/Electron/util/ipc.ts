@@ -3,6 +3,7 @@ import { BrowserWindow } from 'electron';
 import output from './output';
 import { IpcMessageType } from '../../common/common.constants';
 import { SpawnedTask } from '@shared/common.types';
+import logger from '@util/logger';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -10,6 +11,8 @@ export const registerMainWindow = (newWindow: BrowserWindow) => {
     mainWindow = newWindow;
     output.out('Main window registered, ready for IPC use.');
 };
+
+export const getMainWindow = () => mainWindow;
 
 /** Send a string message to the client */
 export const messageWindow = (message: string) => {
@@ -32,4 +35,8 @@ export const updateTaskProgress = (data: SpawnedTask) => {
     }
 
     mainWindow.webContents.send(IpcMessageType.taskProgress, JSON.stringify(data));
+};
+
+export const handleErrorMessage = (message: string, stack?: string) => {
+    logger.error(`[err] Error: ${message}`, stack);
 };

@@ -6,6 +6,8 @@ import { OPTION_LABELS } from '@utils/constants';
 import { getIpcRenderer } from '@utils/helpers';
 import FileListModal from './FileListModal.vue';
 import MiniFileDrop from 'src/components/common/MiniFileDrop.vue';
+import { FilterTestRequest, ProcessingModuleType } from '@shared/common.types';
+import { IpcMessageType } from '@shared/common.constants';
 
 const props = defineProps<PipelineOptionsProps & { additionalHelp?}>();
 const showList = ref(false);
@@ -26,9 +28,11 @@ const handleDroppedFiles = async (filePaths: string[]) => {
 
   showList.value = true;
 
-  const res = await ipcRenderer.testFilter({
-    filePaths, filter: String(props.currentOptions.value), invert: !!props.currentOptions.inverse
-  });
+  const res = await ipcRenderer.invoke<FilterTestRequest, string[]>(IpcMessageType.runTest, {
+    type: ProcessingModuleType.filter,
+    filePaths,
+    filter: String(props.currentOptions.value), invert: !!props.currentOptions.inverse
+  })
 
   fileList.value = res;
 

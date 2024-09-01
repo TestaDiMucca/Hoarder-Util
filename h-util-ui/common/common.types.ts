@@ -64,7 +64,10 @@ export type ProcessingRequest = {
     filePaths: string[];
 };
 
+export type RunTestRequest = FilterTestRequest | RenameTestRequest;
+
 export type FilterTestRequest = {
+    type: ProcessingModuleType.filter;
     filter: string;
     invert: boolean;
     filePaths: string[];
@@ -72,6 +75,7 @@ export type FilterTestRequest = {
 };
 
 export type RenameTestRequest = {
+    type: ProcessingModuleType.dynamicRename;
     templateString: string;
     filePaths: string[];
 };

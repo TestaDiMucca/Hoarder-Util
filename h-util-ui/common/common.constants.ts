@@ -11,10 +11,6 @@ export enum IpcMessageType {
     saveData = 'save-data',
     /** Let main update the client on task progress */
     taskProgress = 'task-progress',
-    /** Event for window closing */
-    close = 'close',
-    /** Confirm we are ready to close */
-    confirmClose = 'confirm-close',
     /** Get stored stats */
     getStats = 'get-stats',
     /** Call an electron dialog from the client to save file */
@@ -27,6 +23,8 @@ export enum IpcMessageType {
     errorReport = 'errorReport',
     /** Test dynamic renaming */
     testRename = 'test-rename',
+    /** Run a test rename, filter, or otherwise */
+    runTest = 'run-test',
 }
 
 export enum RenameTemplates {

@@ -5,7 +5,7 @@ import { extractStringTemplate, PipelineOptionsProps } from './pipelineOptions.c
 import { OPTION_LABELS } from '@utils/constants';
 import { getIpcRenderer } from '@utils/helpers';
 import { IpcMessageType, RenameTemplates } from '@shared/common.constants';
-import { RenameTestRequest } from '@shared/common.types';
+import { ProcessingModuleType, RenameTestRequest } from '@shared/common.types';
 import FileListModal from './FileListModal.vue';
 import MiniFileDrop from 'src/components/common/MiniFileDrop.vue';
 import { previewRenamedFile } from './pipelineOptions.util';
@@ -48,7 +48,8 @@ const handleDroppedFiles = async (filePaths: string[]) => {
 
   showList.value = true;
 
-  const res = await ipcRenderer.invoke<RenameTestRequest, string[]>(IpcMessageType.testRename, {
+  const res = await ipcRenderer.invoke<RenameTestRequest, string[]>(IpcMessageType.runTest, {
+    type: ProcessingModuleType.dynamicRename,
     filePaths, templateString: String(props.currentOptions.value)
   });
 
