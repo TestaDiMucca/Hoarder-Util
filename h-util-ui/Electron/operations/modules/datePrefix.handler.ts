@@ -22,6 +22,7 @@ const datePrefixHandler: ModuleHandler = {
         output.log(`rename ${fileName} to ${newName}`);
 
         await fsRename(filePath, newPath);
+        filePath = newPath;
 
         addEventLogForReport(opts, fileName, 'renamed', newName);
     },

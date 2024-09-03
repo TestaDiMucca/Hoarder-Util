@@ -34,7 +34,10 @@ const moveDirectoryHandler: ModuleHandler<{}, DirectoriesScanned> = {
 
         output.log(`Moving ${fileName} into ${targetDirectoryName}/`);
 
-        await fs.rename(filePath, path.join(directoryPath, fileName));
+        const newPath = path.join(directoryPath, fileName);
+        await fs.rename(filePath, newPath);
+
+        filePath = newPath;
 
         addEventLogForReport(opts, fileName, 'moved', targetDirectoryName);
     },
