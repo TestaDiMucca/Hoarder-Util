@@ -6,12 +6,13 @@ import EditPipeline from './components/EditPipeline/EditPipeline.vue'
 import { VueComponent } from './utils/util.types'
 import { addErrorListeners, getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
 import store from './utils/store'
+import { PageViews } from '@utils/types'
 
 const $q = useQuasar();
 
-const routes: Record<string, VueComponent> = {
-  '/': HomePage,
-  '/new': EditPipeline
+const routes: Record<PageViews, VueComponent> = {
+  [PageViews.Home]: HomePage,
+  [PageViews.Edit]: EditPipeline
 }
 const currentPath = ref(window.location.hash)
 

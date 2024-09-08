@@ -1,6 +1,13 @@
 import { IpcMessageType } from '@shared/common.constants';
 import { StatsStorage, Storage } from '@shared/common.types';
 import { VueStore } from './store';
+import { PageViews } from './types';
+
+export { PageViews } from './types';
+
+export const navigateTo = (path: PageViews) => {
+    window.location.href = `#${path}`;
+};
 
 /**
  * Sometimes structuredClone throws an error, catch and retry with caveman method

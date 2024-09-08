@@ -4,10 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import cloneDeep from 'lodash/cloneDeep';
 
-import { ProcessingModule } from '@utils/types';
+import { PageViews, ProcessingModule } from '@utils/types';
 import store from '@utils/store';
 import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
 import EditPipelineModule from './EditPipelineModule.vue';
+import { navigateTo } from '@utils/helpers';
 
 /** Replace with prop if any. */
 const pipelineModules = ref<ProcessingModule[]>([
@@ -56,7 +57,7 @@ const handleSavePipeline = () => {
 
 const returnHome = () => {
   store.setSelectedPipeline(null);
-  window.location.href = '#/';
+  navigateTo(PageViews.Home);
 }
 
 const handlePipelineNameUpdated = (event: Event) => {

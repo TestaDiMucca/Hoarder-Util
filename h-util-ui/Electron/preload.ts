@@ -1,4 +1,3 @@
-import { FilterTestRequest } from '@shared/common.types';
 import { contextBridge, ipcRenderer } from 'electron/renderer';
 
 contextBridge.exposeInMainWorld('browserWindow', {

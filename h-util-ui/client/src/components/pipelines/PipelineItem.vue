@@ -5,12 +5,15 @@ import Menu from 'vue-material-design-icons/DotsVertical.vue'
 
 import store from '@utils/store';
 import { IpcMessageType } from '@shared/common.constants';
-import { Pipeline } from '@utils/types';
-import { getIpcRenderer, sendMessageToMain } from '@utils/helpers';
+import { PageViews, Pipeline } from '@utils/types';
+import { getIpcRenderer, navigateTo, sendMessageToMain } from '@utils/helpers';
 import { MODULE_MATERIAL_ICONS } from '@utils/constants';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
 
 interface Props { pipelineItem: Pipeline }
+
+/** Electron supplements file path */
+type ElectronFile = File & { path: string };
 
 const props = defineProps<Props>()
 const ipcRenderer = getIpcRenderer();
@@ -22,7 +25,7 @@ const deletePipeline = () =>
 const selectPipeline = () => {
   store.setSelectedPipeline(props.pipelineItem)
 
-  window.location.href = '#/new';
+  navigateTo(PageViews.Edit);
 }
 
 const duplicatePipeline = () => {
@@ -34,14 +37,14 @@ const duplicatePipeline = () => {
 
   setTimeout(() => {
     store.setSelectedPipeline(created);
-    window.location.href = '#/new';
+    navigateTo(PageViews.Edit);
   }, 1000);
 }
 
-const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
+const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: ElectronFile[], _rejectReasons) => {
   if (acceptFiles.length) {
     const payload = {
-      filePaths: acceptFiles.map(f => (f as any).path),
+      filePaths: acceptFiles.map(f => f.path),
       pipeline: props.pipelineItem
     }
 
