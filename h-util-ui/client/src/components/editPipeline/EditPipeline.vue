@@ -2,6 +2,7 @@
 import { computed, ref, onBeforeMount } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
+import Palette from 'vue-material-design-icons/Palette.vue'
 import cloneDeep from 'lodash/cloneDeep';
 
 import { PageViews, ProcessingModule } from '@utils/types';
@@ -16,6 +17,7 @@ const pipelineModules = ref<ProcessingModule[]>([
 ]);
 
 const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
+const pipelineColor = ref<string>();
 const pipelineRanking = ref(DEFAULT_RANKING);
 
 onBeforeMount(() => {
@@ -24,6 +26,7 @@ onBeforeMount(() => {
   if (!selected) return;
   pipelineModules.value = cloneDeep(selected.processingModules);
   pipelineName.value = selected.name;
+  pipelineColor.value = selected.color;
   pipelineRanking.value = selected.manualRanking ?? DEFAULT_RANKING;
 })
 
@@ -49,6 +52,7 @@ const handleSavePipeline = () => {
     id: store.state.selectedPipeline?.id ?? uuidv4(),
     name: pipelineName.value,
     manualRanking: pipelineRanking.value,
+    color: pipelineColor.value,
     processingModules: pipelineModules.value
   })
 
@@ -85,6 +89,16 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
         @input="handlePipelineNameUpdated" />
       <q-input type="number" class="number-input input-field" label="Pipeline rank" v-model="pipelineRanking"
         @input="handlePipelineRankingUpdated" />
+      <q-input v-model="pipelineColor" :rules="['anyColor']" label="Display color" class="color-input">
+        <template v-slot:append>
+          <button class="button-with-icon-child">
+            <Palette class="icon-button cursor-pointer" :style="pipelineColor ? { color: pipelineColor } : undefined" />
+            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+              <q-color no-footer v-model="pipelineColor" />
+            </q-popup-proxy>
+          </button>
+        </template>
+      </q-input>
     </section>
 
     <q-card-section class="modules-container" v-for="(pipelineModule, index) in pipelineModules">
@@ -160,5 +174,10 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
   justify-content: center;
   display: flex;
   gap: 5px;
+}
+
+.color-input button {
+  margin: 0;
+  padding: 1em 0 0;
 }
 </style>

@@ -28,8 +28,11 @@ export type Pipeline = {
     created?: string;
     modified?: string;
     manualRanking?: number;
-    timesRan?: number;
     processingModules: ProcessingModule[];
+    /** Used for the card display */
+    color?: string;
+    /** Supplemented on load. todo: take out of this type */
+    timesRan?: number;
 };
 
 export type Storage = {

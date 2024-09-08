@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 import Menu from 'vue-material-design-icons/DotsVertical.vue'
 
@@ -48,17 +48,28 @@ const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: ElectronFile[], _rejec
       pipeline: props.pipelineItem
     }
 
+    /**
+     * Not a network request so not dealing with compressing the payload or using an id only
+     * There may be cost in serializing the pipeline but either seems trivial at this point but
+     * may improve in the future
+     */
     ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify(payload)])
   } else {
     sendMessageToMain('No files detected')
   }
 }
 
+const cardStyle = computed(() => props.pipelineItem.color ? {
+  boxShadow: `inset 0 0 10px 5px ${props.pipelineItem.color}`, /* Blur effect with a shadow */
+  boxSizing: 'border-box'
+} : undefined)
+
 const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </script>
 
 <template>
-  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true }">
+  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true, 'has-color': !!pipelineItem.color }"
+    :style="cardStyle">
     <div v-bind="getRootProps()" class="cursor-pointer">
       <div class="pipeline-item">
         {{ pipelineItem.name }}
@@ -99,6 +110,12 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </template>
 
 <style scoped>
+.has-color {
+  /* Border size fixed, but color is dynamic */
+  /* border: 5px solid transparent; */
+  box-sizing: border-box;
+}
+
 .pipeline-item {
   padding: 1em;
   font-weight: 500;
