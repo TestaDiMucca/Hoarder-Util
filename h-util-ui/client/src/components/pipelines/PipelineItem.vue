@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, CSSProperties, ref } from 'vue';
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 import Menu from 'vue-material-design-icons/DotsVertical.vue'
 
@@ -62,15 +62,14 @@ const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: ElectronFile[], _rejec
 const cardStyle = computed(() => props.pipelineItem.color ? {
   boxShadow: `inset 0 0 10px 5px ${props.pipelineItem.color}`, /* Blur effect with a shadow */
   boxSizing: 'border-box'
-} : undefined)
+} satisfies CSSProperties : undefined)
 
 const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </script>
 
 <template>
-  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true, 'has-color': !!pipelineItem.color }"
-    :style="cardStyle">
-    <div v-bind="getRootProps()" class="cursor-pointer">
+  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true, 'has-color': !!pipelineItem.color }">
+    <div v-bind="getRootProps()" class="cursor-pointer" :style="cardStyle">
       <div class="pipeline-item">
         {{ pipelineItem.name }}
       </div>
