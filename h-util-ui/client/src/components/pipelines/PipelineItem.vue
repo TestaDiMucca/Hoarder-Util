@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, CSSProperties, ref } from 'vue';
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 import Menu from 'vue-material-design-icons/DotsVertical.vue'
 
 import store from '@utils/store';
 import { IpcMessageType } from '@shared/common.constants';
-import { Pipeline } from '@utils/types';
-import { getIpcRenderer, sendMessageToMain } from '@utils/helpers';
+import { PageViews, Pipeline } from '@utils/types';
+import { getIpcRenderer, navigateTo, sendMessageToMain } from '@utils/helpers';
 import { MODULE_MATERIAL_ICONS } from '@utils/constants';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
 
 interface Props { pipelineItem: Pipeline }
+
+/** Electron supplements file path */
+type ElectronFile = File & { path: string };
 
 const props = defineProps<Props>()
 const ipcRenderer = getIpcRenderer();
@@ -22,7 +25,7 @@ const deletePipeline = () =>
 const selectPipeline = () => {
   store.setSelectedPipeline(props.pipelineItem)
 
-  window.location.href = '#/new';
+  navigateTo(PageViews.Edit);
 }
 
 const duplicatePipeline = () => {
@@ -34,29 +37,39 @@ const duplicatePipeline = () => {
 
   setTimeout(() => {
     store.setSelectedPipeline(created);
-    window.location.href = '#/new';
+    navigateTo(PageViews.Edit);
   }, 1000);
 }
 
-const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
+const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: ElectronFile[], _rejectReasons) => {
   if (acceptFiles.length) {
     const payload = {
-      filePaths: acceptFiles.map(f => (f as any).path),
+      filePaths: acceptFiles.map(f => f.path),
       pipeline: props.pipelineItem
     }
 
+    /**
+     * Not a network request so not dealing with compressing the payload or using an id only
+     * There may be cost in serializing the pipeline but either seems trivial at this point but
+     * may improve in the future
+     */
     ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify(payload)])
   } else {
     sendMessageToMain('No files detected')
   }
 }
 
+const cardStyle = computed(() => props.pipelineItem.color ? {
+  boxShadow: `inset 0 0 10px 5px ${props.pipelineItem.color}`, /* Blur effect with a shadow */
+  boxSizing: 'border-box'
+} satisfies CSSProperties : undefined)
+
 const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </script>
 
 <template>
-  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true }">
-    <div v-bind="getRootProps()" class="cursor-pointer">
+  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true, 'has-color': !!pipelineItem.color }">
+    <div v-bind="getRootProps()" class="cursor-pointer" :style="cardStyle">
       <div class="pipeline-item">
         {{ pipelineItem.name }}
       </div>
@@ -96,6 +109,12 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </template>
 
 <style scoped>
+.has-color {
+  /* Border size fixed, but color is dynamic */
+  /* border: 5px solid transparent; */
+  box-sizing: border-box;
+}
+
 .pipeline-item {
   padding: 1em;
   font-weight: 500;

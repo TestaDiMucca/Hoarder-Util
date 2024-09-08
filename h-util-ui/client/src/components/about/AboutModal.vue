@@ -17,7 +17,6 @@ const tab = ref(Tabs.about);
 const about = ref(false);
 const stats = ref<StatsStorage | null>(null);
 
-// Define props using the defineProps function
 defineProps<{
   openButton: any;
   openButtonProps?: Record<string, any>;

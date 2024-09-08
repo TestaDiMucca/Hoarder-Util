@@ -5,11 +5,12 @@ import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import Information from 'vue-material-design-icons/Information.vue'
 import { useQuasar } from 'quasar'
 import AboutModal from './About/AboutModal.vue';
+import { navigateTo, PageViews } from '@utils/helpers';
 
 /* Auto dark for now */
 useQuasar().dark.set(true);
 
-const handleNewPipeline = () => window.location.href = '#/new';
+const handleNewPipeline = () => navigateTo(PageViews.Edit);
 </script>
 
 <template>
@@ -19,7 +20,6 @@ const handleNewPipeline = () => window.location.href = '#/new';
       <AboutModal :open-button="Information" />
       <PlusBox class="icon-button create-button" @click="handleNewPipeline" title="Create a new pipeline" />
     </nav>
-
   </section>
 
   <section class="main-content">
