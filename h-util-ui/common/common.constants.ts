@@ -39,3 +39,5 @@ export enum RenameTemplates {
     MetaTitle = 'metaTitle',
     MetaTrackNo = 'metaTrackNo',
 }
+
+export const defaultTimeMask = 'yy-mm-dd-HH-MM_';
