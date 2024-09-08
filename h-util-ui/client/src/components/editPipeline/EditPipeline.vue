@@ -89,7 +89,8 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
         @input="handlePipelineNameUpdated" />
       <q-input type="number" class="number-input input-field" label="Pipeline rank" v-model="pipelineRanking"
         @input="handlePipelineRankingUpdated" />
-      <q-input v-model="pipelineColor" :rules="['anyColor']" label="Display color" class="color-input">
+      <q-input v-model="pipelineColor" :rules="pipelineColor === '' ? [] : ['anyColor']" label="Display color"
+        class="color-input" no-error-icon>
         <template v-slot:append>
           <button class="button-with-icon-child">
             <Palette class="icon-button cursor-pointer" :style="pipelineColor ? { color: pipelineColor } : undefined" />
@@ -97,6 +98,9 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
               <q-color no-footer v-model="pipelineColor" />
             </q-popup-proxy>
           </button>
+        </template>
+        <template v-slot:error>
+          Not a valid color
         </template>
       </q-input>
     </section>
