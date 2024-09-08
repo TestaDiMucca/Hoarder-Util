@@ -6,6 +6,7 @@ import Information from 'vue-material-design-icons/Information.vue'
 import { useQuasar } from 'quasar'
 import AboutModal from './About/AboutModal.vue';
 import { navigateTo, PageViews } from '@utils/helpers';
+import PageLayout from 'src/layout/PageLayout.vue';
 
 /* Auto dark for now */
 useQuasar().dark.set(true);
@@ -14,21 +15,18 @@ const handleNewPipeline = () => navigateTo(PageViews.Edit);
 </script>
 
 <template>
-  <section class="header-bar">
-    <span>Visual H-Util</span>
-    <nav class="controls">
-      <AboutModal :open-button="Information" />
-      <PlusBox class="icon-button create-button" @click="handleNewPipeline" title="Create a new pipeline" />
-    </nav>
-  </section>
-
-  <section class="main-content">
-    <q-card class="ui-card">
-      <q-card-section>
-        <PipelineGallery />
-      </q-card-section>
-    </q-card>
-  </section>
+  <PageLayout>
+    <template #top-bar>
+      <span>Visual H-Util</span>
+      <nav class="controls">
+        <AboutModal :open-button="Information" />
+        <PlusBox class="icon-button create-button" @click="handleNewPipeline" title="Create a new pipeline" />
+      </nav>
+    </template>
+    <template #content>
+      <PipelineGallery />
+    </template>
+  </PageLayout>
 
   <section class="task-list-container">
     <TaskList />
@@ -36,28 +34,9 @@ const handleNewPipeline = () => navigateTo(PageViews.Edit);
 </template>
 
 <style scoped>
-.header-bar {
-  height: 40px;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-
-.header-bar .controls {
+.controls {
   display: flex;
   gap: 0.5em;
-}
-
-.main-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.main-content .ui-card {
-  flex-grow: 1;
-  overflow-y: auto;
 }
 
 .task-list-container {

@@ -10,6 +10,7 @@ import store from '@utils/store';
 import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
 import EditPipelineModule from './EditPipelineModule.vue';
 import { navigateTo } from '@utils/helpers';
+import PageLayout from 'src/layout/PageLayout.vue';
 
 /** Replace with prop if any. */
 const pipelineModules = ref<ProcessingModule[]>([
@@ -81,64 +82,59 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
 </script>
 
 <template>
-  <q-card class="ui-card">
-    <h5>{{ header }}</h5>
+  <PageLayout>
+    <template #top-bar>
+      <span>{{ header }}</span>
+    </template>
+    <template #content>
+      <section class="pipeline-opts">
+        <q-input type="text" class="text-input input-field" label="Pipeline name" v-model="pipelineName"
+          @input="handlePipelineNameUpdated" />
+        <q-input type="number" class="number-input input-field" label="Pipeline rank" v-model="pipelineRanking"
+          @input="handlePipelineRankingUpdated" />
+        <q-input v-model="pipelineColor" :rules="pipelineColor === '' ? [] : ['anyColor']" label="Display color"
+          class="color-input" no-error-icon>
+          <template v-slot:append>
+            <button class="button-with-icon-child">
+              <Palette class="icon-button cursor-pointer"
+                :style="pipelineColor ? { color: pipelineColor } : undefined" />
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-color no-footer v-model="pipelineColor" />
+              </q-popup-proxy>
+            </button>
+          </template>
+          <template v-slot:error>
+            Not a valid color
+          </template>
+        </q-input>
+      </section>
 
-    <section class="pipeline-opts">
-      <q-input type="text" class="text-input input-field" label="Pipeline name" v-model="pipelineName"
-        @input="handlePipelineNameUpdated" />
-      <q-input type="number" class="number-input input-field" label="Pipeline rank" v-model="pipelineRanking"
-        @input="handlePipelineRankingUpdated" />
-      <q-input v-model="pipelineColor" :rules="pipelineColor === '' ? [] : ['anyColor']" label="Display color"
-        class="color-input" no-error-icon>
-        <template v-slot:append>
-          <button class="button-with-icon-child">
-            <Palette class="icon-button cursor-pointer" :style="pipelineColor ? { color: pipelineColor } : undefined" />
-            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-              <q-color no-footer v-model="pipelineColor" />
-            </q-popup-proxy>
-          </button>
-        </template>
-        <template v-slot:error>
-          Not a valid color
-        </template>
-      </q-input>
-    </section>
+      <q-card-section class="modules-container" v-for="(pipelineModule, index) in pipelineModules">
+        <EditPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
+          :index="index" />
+        <div v-if="index < pipelineModules.length - 1" class="line" />
+        <div v-if="index === pipelineModules.length - 1" class="line line-end" />
+      </q-card-section>
 
-    <q-card-section class="modules-container" v-for="(pipelineModule, index) in pipelineModules">
-      <EditPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
-        :index="index" />
-      <div v-if="index < pipelineModules.length - 1" class="line" />
-      <div v-if="index === pipelineModules.length - 1" class="line line-end" />
-    </q-card-section>
-
-    <q-card-section @click="handleNewModules" class="modules-container">
-      <q-card class="new-module-card p-2">
-        <PlusBox class="icon-button" />
-        <span>Add a module</span>
-      </q-card>
-    </q-card-section>
-  </q-card>
-
-  <nav>
-    <button @click="returnHome">
-      Cancel
-    </button>
-    <button :disabled="hasNoModules" @click="handleSavePipeline">
-      Save pipeline
-    </button>
-  </nav>
+      <q-card-section @click="handleNewModules" class="modules-container">
+        <q-card class="new-module-card p-2">
+          <PlusBox class="icon-button" />
+          <span>Add a module</span>
+        </q-card>
+      </q-card-section>
+    </template>
+    <template #footer>
+      <button @click="returnHome">
+        Cancel
+      </button>
+      <button :disabled="hasNoModules" @click="handleSavePipeline">
+        Save pipeline
+      </button>
+    </template>
+  </PageLayout>
 </template>
 
 <style scoped>
-.ui-card {
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .pipeline-opts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -154,6 +150,7 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
 .modules-container {
   min-width: 300px;
   width: 70%;
+  margin: auto;
   position: relative;
 }
 
