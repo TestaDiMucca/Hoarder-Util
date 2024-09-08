@@ -15,6 +15,7 @@ export type ProcessingModule = {
     type: ProcessingModuleType;
     options: {
         value: string | number;
+        dateMask?: string;
         ignoreErrors?: boolean;
         skipPreviouslyFailed?: boolean;
         inverse?: boolean;

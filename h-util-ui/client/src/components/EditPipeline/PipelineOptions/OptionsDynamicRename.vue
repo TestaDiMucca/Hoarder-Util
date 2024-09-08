@@ -4,11 +4,11 @@ import { computed, ref } from 'vue';
 import { extractStringTemplate, PipelineOptionsProps } from './pipelineOptions.common';
 import { OPTION_LABELS } from '@utils/constants';
 import { getIpcRenderer } from '@utils/helpers';
-import { IpcMessageType, RenameTemplates } from '@shared/common.constants';
+import { defaultTimeMask, IpcMessageType, RenameTemplates } from '@shared/common.constants';
 import { ProcessingModuleType, RenameTestRequest } from '@shared/common.types';
 import FileListModal from './FileListModal.vue';
 import MiniFileDrop from 'src/components/common/MiniFileDrop.vue';
-import { previewRenamedFile } from './pipelineOptions.util';
+import { hasDateTag, previewRenamedFile } from './pipelineOptions.util';
 
 const props = defineProps<PipelineOptionsProps>();
 const showList = ref(false);
@@ -22,6 +22,11 @@ const handleModuleOptionUpdated = (event: Event) => {
   props.handleOptionChange('value', newValue);
 
   onInput();
+}
+
+const handleFormatTaskUpdated = (event: Event) => {
+  const newValue = (event.target as HTMLInputElement).value;
+  props.handleOptionChange('dateMask', newValue);
 }
 
 const onInput = () => {
@@ -62,7 +67,8 @@ const clearFiles = () => {
 
 const optionLabel = computed(() => OPTION_LABELS[props.moduleType]);
 
-const exampleName = computed(() => previewRenamedFile(String(props.currentOptions.value)));
+const exampleName = computed(() => previewRenamedFile(String(props.currentOptions.value), props.currentOptions.dateMask));
+const templateUsesDateTags = computed(() => hasDateTag(String(props.currentOptions.value)))
 </script>
 
 <template>
@@ -70,6 +76,8 @@ const exampleName = computed(() => previewRenamedFile(String(props.currentOption
     <div class="autocomplete">
       <q-input v-if="optionLabel" type="text" v-model="currentOptions.value" @input="handleModuleOptionUpdated"
         @update:model-value="onInput" :label="optionLabel ?? '%original%'" placeholder="example: %original%_tagged" />
+      <q-input v-if="templateUsesDateTags" type="text" v-model="currentOptions.dateMask"
+        @input="handleFormatTaskUpdated" label="Date formatting mask" :placeholder="defaultTimeMask" />
       <div class="example">{{ exampleName }}</div>
       <q-card v-if="filteredTemplateOptions.length > 0" class="suggestion-list">
         <q-card-section>

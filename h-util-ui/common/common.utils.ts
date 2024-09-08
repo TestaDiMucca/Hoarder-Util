@@ -1,3 +1,7 @@
+import dateFormat from 'dateformat';
+import { defaultTimeMask } from './common.constants';
+
+/** Just gets a default date time stamp */
 export function formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = date.getMonth() + 1; // getMonth() returns a zero-based index
@@ -9,6 +13,14 @@ export function formatDate(date: Date): string {
 
     return `${year}-${paddedMonth}-${paddedDay}`;
 }
+
+export const formatDateString = (date: Date, mask = defaultTimeMask) => {
+    try {
+        return dateFormat(date, mask);
+    } catch (e: any) {
+        console.error(`Error formatting dates: ${e.message}`);
+    }
+};
 
 export function slugify(text: string): string {
     return (
