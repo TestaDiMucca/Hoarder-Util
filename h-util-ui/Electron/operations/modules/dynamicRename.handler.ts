@@ -9,7 +9,7 @@ import {
     getDateStringForFile,
     splitFileNameFromPath,
 } from '@common/fileops';
-import { RenameTemplates } from '@shared/common.constants';
+import { defaultTimeMask, RenameTemplates } from '@shared/common.constants';
 import { ConfigError } from '@util/errors';
 import { ModuleHandler, ModuleOptions } from '@util/types';
 import { slugify } from '@shared/common.utils';
@@ -28,6 +28,7 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
     handler: async (fileWithMeta, opts) => {
         const { filePath } = fileWithMeta;
         const stringTemplate = opts.clientOptions?.value;
+        const timeMask = opts.clientOptions?.dateMask ?? defaultTimeMask;
 
         if (!stringTemplate) throw new ConfigError('No string template provided');
 
@@ -37,7 +38,7 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
 
         // Gather data into map
         const tags = (opts.context?.tags ?? []) as RenameTemplates[];
-        await promises.each(tags, async (tag) => populateDataDict(dataDict, tag, filePath));
+        await promises.each(tags, async (tag) => populateDataDict(dataDict, tag, filePath, timeMask));
 
         // Replace using data from the map
         const { fileName } = splitFileNameFromPath(filePath);

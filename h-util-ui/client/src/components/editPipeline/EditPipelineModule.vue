@@ -44,7 +44,7 @@ const handleModuleOptionUpdated = (flag: keyof ProcessingModule['options'], newV
   updateOptionValue(newValue, flag);
 }
 
-const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options'], 'value'>) => {
+const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options'], 'dateMask' | 'value'>) => {
   const newData: ProcessingModule = cloneObject(props.processingModule);
 
   newData.options[option] = props.processingModule.options[option] ? false : true;
