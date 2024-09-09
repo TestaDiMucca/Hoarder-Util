@@ -5,7 +5,12 @@ import { splitFileNameFromPath } from '@common/fileops';
 import ocrHandler from './modules/ocr.handler';
 
 export const filterTest = async (filterTestRequest: FilterTestRequest) => {
-    const { filter, filePaths, invert, moduleType } = filterTestRequest;
+    const { filePaths, invert, moduleType, type } = filterTestRequest;
+
+    const filter = type === ProcessingModuleType.ruleFilter ? null : filterTestRequest.filter;
+
+    // todo: handling rules vs string based
+    if (!filter) return [];
 
     const moduleHandler = moduleType === ProcessingModuleType.ocr ? ocrHandler : filterHandler;
 
@@ -13,7 +18,7 @@ export const filterTest = async (filterTestRequest: FilterTestRequest) => {
 
     await withFileListHandling({
         fileOptions,
-        clientOptions: { value: filter, inverse: invert },
+        clientOptions: { value: filter!, inverse: invert },
         moduleHandler,
     });
 

@@ -1,4 +1,4 @@
-import { AttributeType, BasicRule, Rule } from './rules.types';
+import { AttributeType, BasicRule, LogicalGroup, Operator, Rule } from './rules.types';
 
 export const evaluateRule = (rule: Rule, data: Record<string, string>): boolean => {
     if (rule.type === 'basic') return evaluateBasicRule(rule, data);
@@ -61,3 +61,27 @@ export function evaluateBasicRule<T extends string = string>(
         return false;
     }
 }
+
+export const availableOperatorsForAttrType = (attrType: AttributeType): Operator[] => {
+    switch (attrType) {
+        case AttributeType.number:
+            return [Operator.eq, Operator.gt, Operator.gte, Operator.lt, Operator.lte, Operator.ne];
+        case AttributeType.string:
+            return [Operator.eq, Operator.ne, Operator.contains, Operator.notContains];
+        default:
+            return [Operator.eq, Operator.ne];
+    }
+};
+
+export const getDefaultRule = (): BasicRule => ({
+    attribute: '',
+    attributeType: AttributeType.number,
+    operator: Operator.eq,
+    value: '',
+    type: 'basic',
+});
+
+export const getDefaultGroupRule = (existingRule?: BasicRule): LogicalGroup => ({
+    type: 'AND',
+    rules: [existingRule ?? getDefaultRule(), getDefaultRule()],
+});

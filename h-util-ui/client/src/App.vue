@@ -51,7 +51,6 @@ onMounted(() => {
   <div class="app-container">
     <component :is="currentView" />
   </div>
-
 </template>
 
 <style scoped>

@@ -9,7 +9,6 @@ export type MenuItem = {
   type: 'item'
   onClick: () => void;
   label: string;
-
 } | {
   type: 'separator'
 }
@@ -31,7 +30,7 @@ defineProps<Props>();
 
       <q-separator v-if="menuItem.type === 'separator'" />
 
-      <q-item v-if="menuItem.type === 'group'">
+      <q-item clickable v-if="menuItem.type === 'group'">
         <q-item-section>{{ menuItem.label }}</q-item-section>
         <q-item-section side>
           <MenuRight :size="20" />

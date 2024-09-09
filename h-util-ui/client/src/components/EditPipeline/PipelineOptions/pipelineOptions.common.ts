@@ -3,9 +3,14 @@ import { ProcessingModule, ProcessingModuleType } from '@shared/common.types';
 export interface PipelineOptionsProps {
     moduleType: ProcessingModuleType;
     currentOptions: ProcessingModule['options'];
-    handleOptionChange: (flag: keyof ProcessingModule['options'], newValue: string) => void;
+    handleOptionChange: <T = string>(flag: keyof ProcessingModule['options'], newValue: T) => void;
 }
 
+/**
+ * Extract the last string template token in a template string.
+ *
+ * e.g. extract "name" from "%data%_%name%"
+ */
 export function extractStringTemplate(input: string): string | null {
     // Get all indices of '%' in the input string
     const indices: number[] = [];

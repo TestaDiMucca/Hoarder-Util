@@ -5,6 +5,7 @@ import CalendarExport from 'vue-material-design-icons/CalendarExport.vue';
 import DatabaseExport from 'vue-material-design-icons/DatabaseExport.vue';
 import Printer from 'vue-material-design-icons/Printer.vue';
 import Filter from 'vue-material-design-icons/Filter.vue';
+import FilterMinus from 'vue-material-design-icons/FilterMinus.vue';
 import TextSearch from 'vue-material-design-icons/TextSearch.vue';
 import FileDocument from 'vue-material-design-icons/FileDocumentArrowRight.vue';
 import Rename from 'vue-material-design-icons/RenameBoxOutline.vue';
@@ -15,6 +16,7 @@ import OptionsStandard from 'src/components/EditPipeline/PipelineOptions/Options
 import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/OptionsDirectory.vue';
 import OptionsFilter from 'src/components/EditPipeline/PipelineOptions/OptionsFilter.vue';
 import OptionsDynamicRename from 'src/components/EditPipeline/PipelineOptions/OptionsDynamicRename.vue';
+import OptionsRuleFilter from 'src/components/EditPipeline/PipelineOptions/OptionsRuleFilter.vue';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -28,6 +30,7 @@ export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.ocr]: '📖',
     [ProcessingModuleType.report]: '📉',
     [ProcessingModuleType.dynamicRename]: '📇',
+    [ProcessingModuleType.ruleFilter]: '📏',
 };
 
 /** Icon representation of the module operations */
@@ -38,10 +41,11 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
     [ProcessingModuleType.datePrefix]: CalendarExport,
     [ProcessingModuleType.metadata]: DatabaseExport,
     [ProcessingModuleType.iterate]: Printer,
-    [ProcessingModuleType.filter]: Filter,
+    [ProcessingModuleType.filter]: FilterMinus,
     [ProcessingModuleType.ocr]: TextSearch,
     [ProcessingModuleType.report]: FileDocument,
     [ProcessingModuleType.dynamicRename]: Rename,
+    [ProcessingModuleType.ruleFilter]: Filter,
 };
 
 /**
@@ -60,11 +64,13 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.ocr]: 'Search string (CSV supported)',
     [ProcessingModuleType.report]: 'Save directory',
     [ProcessingModuleType.dynamicRename]: 'Rename string template',
+    [ProcessingModuleType.ruleFilter]: '-',
 };
 
 export const OPTION_TOOLTIP: Partial<Record<ProcessingModuleType, string>> = {
     [ProcessingModuleType.compressVideo]: 'For quality, 0 CRF is lossless and 23 is "standard"',
     [ProcessingModuleType.iterate]: 'File will be outputted in the directory of the input files.',
+    [ProcessingModuleType.ruleFilter]: 'Files passing the rule set will continue down the pipeline',
 };
 
 export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
@@ -78,6 +84,8 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
             return OptionsFilter;
         case ProcessingModuleType.dynamicRename:
             return OptionsDynamicRename;
+        case ProcessingModuleType.ruleFilter:
+            return OptionsRuleFilter;
         default:
             return OptionsStandard;
     }
