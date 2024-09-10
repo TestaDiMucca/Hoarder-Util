@@ -3,11 +3,12 @@ import { computed, ref } from 'vue';
 import Menu from 'vue-material-design-icons/Menu.vue'
 import PipelineItem from './PipelineItem.vue';
 import store from '@utils/store';
-import { SortBy, sortPipelines, SortType } from './pipelineGallery.helpers';
+import { CardStyles, SortBy, sortPipelines, SortType } from './pipelineGallery.helpers';
 
 const stateStore = ref(store.state)
 const sortBy = ref(SortBy.name)
 const sortType = ref(SortType.asc)
+const cardStyle = ref(CardStyles.standard);
 
 const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.value.pipelines), sortBy.value, sortType.value))
 </script>
@@ -22,6 +23,8 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
           <q-select class="dropdown" v-model="sortBy" :options="Object.values(SortBy)" label="Sort by"
             :hide-dropdown-icon="true" />
           <q-select class="dropdown" v-model="sortType" :options="Object.values(SortType)" label="Order"
+            :hide-dropdown-icon="true" />
+          <q-select class="dropdown" v-model="cardStyle" :options="Object.values(CardStyles)" label="Card style"
             :hide-dropdown-icon="true" />
         </q-card>
       </q-popup-proxy>
