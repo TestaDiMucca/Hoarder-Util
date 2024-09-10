@@ -1,5 +1,16 @@
 import { AttributeType, BasicRule, LogicalGroup, Operator, Rule } from './rules.types';
 
+// TODO: @common
+const checkAgainstRegex = (searchString: string, pattern: string) => {
+    try {
+        const re = new RegExp(pattern, 'i');
+
+        return searchString.search(re) >= 0;
+    } catch (e) {
+        return searchString.toLowerCase().includes(pattern.toLowerCase());
+    }
+};
+
 export const evaluateRule = (rule: Rule, data: Record<string, string>): boolean => {
     if (rule.type === 'basic') return evaluateBasicRule(rule, data);
 
@@ -57,6 +68,10 @@ export function evaluateBasicRule<T extends string = string>(
                 if (typeof value !== 'string') return false;
 
                 return !value.includes(rule.value);
+            case Operator.matches:
+                if (typeof value !== 'string' || castRuleValue !== 'string') return false;
+
+                return checkAgainstRegex(value, castRuleValue);
             // Add more operators as needed
             default:
                 return false;
@@ -71,7 +86,7 @@ export const availableOperatorsForAttrType = (attrType: AttributeType): Operator
         case AttributeType.number:
             return [Operator.eq, Operator.gt, Operator.gte, Operator.lt, Operator.lte, Operator.ne];
         case AttributeType.string:
-            return [Operator.eq, Operator.ne, Operator.contains, Operator.notContains];
+            return [Operator.eq, Operator.ne, Operator.contains, Operator.notContains, Operator.matches];
         default:
             return [Operator.eq, Operator.ne];
     }

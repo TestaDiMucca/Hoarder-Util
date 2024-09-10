@@ -1,4 +1,4 @@
-import { checkFilenameExcluded, parseStringToTags } from './helpers';
+import { checkAgainstRegex, parseStringToTags } from './helpers';
 
 describe('utils', () => {
     describe('parseStringToTags', () => {
@@ -21,11 +21,11 @@ describe('utils', () => {
         });
     });
 
-    describe('checkFilenameExcluded', () => {
+    describe('checkAgainstRegex', () => {
         test.each(['balbalbal.jpg', 'yhtqha5.png', 'wanWANwan.mov'])('matches partial string in %s', (fileName) => {
             const partial = fileName.substring(fileName.length - 4, fileName.length - 1);
 
-            const result = checkFilenameExcluded(fileName, partial);
+            const result = checkAgainstRegex(fileName, partial);
 
             expect(result).toBeTruthy();
         });
@@ -33,7 +33,7 @@ describe('utils', () => {
         test.each(['ragnar.mp3', 'zolberg.wav', 'sign.gif'])('will not match random shit in %s', (fileName) => {
             const corrupted = 'COPY_ov_' + fileName;
 
-            const result = checkFilenameExcluded(fileName, corrupted);
+            const result = checkAgainstRegex(fileName, corrupted);
 
             expect(result).toBeFalsy();
         });
@@ -41,7 +41,7 @@ describe('utils', () => {
         test('ignores casing', () => {
             const fileName = 'agua-san.jpg';
 
-            const result = checkFilenameExcluded(fileName, fileName.toUpperCase());
+            const result = checkAgainstRegex(fileName, fileName.toUpperCase());
 
             expect(result).toBeTruthy();
         });
@@ -55,7 +55,7 @@ describe('utils', () => {
         test.each(regExCases)('uses regex too in %s', (fileName, shouldMatch) => {
             const matchStr = '^\\d{1,2}\\D\\d{1,2}\\D';
 
-            const result = checkFilenameExcluded(fileName, matchStr);
+            const result = checkAgainstRegex(fileName, matchStr);
             expect(result).toEqual(shouldMatch);
         });
     });

@@ -1,4 +1,4 @@
-import { checkFilenameExcluded } from '@common/common';
+import { checkAgainstRegex } from '@common/common';
 import { splitFileNameFromPath } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
 import { addEventLogForReport } from '../handler.helpers';
@@ -11,7 +11,7 @@ const filterHandler: ModuleHandler = {
 
         const { fileName } = splitFileNameFromPath(fileWithMeta.filePath);
 
-        const excluded = checkFilenameExcluded(fileName, String(stringMatch));
+        const excluded = checkAgainstRegex(fileName, String(stringMatch));
 
         const inverse = opts.clientOptions?.inverse;
         if ((excluded && !inverse) || (!excluded && inverse)) {

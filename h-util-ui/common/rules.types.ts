@@ -7,6 +7,8 @@ export enum Operator {
     ne = '!=',
     contains = 'contains',
     notContains = 'does not contain',
+    /** Supports regex */
+    matches = 'matches',
 }
 
 export enum AttributeType {
