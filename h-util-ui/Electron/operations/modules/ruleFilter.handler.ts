@@ -11,7 +11,6 @@ const ruleFilterHandler: ModuleHandler = {
 
         const { fileName, rootPath } = splitFileNameFromPath(fileWithMeta.filePath);
 
-        console.log('testing against', rules);
         // TODO get more data
         const excluded = evaluateRule(rules, {
             name: fileName,

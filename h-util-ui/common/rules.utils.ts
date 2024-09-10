@@ -37,22 +37,26 @@ export function evaluateBasicRule<T extends string = string>(
                   : rule.value;
 
         switch (rule.operator) {
-            case '=':
+            case Operator.eq:
                 return value === castRuleValue;
-            case '>':
+            case Operator.gt:
                 return value > castRuleValue;
-            case '<':
+            case Operator.lt:
                 return value < castRuleValue;
-            case '>=':
+            case Operator.gte:
                 return value >= castRuleValue;
-            case '<=':
+            case Operator.lte:
                 return value <= castRuleValue;
-            case '!=':
+            case Operator.ne:
                 return value !== castRuleValue;
-            case 'contains':
+            case Operator.contains:
                 if (typeof value !== 'string') return false;
 
                 return value.includes(rule.value);
+            case Operator.notContains:
+                if (typeof value !== 'string') return false;
+
+                return !value.includes(rule.value);
             // Add more operators as needed
             default:
                 return false;
