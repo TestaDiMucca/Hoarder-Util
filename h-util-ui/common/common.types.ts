@@ -1,3 +1,5 @@
+import { Rule } from './rules.types';
+
 export enum ProcessingModuleType {
     datePrefix = 'Date Prefix',
     metadata = 'Metadata Tagging',
@@ -9,24 +11,32 @@ export enum ProcessingModuleType {
     ocr = 'Text Parsing (OCR)',
     report = 'Report output',
     dynamicRename = 'Dynamic Rename',
+    ruleFilter = 'Filter with Rules',
 }
+
+/** Options that work by switching on/off only */
+export type ProcessingModuleBooleanOptions = {
+    ignoreErrors?: boolean;
+    skipPreviouslyFailed?: boolean;
+    inverse?: boolean;
+};
 
 export type ProcessingModule = {
     type: ProcessingModuleType;
-    options: {
+    options: ProcessingModuleBooleanOptions & {
         value: string | number;
+        rules?: Rule;
         dateMask?: string;
-        ignoreErrors?: boolean;
-        skipPreviouslyFailed?: boolean;
-        inverse?: boolean;
     };
 };
 
 export type Pipeline = {
+    /** Should only be missing on new pipelines */
     id?: string;
     name: string;
     created?: string;
     modified?: string;
+    /** Used for gallery sorting */
     manualRanking?: number;
     processingModules: ProcessingModule[];
     /** Used for the card display */
@@ -63,20 +73,30 @@ export type SpawnedTask = {
     subProgress?: number;
 };
 
+/** Data package sent to main thread to request a run */
 export type ProcessingRequest = {
     pipeline: Pipeline;
     filePaths: string[];
 };
 
+/** Data packages sent to main to test a module */
 export type RunTestRequest = FilterTestRequest | RenameTestRequest;
 
-export type FilterTestRequest = {
-    type: ProcessingModuleType.filter;
-    filter: string;
-    invert: boolean;
-    filePaths: string[];
-    moduleType?: ProcessingModuleType;
-};
+export type FilterTestRequest =
+    | {
+          type: ProcessingModuleType.filter;
+          filter: string;
+          invert: boolean;
+          filePaths: string[];
+          moduleType?: ProcessingModuleType;
+      }
+    | {
+          type: ProcessingModuleType.ruleFilter;
+          rules: Rule;
+          invert: boolean;
+          filePaths: string[];
+          moduleType?: ProcessingModuleType;
+      };
 
 export type RenameTestRequest = {
     type: ProcessingModuleType.dynamicRename;

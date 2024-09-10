@@ -67,6 +67,11 @@ const menuItems: MenuItem[] = [
     items: [
       {
         type: 'item',
+        label: 'Filter by Rules',
+        onClick: handleModuleTypeSelect(ProcessingModuleType.ruleFilter)
+      },
+      {
+        type: 'item',
         label: 'Filter file',
         onClick: handleModuleTypeSelect(ProcessingModuleType.filter)
       },

@@ -6,7 +6,7 @@ import * as prompt from 'prompt-sync';
 import { PATH_ALIAS_STORE } from './constants';
 import ConfigStore from './confLoader';
 import { getFileList, validDirectoryPath } from './files';
-import { checkFilenameExcluded as checkExcludedOriginal } from '@common/common';
+import { checkAgainstRegex as checkExcludedOriginal } from '@common/common';
 
 const defaultAc = (_input: string) => ['y', 'n'];
 
@@ -76,7 +76,7 @@ export const messageAndQuit = (message: string) => {
     exitApp();
 };
 
-export const checkFilenameExcluded = checkExcludedOriginal;
+export const checkAgainstRegex = checkExcludedOriginal;
 
 export const getFileListWithExcludes = async (dir: string, excludes?: string) => {
     let excludeList: string[] | null;
@@ -94,7 +94,7 @@ export const getFileListWithExcludes = async (dir: string, excludes?: string) =>
 
     output.log(`Excludes matching with: "${excludeList.join(',')}"`);
 
-    const filteredList = fullList.filter((fileName) => !excludeList.some((ex) => checkFilenameExcluded(fileName, ex)));
+    const filteredList = fullList.filter((fileName) => !excludeList.some((ex) => checkAgainstRegex(fileName, ex)));
 
     output.log(`Excludes filter removed ${fullList.length - filteredList.length} files.`);
 

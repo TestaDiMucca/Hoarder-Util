@@ -16,6 +16,7 @@
 .header-and-content {
   display: flex;
   flex-direction: column;
+  max-height: 100vh;
 }
 
 .top-bar {
@@ -39,6 +40,7 @@
 }
 
 .footer {
+  padding-top: 5px;
   height: 3.5rem;
   width: 100%;
 }

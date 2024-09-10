@@ -12,7 +12,6 @@ import EditPipelineModule from './EditPipelineModule.vue';
 import { navigateTo } from '@utils/helpers';
 import PageLayout from 'src/layout/PageLayout.vue';
 
-/** Replace with prop if any. */
 const pipelineModules = ref<ProcessingModule[]>([
   getDefaultModule()
 ]);

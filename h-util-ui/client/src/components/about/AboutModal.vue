@@ -39,6 +39,7 @@ const handleExportPipelines = () => {
 const handleImportPipelines = () => tab.value = Tabs.import;
 
 watch(about, (newValue, oldValue) => {
+  /** Only fetch when opening */
   if (newValue && !oldValue) getStats();
 })
 </script>

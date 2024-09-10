@@ -1,19 +1,23 @@
 import { FilterTestRequest, ProcessingModuleType } from '@shared/common.types';
-import filterHandler from './modules/filter.handler';
 import { fileListToFileOptions, withFileListHandling } from './handler.helpers';
 import { splitFileNameFromPath } from '@common/fileops';
-import ocrHandler from './modules/ocr.handler';
+import { MODULE_MAP } from './modules/moduleMap';
 
 export const filterTest = async (filterTestRequest: FilterTestRequest) => {
-    const { filter, filePaths, invert, moduleType } = filterTestRequest;
+    const { filePaths, invert, type } = filterTestRequest;
 
-    const moduleHandler = moduleType === ProcessingModuleType.ocr ? ocrHandler : filterHandler;
+    const moduleHandler = MODULE_MAP[type!];
+
+    if (!moduleHandler) throw new Error(`No handler found for ${type}`);
 
     const fileOptions = fileListToFileOptions(filePaths);
+    const usesRules = type === ProcessingModuleType.ruleFilter;
 
     await withFileListHandling({
         fileOptions,
-        clientOptions: { value: filter, inverse: invert },
+        clientOptions: usesRules
+            ? { inverse: invert, rules: filterTestRequest.rules, value: '' }
+            : { value: filterTestRequest.filter, inverse: invert },
         moduleHandler,
     });
 

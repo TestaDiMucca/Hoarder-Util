@@ -9,6 +9,7 @@ import { cloneObject } from '@utils/helpers';
 import { getModuleCanInvert } from '@utils/module.helpers';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
 import ModuleTypeDropdown from './ModuleTypeDropdown.vue';
+import { ProcessingModuleBooleanOptions } from '@shared/common.types';
 
 interface Props {
   processingModule: ProcessingModule;
@@ -28,7 +29,7 @@ const handleModuleTypeSelect = (type: ProcessingModuleType) => {
   props.handleModuleUpdated(newData, props.index);
 }
 
-const updateOptionValue = (newValue: string, flag: keyof ProcessingModule['options'] = 'value') => {
+const updateOptionValue = <T = string>(newValue: T, flag: keyof ProcessingModule['options'] = 'value') => {
   const newData: ProcessingModule = {
     ...props.processingModule,
     options: {
@@ -40,11 +41,11 @@ const updateOptionValue = (newValue: string, flag: keyof ProcessingModule['optio
   props.handleModuleUpdated(newData, props.index);
 }
 
-const handleModuleOptionUpdated = (flag: keyof ProcessingModule['options'], newValue: string) => {
+const handleModuleOptionUpdated = <T = string>(flag: keyof ProcessingModule['options'], newValue: T) => {
   updateOptionValue(newValue, flag);
 }
 
-const handleToggleModuleOption = (option: keyof Omit<ProcessingModule['options'], 'dateMask' | 'value'>) => {
+const handleToggleModuleOption = (option: keyof ProcessingModuleBooleanOptions) => {
   const newData: ProcessingModule = cloneObject(props.processingModule);
 
   newData.options[option] = props.processingModule.options[option] ? false : true;
