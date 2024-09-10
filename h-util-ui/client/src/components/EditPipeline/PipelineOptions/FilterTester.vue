@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, toRaw } from 'vue';
 import { PipelineOptionsProps } from './pipelineOptions.common';
 import { getIpcRenderer } from '@utils/helpers';
 import { FilterTestRequest, ProcessingModuleType } from '@shared/common.types';
@@ -28,7 +28,7 @@ const handleDroppedFiles = async (filePaths: string[]) => {
       filePaths,
       invert: !!props.options.inverse,
       ...(props.type === ProcessingModuleType.ruleFilter ? {
-        type: ProcessingModuleType.ruleFilter, rules: props.options.rules!
+        type: ProcessingModuleType.ruleFilter, rules: toRaw(props.options.rules!)
       } : {
         type: ProcessingModuleType.filter,
         filter: String(props.options.value!)
@@ -45,6 +45,6 @@ const clearFiles = () => {
 </script>
 
 <template>
-  <MiniFileDrop v-if="options.value" :handleDroppedFiles="handleDroppedFiles" />
+  <MiniFileDrop v-if="options.value || options.rules" :handleDroppedFiles="handleDroppedFiles" />
   <FileListModal v-model="showList" :fileList="fileList" :onHide="clearFiles" action="filtered" />
 </template>

@@ -22,7 +22,6 @@ const emit = defineEmits(['update-rule'])
 const nestLevel = (props.nested ?? 0);
 
 watch(currentRule, () => {
-  console.log(nestLevel)
   if (nestLevel > 0) return;
 
   props.onUpdatedRule?.(currentRule.value)
@@ -143,7 +142,7 @@ const availableOperators = computed<MenuItem[]>(() => (currentRule.value.type ==
 
 .operator-button {
   padding: 0.3em;
-  width: 2em;
+  width: 4.5em;
   height: 50%;
 }
 

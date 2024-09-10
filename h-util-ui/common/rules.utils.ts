@@ -75,7 +75,7 @@ export const availableOperatorsForAttrType = (attrType: AttributeType): Operator
 
 export const getDefaultRule = (): BasicRule => ({
     attribute: '',
-    attributeType: AttributeType.number,
+    attributeType: AttributeType.string,
     operator: Operator.eq,
     value: '',
     type: 'basic',

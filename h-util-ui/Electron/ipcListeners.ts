@@ -107,6 +107,7 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         switch (testRequest.type) {
             case ProcessingModuleType.dynamicRename:
                 return await renameTest(testRequest);
+            case ProcessingModuleType.ruleFilter:
             case ProcessingModuleType.filter:
                 return await filterTest(testRequest);
             default:

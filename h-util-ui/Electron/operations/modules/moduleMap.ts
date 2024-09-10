@@ -11,6 +11,7 @@ import ocrHandler from './ocr.handler';
 import movCompressHandler from './movCompress.handler';
 import reportHandler from './report.handler';
 import dynamicRenameHandler from './dynamicRename.handler';
+import ruleFilterHandler from './ruleFilter.handler';
 
 export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.datePrefix]: datePrefixHandler,
@@ -23,5 +24,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.ocr]: ocrHandler,
     [ProcessingModuleType.report]: reportHandler,
     [ProcessingModuleType.dynamicRename]: dynamicRenameHandler,
-    [ProcessingModuleType.ruleFilter]: null,
+    [ProcessingModuleType.ruleFilter]: ruleFilterHandler,
 };
