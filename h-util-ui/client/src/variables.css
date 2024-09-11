@@ -1,11 +1,14 @@
 /**
- * CSS color vars
+ * CSS vars
  * Quasar sass injections appear to require quasar-cli
  */
 
 body {
   --q-backingColor: #470b0d;
   --q-lightColor: #efc648;
+
+  --card-size-normal: 250px;
+  --card-size-compact: 100px;
 }
 
 /* .body--dark {

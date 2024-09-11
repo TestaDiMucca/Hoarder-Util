@@ -3,11 +3,12 @@ import { computed, ref } from 'vue';
 import Menu from 'vue-material-design-icons/Menu.vue'
 import PipelineItem from './PipelineItem.vue';
 import store from '@utils/store';
-import { SortBy, sortPipelines, SortType } from './pipelineGallery.helpers';
+import { CardStyles, SortBy, sortPipelines, SortType } from './pipelineGallery.helpers';
 
 const stateStore = ref(store.state)
 const sortBy = ref(SortBy.name)
 const sortType = ref(SortType.asc)
+const cardStyle = ref(CardStyles.standard);
 
 const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.value.pipelines), sortBy.value, sortType.value))
 </script>
@@ -23,14 +24,17 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
             :hide-dropdown-icon="true" />
           <q-select class="dropdown" v-model="sortType" :options="Object.values(SortType)" label="Order"
             :hide-dropdown-icon="true" />
+          <q-select class="dropdown" v-model="cardStyle" :options="Object.values(CardStyles)" label="Card style"
+            :hide-dropdown-icon="true" />
         </q-card>
       </q-popup-proxy>
     </button>
 
   </nav>
-  <div class="gallery-container">
+  <div
+    :class="{ 'gallery-container': true, 'cards-normal': cardStyle !== CardStyles.compact, 'cards-compact': cardStyle === CardStyles.compact }">
     <div v-for="pipeline in sortedPipelines" :key="pipeline.id!" class="gallery-item">
-      <PipelineItem :pipeline-item="pipeline" />
+      <PipelineItem :pipeline-item="pipeline" :cardStyle="cardStyle" />
     </div>
   </div>
 </template>
@@ -39,16 +43,24 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
 .gallery-container {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
   justify-content: center;
   gap: 10px;
   overflow-y: auto;
   padding: 0.5em;
 }
 
-.gallery-item {
-  min-width: 250px;
+.cards-normal {
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-size-normal), 1fr));
 }
+
+.cards-compact {
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-size-compact), 1fr));
+}
+
+/* .gallery-item {
+  width: min-content;
+} */
 
 .sort-opts {
   display: flex;
