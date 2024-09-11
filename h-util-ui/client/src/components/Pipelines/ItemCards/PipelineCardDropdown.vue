@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import Menu from 'vue-material-design-icons/DotsVertical.vue'
+import { computed, ref } from 'vue';
+import MenuVert from 'vue-material-design-icons/DotsVertical.vue'
+import MenuBars from 'vue-material-design-icons/Menu.vue'
 
 import DeleteConfirmModal from '../../common/DeleteConfirmModal.vue';
 import store from '@utils/store';
 import { Pipeline } from '@shared/common.types';
 import { navigateTo, PageViews } from '@utils/helpers';
 
-interface Props { pipelineItem: Pipeline; };
+interface Props {
+  pipelineItem: Pipeline;
+  icon?: 'vert' | 'hor' | 'bars';
+};
 
 const props = defineProps<Props>();
 const confirmDelete = ref(false);
@@ -33,11 +37,14 @@ const duplicatePipeline = () => {
     navigateTo(PageViews.Edit);
   }, 1000);
 }
+
+const MenuIcon = computed(() => props.icon === 'bars' ? MenuBars : MenuVert)
+
 </script>
 
 <template>
   <button class="button-with-icon-child">
-    <Menu class="icon-button" :size="18" />
+    <component :is="MenuIcon" class="icon-button" :size="18" />
     <q-menu>
       <q-list style="min-width: 100px">
         <q-item clickable v-close-popup="true" @click="selectPipeline">

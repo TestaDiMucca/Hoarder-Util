@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { Pipeline } from '@shared/common.types';
 import { MODULE_MATERIAL_ICONS } from '@utils/constants';
-import { sendMessageToMain } from '@utils/helpers';
-import { computed, CSSProperties } from 'vue';
-import { FileUploadOptions, useDropzone } from "vue3-dropzone";
-import { ElectronFile } from './itemCards.common';
+import { computed, CSSProperties, ref } from 'vue';
 import PipelineCardDropdown from './PipelineCardDropdown.vue';
+import PipelineCardDropzone from './PipelineCardDropzone.vue';
+import { PipelineCardProps } from './itemCards.common';
 
-interface Props {
-  pipelineItem: Pipeline;
-  onDrop: (fileList: string[]) => void;
-};
-const props = defineProps<Props>();
+const props = defineProps<PipelineCardProps>();
 
 /** For custom color rendering */
 const cardStyle = computed(() => props.pipelineItem.color ? {
@@ -19,24 +13,18 @@ const cardStyle = computed(() => props.pipelineItem.color ? {
   boxSizing: 'border-box'
 } satisfies CSSProperties : undefined)
 
-const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: ElectronFile[], _rejectReason) => {
-  if (acceptFiles.length) {
-    props.onDrop(acceptFiles.map(f => f.path));
-  } else {
-    sendMessageToMain('No files detected');
-  }
+const isDragActive = ref(false);
+const onDragActiveChange = (active: boolean) => {
+  isDragActive.value = active;
 }
-
-const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 </script>
 
 <template>
-  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true, 'has-color': !!pipelineItem.color }">
-    <div v-bind="getRootProps()" class="cursor-pointer" :style="cardStyle">
-      <div class="pipeline-item">
+  <q-card :class="{ 'pipeline-drop': isDragActive, 'pipeline-card': true }">
+    <PipelineCardDropzone :onDrop="onDrop" :onDragActiveChange="onDragActiveChange" :style="cardStyle">
+      <div class="pipeline-name">
         {{ pipelineItem.name }}
       </div>
-      <input v-bind="getInputProps()" />
       <p v-if="isDragActive">Drop the files here ...</p>
       <p v-else>Drop files here, or
         <span class="pipeline-drop-click-text">click to browse</span>
@@ -47,20 +35,14 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
           <q-tooltip :delay="500" :offset="[0, 10]">{{ pipelineModule.type }}</q-tooltip>
         </div>
       </nav>
-    </div>
+    </PipelineCardDropzone>
 
     <PipelineCardDropdown class="sub-menu" :pipelineItem="pipelineItem" />
   </q-card>
 </template>
 
 <style scoped>
-.has-color {
-  /* Border size fixed, but color is dynamic */
-  /* border: 5px solid transparent; */
-  box-sizing: border-box;
-}
-
-.pipeline-item {
+.pipeline-name {
   padding: 1em;
   font-weight: 500;
 }
@@ -80,8 +62,10 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 }
 
 .pipeline-card {
+  box-sizing: border-box;
   transition: transform 0.5s;
   position: relative;
+  min-width: var(--card-size-normal);
 }
 
 .icon-bar {
@@ -98,5 +82,6 @@ const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   position: absolute;
   top: 8px;
   right: 0;
+  z-index: 1;
 }
 </style>

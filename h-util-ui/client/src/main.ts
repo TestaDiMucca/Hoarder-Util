@@ -4,7 +4,7 @@ import Notify from 'quasar/src/plugins/notify/Notify';
 
 import './style.css';
 import './global.css';
-import './colors.css';
+import './variables.css';
 import App from './App.vue';
 
 import '@quasar/extras/material-icons/material-icons.css';

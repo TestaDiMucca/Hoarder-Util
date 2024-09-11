@@ -28,6 +28,6 @@ watch(isDragActive, () => {
 <template>
   <div v-bind="getRootProps()" class="cursor-pointer">
     <input v-bind="getInputProps()" />
-    <slot />
+    <slot></slot>
   </div>
 </template>

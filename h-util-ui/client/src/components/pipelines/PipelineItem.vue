@@ -3,8 +3,13 @@ import { IpcMessageType } from '@shared/common.constants';
 import { Pipeline } from '@utils/types';
 import { getIpcRenderer } from '@utils/helpers';
 import PipelineCardStandard from './ItemCards/PipelineCardStandard.vue';
+import { CardStyles } from './pipelineGallery.helpers';
+import PipelineCardCompact from './ItemCards/PipelineCardCompact.vue';
 
-interface Props { pipelineItem: Pipeline }
+interface Props {
+  pipelineItem: Pipeline;
+  cardStyle: CardStyles;
+}
 
 const props = defineProps<Props>()
 const ipcRenderer = getIpcRenderer();
@@ -29,5 +34,6 @@ const onDrop = (filePaths: string[]) => {
 </script>
 
 <template>
-  <PipelineCardStandard :onDrop="onDrop" :pipelineItem="pipelineItem" />
+  <PipelineCardCompact v-if="cardStyle === CardStyles.compact" :onDrop="onDrop" :pipelineItem="pipelineItem" />
+  <PipelineCardStandard v-else :onDrop="onDrop" :pipelineItem="pipelineItem" />
 </template>
