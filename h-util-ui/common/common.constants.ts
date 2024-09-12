@@ -40,4 +40,13 @@ export enum RenameTemplates {
     MetaTrackNo = 'metaTrackNo',
 }
 
+/**
+ * Data we can extract from files
+ */
+export enum ExtraData {
+    ocr = 'ocr',
+    FileSize = 'fileSize',
+    Extension = 'ext',
+}
+
 export const defaultTimeMask = 'yy-mm-dd-HH-MM_';
