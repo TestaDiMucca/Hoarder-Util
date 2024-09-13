@@ -1,7 +1,7 @@
 import { splitFileNameFromPath } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
 import { addEventLogForReport, DataDict, populateDataDict } from '../handler.helpers';
-import { evaluateRule } from '@shared/rules.utils';
+import { crawlRules, evaluateRule } from '@shared/rules.utils';
 import { Rule } from '@shared/rules.types';
 import { ExtraData, RenameTemplates } from '@shared/common.constants';
 import { promises } from '@common/common';
@@ -40,8 +40,11 @@ const ruleFilterHandler: ModuleHandler = {
 export default ruleFilterHandler;
 
 const getRuleAttrsUsed = (rules: Rule): Array<RenameTemplates | ExtraData | string> => {
-    // todo: need to get value for ocr
-    const attrsUsed: string[] = [];
+    const attrsUsed = new Set<string>();
 
-    return attrsUsed;
+    crawlRules(rules, (rule) => {
+        attrsUsed.add(rule.attribute);
+    });
+
+    return [...attrsUsed];
 };
