@@ -8,6 +8,7 @@ import {
     ffMeta,
     formatDateString,
     getDateStringForFile,
+    searchForTextInImage,
 } from '@common/fileops';
 import { slugify } from '@shared/common.utils';
 
@@ -133,8 +134,26 @@ export const fileListToFileOptions = (fileList: string[]): FileOptions => ({
 
 export type DataDict = Partial<Record<RenameTemplates | ExtraData, string>>;
 
+type PopulateDataDictArgs = {
+    dataDict: DataDict;
+    tag: string;
+    filePath: string;
+    mask?: string;
+    /** Populate with non formatted, standard version */
+    raw?: boolean;
+    /** Arbitrary string option to use with some certain data fetches */
+    option?: string;
+};
+
 // todo: refactor to opts obj
-export const populateDataDict = async (dataDict: DataDict, tag: string, filePath: string, mask = 'yy-mm-dd-HH-MM') => {
+export const populateDataDict = async ({
+    dataDict,
+    tag,
+    filePath,
+    mask = 'yy-mm-dd-HH-MM',
+    raw,
+    option,
+}: PopulateDataDictArgs) => {
     const castTag = tag as RenameTemplates | ExtraData;
     const { fileName: rawFileName } = splitFileNameFromPath(filePath);
     const ext = path.extname(rawFileName);
@@ -149,8 +168,12 @@ export const populateDataDict = async (dataDict: DataDict, tag: string, filePath
             if (dataDict[castTag]) return;
 
             const stat = await fs.stat(filePath);
-            dataDict[RenameTemplates.DateCreated] = formatDateString(stat.ctime ?? stat.mtime, mask);
-            dataDict[RenameTemplates.DateModified] = formatDateString(stat.mtime ?? stat.ctime, mask);
+
+            const created = stat.ctime ?? stat.mtime;
+            const modified = stat.mtime ?? stat.ctime;
+
+            dataDict[RenameTemplates.DateCreated] = raw ? created.toISOString() : formatDateString(created, mask);
+            dataDict[RenameTemplates.DateModified] = raw ? modified.toISOString() : formatDateString(modified, mask);
             dataDict[ExtraData.FileSize] = String(stat.size);
             return;
         case RenameTemplates.ExifTaken:
@@ -188,7 +211,9 @@ export const populateDataDict = async (dataDict: DataDict, tag: string, filePath
             dataDict[ExtraData.Extension] = path.extname(fileName);
             return;
         case ExtraData.ocr:
-            // todo: pass in param
+            if (!option) return;
+            const ocrResult = await searchForTextInImage(filePath, [option]);
+            dataDict[ExtraData.ocr] = String(ocrResult);
             return;
         default:
             return;

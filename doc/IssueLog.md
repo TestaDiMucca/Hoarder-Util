@@ -2,6 +2,16 @@
 
 A record of some headache-inducing issues and what the fix ended up being.
 
+## Broken path aliases in tests - Sep 13
+
+### Encountered
+
+Creating test files that import methods which use `@common`, `@util`, `@shared`
+
+### Fixes
+
+Update the `jest.config.js` to match the alias definitions in `tsconfig.json`.
+
 ## Build errors - Aug 25
 
 ### Encountered

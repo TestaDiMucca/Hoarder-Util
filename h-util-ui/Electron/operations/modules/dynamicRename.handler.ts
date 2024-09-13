@@ -2,13 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { promises } from '@common/common';
-import {
-    checkSupportedExt,
-    ffMeta,
-    formatDateString,
-    getDateStringForFile,
-    splitFileNameFromPath,
-} from '@common/fileops';
+import { splitFileNameFromPath } from '@common/fileops';
 import { defaultTimeMask, RenameTemplates } from '@shared/common.constants';
 import { ConfigError } from '@util/errors';
 import { ModuleHandler, ModuleOptions } from '@util/types';
@@ -33,11 +27,9 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
 
         const dataDict: DataDict = {};
 
-        // Gather data into map
         const tags = (opts.context?.tags ?? []) as RenameTemplates[];
-        await promises.each(tags, async (tag) => populateDataDict(dataDict, tag, filePath, timeMask));
+        await promises.each(tags, async (tag) => populateDataDict({ dataDict, tag, filePath, mask: timeMask }));
 
-        // Replace using data from the map
         const { fileName } = splitFileNameFromPath(filePath);
 
         const ext = path.extname(fileName);

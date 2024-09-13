@@ -1,7 +1,10 @@
 import { splitFileNameFromPath } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
-import { addEventLogForReport } from '../handler.helpers';
+import { addEventLogForReport, DataDict, populateDataDict } from '../handler.helpers';
 import { evaluateRule } from '@shared/rules.utils';
+import { Rule } from '@shared/rules.types';
+import { ExtraData, RenameTemplates } from '@shared/common.constants';
+import { promises } from '@common/common';
 
 const ruleFilterHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
@@ -11,7 +14,12 @@ const ruleFilterHandler: ModuleHandler = {
 
         const { fileName, rootPath } = splitFileNameFromPath(fileWithMeta.filePath);
 
-        // TODO get more data
+        const dataDict: DataDict = {};
+
+        await promises.each(getRuleAttrsUsed(rules), async (tag) => {
+            await populateDataDict({ dataDict, tag, filePath: fileWithMeta.filePath, raw: true });
+        });
+
         const excluded = evaluateRule(rules, {
             name: fileName,
             path: rootPath,
@@ -30,3 +38,10 @@ const ruleFilterHandler: ModuleHandler = {
 };
 
 export default ruleFilterHandler;
+
+const getRuleAttrsUsed = (rules: Rule): Array<RenameTemplates | ExtraData | string> => {
+    // todo: need to get value for ocr
+    const attrsUsed: string[] = [];
+
+    return attrsUsed;
+};
