@@ -5,6 +5,7 @@ import { Storage } from '@shared/common.types';
 import { computed, onUnmounted, ref } from 'vue';
 import store from '@utils/store';
 import { readTextFileAndParseJson } from '@utils/helpers';
+import { transformLegacyPipelineMap } from '@utils/transformers'
 
 const pipelines = ref<Storage['pipelines']>({});
 const selectedIds = ref<Record<string, boolean>>({});
@@ -16,7 +17,8 @@ const reset = () => {
 
 const onDrop: FileUploadOptions['onDrop'] = (acceptFiles: File[], _rejectReasons) => {
   if (acceptFiles.length) {
-    readTextFileAndParseJson<Storage['pipelines']>(acceptFiles[0]).then(parsed => {
+    readTextFileAndParseJson<Storage['pipelines']>(acceptFiles[0]).then(rawParsed => {
+      const parsed = transformLegacyPipelineMap(rawParsed);
       // Needs validation.
       const pipelineList = Object.values(parsed);
       pipelines.value = parsed;

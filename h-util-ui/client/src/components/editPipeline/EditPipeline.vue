@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import { computed, ref, onBeforeMount } from 'vue';
+import { computed, ref, onBeforeMount, watch } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import Palette from 'vue-material-design-icons/Palette.vue'
 import cloneDeep from 'lodash/cloneDeep';
+import { NodeProps, VueFlow } from '@vue-flow/core';
+import { Background } from '@vue-flow/background'
 
-import { PageViews, ProcessingModule } from '@utils/types';
+import { PageViews, ProcessingModule, ProcessingModuleType } from '@utils/types';
 import store from '@utils/store';
 import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
-import EditPipelineModule from './EditPipelineModule.vue';
 import { navigateTo } from '@utils/helpers';
 import PageLayout from 'src/layout/PageLayout.vue';
+import { buildPipelineTopology, ChartNodeData } from './pipelineTopology';
+import EditPipelineTopologyModule from './Topology/EditPipelineTopologyModule.vue';
+import EditPipelineNewModule from './Topology/EditPipelineNewModule.vue';
 
 const pipelineModules = ref<ProcessingModule[]>([
-  getDefaultModule()
+  getDefaultModule(uuidv4())
 ]);
 
 const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
@@ -43,8 +46,15 @@ const handleModuleUpdated = (newData: ProcessingModule | null, index: number) =>
   pipelineModules.value[index] = newData;
 }
 
+const handleModuleUpdatedById = (newData: ProcessingModule | null, id: string) => {
+  const targetedModuleIndex = pipelineModules.value.findIndex(m => m.id === id);
+  handleModuleUpdated(newData, targetedModuleIndex);
+}
+
+const getModuleById = (id: string) => pipelineModules.value.find(m => m.id === id);
+
 const handleNewModules = () => {
-  pipelineModules.value.push(getDefaultModule())
+  pipelineModules.value.push(getDefaultModule(uuidv4()))
 }
 
 const handleSavePipeline = () => {
@@ -58,6 +68,17 @@ const handleSavePipeline = () => {
 
   returnHome()
 };
+
+// TEMP: Make sure links work correctly by auto connecting in sequence
+watch(pipelineModules.value, () => {
+  let nextModule: ProcessingModule;
+  for (let i = 0; i < pipelineModules.value.length; i++) {
+    nextModule = pipelineModules.value[i + 1];
+    const currentModule = pipelineModules.value[i];
+
+    if (nextModule && currentModule.type !== ProcessingModuleType.branch) currentModule.nextModule = nextModule.id;
+  }
+})
 
 const returnHome = () => {
   store.setSelectedPipeline(null);
@@ -76,8 +97,10 @@ const handlePipelineRankingUpdated = (event: Event) => {
   pipelineRanking.value = +newValue;
 }
 
-const hasNoModules = computed(() => pipelineModules.value.length === 0)
+const hasNoModules = computed(() => pipelineModules.value.length === 0);
 const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' : 'New pipeline');
+
+const vueFlowTopology = computed(() => buildPipelineTopology(pipelineModules.value));
 </script>
 
 <template>
@@ -108,19 +131,20 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
         </q-input>
       </section>
 
-      <q-card-section class="modules-container" v-for="(pipelineModule, index) in pipelineModules">
-        <EditPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
-          :index="index" />
-        <div v-if="index < pipelineModules.length - 1" class="line" />
-        <div v-if="index === pipelineModules.length - 1" class="line line-end" />
-      </q-card-section>
+      <section class="pipeline-topology">
+        <VueFlow class="vue-flow" :nodes="vueFlowTopology.nodes" :edges="vueFlowTopology.links">
+          <Background />
 
-      <q-card-section @click="handleNewModules" class="modules-container">
-        <q-card class="new-module-card p-2">
-          <PlusBox class="icon-button" />
-          <span>Add a module</span>
-        </q-card>
-      </q-card-section>
+          <template #node-default="props: NodeProps<ChartNodeData>">
+            <EditPipelineTopologyModule v-if="props.data.pipelineModule" :processing-module="props.data.pipelineModule"
+              :handle-module-updated="handleModuleUpdatedById" />
+          </template>
+
+          <template #node-new="props: NodeProps<ChartNodeData>">
+            <EditPipelineNewModule :handle-new-modules="handleNewModules" :from-id="props.data.fromModuleId" />
+          </template>
+        </VueFlow>
+      </section>
     </template>
     <template #footer>
       <button @click="returnHome">
@@ -151,6 +175,17 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
   width: 70%;
   margin: auto;
   position: relative;
+}
+
+.pipeline-topology {
+  width: 70%;
+  margin: auto;
+  height: 400px;
+  min-height: 400px;
+}
+
+.vue-flow {
+  border: 1px solid gray;
 }
 
 .line {

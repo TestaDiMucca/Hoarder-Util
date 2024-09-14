@@ -77,7 +77,7 @@ const menuItems: MenuItem[] = [
       },
       {
         type: 'item',
-        label: 'Search image for test',
+        label: 'Search image for text',
         onClick: handleModuleTypeSelect(ProcessingModuleType.ocr)
       },
     ]

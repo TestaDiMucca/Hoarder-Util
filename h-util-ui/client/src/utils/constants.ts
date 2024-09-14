@@ -9,8 +9,10 @@ import FilterMinus from 'vue-material-design-icons/FilterMinus.vue';
 import TextSearch from 'vue-material-design-icons/TextSearch.vue';
 import FileDocument from 'vue-material-design-icons/FileDocumentArrowRight.vue';
 import Rename from 'vue-material-design-icons/RenameBoxOutline.vue';
+import Branching from 'vue-material-design-icons/FamilyTree.vue';
+import Pipe from 'vue-material-design-icons/Pipe.vue';
 
-import { ProcessingModule, ProcessingModuleType } from './types';
+import { ActionModule, ProcessingModule, ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
 import OptionsStandard from 'src/components/EditPipeline/PipelineOptions/OptionsStandard.vue';
 import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/OptionsDirectory.vue';
@@ -31,6 +33,8 @@ export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.report]: '📉',
     [ProcessingModuleType.dynamicRename]: '📇',
     [ProcessingModuleType.ruleFilter]: '📏',
+    [ProcessingModuleType.branch]: '🌳',
+    [ProcessingModuleType.runPipeline]: '🪈',
 };
 
 /** Icon representation of the module operations */
@@ -46,6 +50,8 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
     [ProcessingModuleType.report]: FileDocument,
     [ProcessingModuleType.dynamicRename]: Rename,
     [ProcessingModuleType.ruleFilter]: Filter,
+    [ProcessingModuleType.branch]: Branching,
+    [ProcessingModuleType.runPipeline]: Pipe,
 };
 
 /**
@@ -65,6 +71,8 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.report]: 'Save directory',
     [ProcessingModuleType.dynamicRename]: 'Rename string template',
     [ProcessingModuleType.ruleFilter]: '-',
+    [ProcessingModuleType.branch]: '-',
+    [ProcessingModuleType.runPipeline]: 'Target pipeline',
 };
 
 export const OPTION_TOOLTIP: Partial<Record<ProcessingModuleType, string>> = {
@@ -92,7 +100,8 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
 };
 
 /** Get a default starter module */
-export const getDefaultModule = (): ProcessingModule => ({
+export const getDefaultModule = (id: string): ActionModule => ({
+    id,
     type: ProcessingModuleType.datePrefix,
     options: {
         value: '',

@@ -25,4 +25,6 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.report]: reportHandler,
     [ProcessingModuleType.dynamicRename]: dynamicRenameHandler,
     [ProcessingModuleType.ruleFilter]: ruleFilterHandler,
+    [ProcessingModuleType.branch]: null,
+    [ProcessingModuleType.runPipeline]: null,
 };

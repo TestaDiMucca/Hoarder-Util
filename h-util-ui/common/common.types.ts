@@ -12,6 +12,8 @@ export enum ProcessingModuleType {
     report = 'Report output',
     dynamicRename = 'Dynamic Rename',
     ruleFilter = 'Filter with Rules',
+    branch = 'branch',
+    runPipeline = 'runPipeline',
 }
 
 /** Options that work by switching on/off only */
@@ -21,14 +23,31 @@ export type ProcessingModuleBooleanOptions = {
     inverse?: boolean;
 };
 
-export type ProcessingModule = {
-    type: ProcessingModuleType;
+export type ProcessingBranch = {
+    rules: Rule;
+    targetModule?: string;
+};
+
+interface BaseModule {
+    id: string;
+}
+
+export interface BranchingModule extends BaseModule {
+    type: ProcessingModuleType.branch;
+    branches: ProcessingBranch[];
+}
+
+export interface ActionModule extends BaseModule {
+    type: Exclude<ProcessingModuleType, 'branch'>;
     options: ProcessingModuleBooleanOptions & {
         value: string | number;
         rules?: Rule;
         dateMask?: string;
     };
-};
+    nextModule?: string;
+}
+
+export type ProcessingModule = BranchingModule | ActionModule;
 
 export type Pipeline = {
     /** Should only be missing on new pipelines */

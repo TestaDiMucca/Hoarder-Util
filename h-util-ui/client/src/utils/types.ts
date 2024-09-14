@@ -1,4 +1,11 @@
-export type { ProcessingModule, Pipeline, TaskQueue, SpawnedTask } from '../../../common/common.types';
+export type {
+    ProcessingModule,
+    ActionModule,
+    BranchingModule,
+    Pipeline,
+    TaskQueue,
+    SpawnedTask,
+} from '../../../common/common.types';
 
 export { ProcessingModuleType } from '../../../common/common.types';
 

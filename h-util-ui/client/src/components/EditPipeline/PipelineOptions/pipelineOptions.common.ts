@@ -1,9 +1,9 @@
-import { ProcessingModule, ProcessingModuleType } from '@shared/common.types';
+import { ActionModule, ProcessingModuleType } from '@shared/common.types';
 
 export interface PipelineOptionsProps {
     moduleType: ProcessingModuleType;
-    currentOptions: ProcessingModule['options'];
-    handleOptionChange: <T = string>(flag: keyof ProcessingModule['options'], newValue: T) => void;
+    currentOptions: ActionModule['options'];
+    handleOptionChange: <T = string>(flag: keyof ActionModule['options'], newValue: T) => void;
 }
 
 /**
