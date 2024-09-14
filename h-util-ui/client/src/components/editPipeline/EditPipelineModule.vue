@@ -3,7 +3,7 @@ import { computed, defineProps, ref } from 'vue';
 import Delete from 'vue-material-design-icons/Delete.vue'
 import Help from 'vue-material-design-icons/HelpCircle.vue'
 
-import { ProcessingModule, ProcessingModuleType } from '@utils/types';
+import { ActionModule, ProcessingModuleType } from '@utils/types';
 import { getDefaultModule, getOptionsComponent, MODULE_MATERIAL_ICONS, OPTION_TOOLTIP } from '@utils/constants';
 import { cloneObject } from '@utils/helpers';
 import { getModuleCanInvert } from '@utils/module.helpers';
@@ -12,16 +12,18 @@ import ModuleTypeDropdown from './ModuleTypeDropdown.vue';
 import { ProcessingModuleBooleanOptions } from '@shared/common.types';
 
 interface Props {
-  processingModule: ProcessingModule;
+  processingModule: ActionModule;
   index: number;
-  handleModuleUpdated: (newData: ProcessingModule | null, index: number) => void;
+  handleModuleUpdated: (newData: ActionModule | null, index: number) => void;
 }
 
 const props = defineProps<Props>()
 const confirmDelete = ref(false);
 
 const handleModuleTypeSelect = (type: ProcessingModuleType) => {
-  const newData: ProcessingModule = {
+  if (type === ProcessingModuleType.branch) return;
+
+  const newData: ActionModule = {
     ...getDefaultModule(),
     type
   }
@@ -29,8 +31,8 @@ const handleModuleTypeSelect = (type: ProcessingModuleType) => {
   props.handleModuleUpdated(newData, props.index);
 }
 
-const updateOptionValue = <T = string>(newValue: T, flag: keyof ProcessingModule['options'] = 'value') => {
-  const newData: ProcessingModule = {
+const updateOptionValue = <T = string>(newValue: T, flag: keyof ActionModule['options'] = 'value') => {
+  const newData: ActionModule = {
     ...props.processingModule,
     options: {
       ...props.processingModule.options,
@@ -41,12 +43,12 @@ const updateOptionValue = <T = string>(newValue: T, flag: keyof ProcessingModule
   props.handleModuleUpdated(newData, props.index);
 }
 
-const handleModuleOptionUpdated = <T = string>(flag: keyof ProcessingModule['options'], newValue: T) => {
+const handleModuleOptionUpdated = <T = string>(flag: keyof ActionModule['options'], newValue: T) => {
   updateOptionValue(newValue, flag);
 }
 
 const handleToggleModuleOption = (option: keyof ProcessingModuleBooleanOptions) => {
-  const newData: ProcessingModule = cloneObject(props.processingModule);
+  const newData: ActionModule = cloneObject(props.processingModule);
 
   newData.options[option] = props.processingModule.options[option] ? false : true;
 

@@ -1,4 +1,4 @@
-import { ProcessingModule } from '@shared/common.types';
+import { ActionModule } from '@shared/common.types';
 
 export type CommonContext = {
     eventLog?: string[];
@@ -12,7 +12,7 @@ export type ModuleOptions<T extends object> = {
     /** Additional info, such as template strings */
     context: CommonContext & T;
     /** Passed from the pipeline's module configuration */
-    clientOptions?: ProcessingModule['options'];
+    clientOptions?: ActionModule['options'];
 };
 
 export type FileOptions = {

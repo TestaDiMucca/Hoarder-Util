@@ -5,7 +5,7 @@ import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import Palette from 'vue-material-design-icons/Palette.vue'
 import cloneDeep from 'lodash/cloneDeep';
 
-import { PageViews, ProcessingModule } from '@utils/types';
+import { PageViews, ProcessingModule, ProcessingModuleType } from '@utils/types';
 import store from '@utils/store';
 import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
 import EditPipelineModule from './EditPipelineModule.vue';
@@ -109,8 +109,8 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
       </section>
 
       <q-card-section class="modules-container" v-for="(pipelineModule, index) in pipelineModules">
-        <EditPipelineModule :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule"
-          :index="index" />
+        <EditPipelineModule v-if="pipelineModule.type !== ProcessingModuleType.branch"
+          :handleModuleUpdated="handleModuleUpdated" :processing-module="pipelineModule" :index="index" />
         <div v-if="index < pipelineModules.length - 1" class="line" />
         <div v-if="index === pipelineModules.length - 1" class="line line-end" />
       </q-card-section>

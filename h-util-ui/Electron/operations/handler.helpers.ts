@@ -13,7 +13,7 @@ import {
 import { slugify } from '@shared/common.utils';
 
 import { FileOptions, FileWithMeta, ModuleHandler, ModuleOptions } from '@util/types';
-import { ProcessingModule } from '@shared/common.types';
+import { ActionModule } from '@shared/common.types';
 import output from '@util/output';
 import { ExtraData, RenameTemplates } from '@shared/common.constants';
 
@@ -24,7 +24,7 @@ type WithFileListHandlingArgs<T extends object> = {
     context?: T;
     onProgress?: (label: string, progress: number) => void;
     /** Configurations passed from the client: module configs */
-    clientOptions?: ProcessingModule['options'];
+    clientOptions?: ActionModule['options'];
     onEvent?: (message: string) => void;
 };
 

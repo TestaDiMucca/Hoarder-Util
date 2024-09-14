@@ -46,6 +46,8 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
     await withTimer(
         async () => {
             await promises.each(pipeline.processingModules, async (processingModule) => {
+                if (processingModule.type === ProcessingModuleType.branch) throw new Error('Branch not supported yet');
+
                 const moduleHandler = MODULE_MAP[processingModule.type];
 
                 currentModule = processingModule.type;
