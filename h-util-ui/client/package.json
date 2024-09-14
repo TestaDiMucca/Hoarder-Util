@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.16.12",
+    "@vue-flow/core": "^1.41.1",
+    "dagre": "^0.8.5",
     "lodash": "^4.17.21",
     "quasar": "^2.16.6",
     "uuid": "^10.0.0",

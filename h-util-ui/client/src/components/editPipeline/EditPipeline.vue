@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import Palette from 'vue-material-design-icons/Palette.vue'
 import cloneDeep from 'lodash/cloneDeep';
+import { VueFlow } from '@vue-flow/core';
 
 import { PageViews, ProcessingModule, ProcessingModuleType } from '@utils/types';
 import store from '@utils/store';
@@ -11,6 +12,7 @@ import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
 import EditPipelineModule from './EditPipelineModule.vue';
 import { navigateTo } from '@utils/helpers';
 import PageLayout from 'src/layout/PageLayout.vue';
+import { buildPipelineTopology } from './pipelineTopology';
 
 const pipelineModules = ref<ProcessingModule[]>([
   getDefaultModule(uuidv4())
@@ -68,8 +70,6 @@ watch(pipelineModules.value, () => {
 
     if (nextModule && currentModule.type !== ProcessingModuleType.branch) currentModule.nextModule = nextModule.id;
   }
-
-  console.log(pipelineModules.value)
 })
 
 const returnHome = () => {
@@ -91,6 +91,8 @@ const handlePipelineRankingUpdated = (event: Event) => {
 
 const hasNoModules = computed(() => pipelineModules.value.length === 0)
 const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' : 'New pipeline');
+
+const vueFlowTopology = computed(() => buildPipelineTopology(pipelineModules.value));
 </script>
 
 <template>
@@ -128,6 +130,12 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
         <div v-if="index === pipelineModules.length - 1" class="line line-end" />
       </q-card-section>
 
+      <section class="pipeline-topology">
+        <VueFlow class="vue-flow" :nodes="vueFlowTopology.nodes" :edges="vueFlowTopology.links" />
+      </section>
+
+
+
       <q-card-section @click="handleNewModules" class="modules-container">
         <q-card class="new-module-card p-2">
           <PlusBox class="icon-button" />
@@ -164,6 +172,17 @@ const header = computed(() => !!store.state.selectedPipeline ? 'Edit pipeline' :
   width: 70%;
   margin: auto;
   position: relative;
+}
+
+.pipeline-topology {
+  width: 70%;
+  margin: auto;
+  height: 400px;
+  min-height: 400px;
+}
+
+.vue-flow {
+  background-color: beige;
 }
 
 .line {
