@@ -104,3 +104,11 @@ export const getDefaultGroupRule = (existingRule?: BasicRule): LogicalGroup => (
     type: 'AND',
     rules: [existingRule ?? getDefaultRule(), getDefaultRule()],
 });
+
+export const crawlRules = (rules: Rule, callback: (basicRule: BasicRule) => void) => {
+    if (rules.type === 'basic') {
+        callback(rules);
+    } else {
+        rules.rules.forEach((rule) => crawlRules(rule, callback));
+    }
+};
