@@ -31,11 +31,14 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
     </button>
 
   </nav>
+
+  <div v-if="sortedPipelines.length === 0">No pipelines. Create a new pipeline to start mangling files.</div>
   <div
     :class="{ 'gallery-container': true, 'cards-normal': cardStyle !== CardStyles.compact, 'cards-compact': cardStyle === CardStyles.compact }">
     <div v-for="pipeline in sortedPipelines" :key="pipeline.id!" class="gallery-item">
       <PipelineItem :pipeline-item="pipeline" :cardStyle="cardStyle" />
     </div>
+
   </div>
 </template>
 
