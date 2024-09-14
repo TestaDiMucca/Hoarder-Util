@@ -100,7 +100,8 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
 };
 
 /** Get a default starter module */
-export const getDefaultModule = (): ActionModule => ({
+export const getDefaultModule = (id: string): ActionModule => ({
+    id,
     type: ProcessingModuleType.datePrefix,
     options: {
         value: '',

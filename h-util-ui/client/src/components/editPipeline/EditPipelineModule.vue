@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, defineProps, ref } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 import Delete from 'vue-material-design-icons/Delete.vue'
 import Help from 'vue-material-design-icons/HelpCircle.vue'
 
@@ -24,7 +25,7 @@ const handleModuleTypeSelect = (type: ProcessingModuleType) => {
   if (type === ProcessingModuleType.branch) return;
 
   const newData: ActionModule = {
-    ...getDefaultModule(),
+    ...getDefaultModule(uuidv4()),
     type
   }
 

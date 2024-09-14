@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onBeforeMount } from 'vue';
+import { computed, ref, onBeforeMount, watch } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import Palette from 'vue-material-design-icons/Palette.vue'
@@ -13,7 +13,7 @@ import { navigateTo } from '@utils/helpers';
 import PageLayout from 'src/layout/PageLayout.vue';
 
 const pipelineModules = ref<ProcessingModule[]>([
-  getDefaultModule()
+  getDefaultModule(uuidv4())
 ]);
 
 const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
@@ -44,7 +44,7 @@ const handleModuleUpdated = (newData: ProcessingModule | null, index: number) =>
 }
 
 const handleNewModules = () => {
-  pipelineModules.value.push(getDefaultModule())
+  pipelineModules.value.push(getDefaultModule(uuidv4()))
 }
 
 const handleSavePipeline = () => {
@@ -58,6 +58,19 @@ const handleSavePipeline = () => {
 
   returnHome()
 };
+
+// TEMP: Make sure links work correctly
+watch(pipelineModules.value, () => {
+  let nextModule: ProcessingModule;
+  for (let i = 0; i < pipelineModules.value.length; i++) {
+    nextModule = pipelineModules.value[i + 1];
+    const currentModule = pipelineModules.value[i];
+
+    if (nextModule && currentModule.type !== ProcessingModuleType.branch) currentModule.nextModule = nextModule.id;
+  }
+
+  console.log(pipelineModules.value)
+})
 
 const returnHome = () => {
   store.setSelectedPipeline(null);

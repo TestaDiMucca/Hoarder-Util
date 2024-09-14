@@ -25,22 +25,27 @@ export type ProcessingModuleBooleanOptions = {
 
 export type ProcessingBranch = {
     rules: Rule;
-    processingModules: ProcessingModule[];
+    targetModule?: string;
 };
 
-export type BranchingModule = {
+interface BaseModule {
+    id: string;
+}
+
+export interface BranchingModule extends BaseModule {
     type: ProcessingModuleType.branch;
     branches: ProcessingBranch[];
-};
+}
 
-export type ActionModule = {
+export interface ActionModule extends BaseModule {
     type: Exclude<ProcessingModuleType, 'branch'>;
     options: ProcessingModuleBooleanOptions & {
         value: string | number;
         rules?: Rule;
         dateMask?: string;
     };
-};
+    nextModule?: string;
+}
 
 export type ProcessingModule = BranchingModule | ActionModule;
 
