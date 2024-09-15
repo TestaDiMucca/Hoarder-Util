@@ -63,4 +63,5 @@ model PipelineStats {
   time_taken       Int      @default(0)
   bytes_compressed Int      @default(0)
   words_parsed     Int      @default(0)
+  files_processed  Int      @default(0)
 }

@@ -89,6 +89,7 @@ export type PipelineStatsPayload = {
     timeTaken: number;
     bytesCompressed: number;
     wordsParsed: number;
+    filesProcessed: number;
 };
 
 export type TaskQueue = Array<SpawnedTask>;

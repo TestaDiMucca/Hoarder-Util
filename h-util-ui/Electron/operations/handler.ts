@@ -72,6 +72,7 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
         cb: async () => {
             await addPipelineRunStat(pipeline.id!, 'times_ran', 1);
             await addPipelineRunStat(pipeline.id!, 'time_taken', timeTaken);
+            await addPipelineRunStat(pipeline.id, 'files_processed', fileOptions.filesWithMeta.length);
         },
     });
 
