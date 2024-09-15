@@ -47,14 +47,20 @@ const handleModuleUpdated = (newData: ProcessingModule | null, index: number) =>
 }
 
 const handleModuleUpdatedById = (newData: ProcessingModule | null, id: string) => {
-  const targetedModuleIndex = pipelineModules.value.findIndex(m => m.id === id);
+  const targetedModuleIndex = getModuleIndexById(id);
   handleModuleUpdated(newData, targetedModuleIndex);
 }
 
-const getModuleById = (id: string) => pipelineModules.value.find(m => m.id === id);
+const getModuleIndexById = (id: string) => pipelineModules.value.findIndex(m => m.id === id);
 
-const handleNewModules = () => {
-  pipelineModules.value.push(getDefaultModule(uuidv4()))
+const handleNewModules = (fromModuleId?: string) => {
+  const newModuleId = uuidv4();
+  if (fromModuleId) {
+    const sourceModule = getModuleIndexById(fromModuleId);
+
+    if (pipelineModules.value[sourceModule]?.type !== ProcessingModuleType.branch) pipelineModules.value[sourceModule].nextModule = newModuleId
+  }
+  pipelineModules.value.push(getDefaultModule(newModuleId))
 }
 
 const handleSavePipeline = () => {
@@ -141,7 +147,8 @@ const vueFlowTopology = computed(() => buildPipelineTopology(pipelineModules.val
           </template>
 
           <template #node-new="props: NodeProps<ChartNodeData>">
-            <EditPipelineNewModule :handle-new-modules="handleNewModules" :from-id="props.data.fromModuleId" />
+            <EditPipelineNewModule :handle-new-modules="() => handleNewModules(props.data.fromModuleId)"
+              :from-id="props.data.fromModuleId" />
           </template>
         </VueFlow>
       </section>
