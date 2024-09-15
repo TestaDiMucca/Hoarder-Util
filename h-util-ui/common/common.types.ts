@@ -51,7 +51,7 @@ export type ProcessingModule = BranchingModule | ActionModule;
 
 export type Pipeline = {
     /** Should only be missing on new pipelines */
-    id?: string;
+    id: string;
     name: string;
     created?: string;
     modified?: string;
@@ -68,6 +68,9 @@ export type Storage = {
     pipelines: Record<string, Pipeline>;
 };
 
+/**
+ * @deprecated replaced by SQLite stats
+ */
 export type StatsStorage = {
     /** Times each pipeline got ran */
     pipelineRuns: Record<string, number>;
@@ -77,6 +80,16 @@ export type StatsStorage = {
     msRan: number;
     /** Number of words read from parser */
     wordsParsed: number;
+};
+
+export type PipelineStatsPayload = {
+    pipelineId: string;
+    pipelineName: string;
+    timesRan: number;
+    timeTaken: number;
+    bytesCompressed: number;
+    wordsParsed: number;
+    filesProcessed: number;
 };
 
 export type TaskQueue = Array<SpawnedTask>;

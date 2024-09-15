@@ -10,7 +10,7 @@
     "build": "tsc && yarn build:front",
     "test": "jest",
     "watch": "nodemon --exec yarn serve:electron",
-    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",
+    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO,PRISMA' --prefix-colors 'red,yellow,green' -k \"yarn serve:front\" \"yarn watch\" \"npm run prisma:studio\"",
     "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",

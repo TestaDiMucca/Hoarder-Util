@@ -3,6 +3,7 @@ import { ActionModule } from '@shared/common.types';
 export type CommonContext = {
     eventLog?: string[];
     pipelineName?: string;
+    pipelineId?: string;
 };
 
 export type ModuleOptions<T extends object> = {

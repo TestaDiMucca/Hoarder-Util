@@ -14,12 +14,11 @@ declare module 'vue-material-design-icons/*.vue' {
 
 type IpcRendererExposed = {
     send: <T>(channel: string, data: T[]) => void;
-    invoke: <T, R = void>(channel: string, data: T) => Promise<R>;
+    invoke: <T, R = void>(channel: string, data?: T) => Promise<R>;
     on: <T>(channel: string, cb: (event: unknown, message: T) => void) => void;
     onMainMessage: (cb: (msg: string) => void) => void;
     onTaskProgress: (cb: (task: string) => void) => void;
     loadData: <T>() => Promise<T>;
-    loadStats: <T>() => Promise<T>;
     saveFile: (content: string) => Promise<void>;
     saveData: (data: string[]) => Promise<void>;
     selectFolder: () => Promise<string>;

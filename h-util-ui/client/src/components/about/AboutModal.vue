@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { StatsStorage } from '@shared/common.types';
+import { PipelineStatsPayload, StatsStorage } from '@shared/common.types';
 import { getIpcRenderer, loadStats, loadUserData } from '@utils/helpers';
 import StatsDisplay from './StatsDisplay.vue';
 import InternalsDisplay from './InternalsDisplay.vue';
@@ -15,7 +15,7 @@ enum Tabs {
 
 const tab = ref(Tabs.about);
 const about = ref(false);
-const stats = ref<StatsStorage | null>(null);
+const stats = ref<PipelineStatsPayload[] | null>(null);
 
 defineProps<{
   openButton: any;
