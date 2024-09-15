@@ -12,6 +12,7 @@ import movCompressHandler from './movCompress.handler';
 import reportHandler from './report.handler';
 import dynamicRenameHandler from './dynamicRename.handler';
 import ruleFilterHandler from './ruleFilter.handler';
+import runPipelineHandler from './runPipeline.handler';
 
 export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.datePrefix]: datePrefixHandler,
@@ -26,5 +27,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.dynamicRename]: dynamicRenameHandler,
     [ProcessingModuleType.ruleFilter]: ruleFilterHandler,
     [ProcessingModuleType.branch]: null,
-    [ProcessingModuleType.runPipeline]: null,
+    [ProcessingModuleType.runPipeline]: runPipelineHandler,
 };

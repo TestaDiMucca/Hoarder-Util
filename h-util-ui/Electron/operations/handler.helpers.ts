@@ -12,10 +12,12 @@ import {
 } from '@common/fileops';
 import { slugify } from '@shared/common.utils';
 
-import { FileOptions, FileWithMeta, ModuleHandler, ModuleOptions } from '@util/types';
-import { ActionModule } from '@shared/common.types';
+import { CommonContext, FileOptions, FileWithMeta, ModuleHandler, ModuleOptions } from '@util/types';
+import { ActionModule, ProcessingModule, ProcessingModuleType } from '@shared/common.types';
 import output from '@util/output';
 import { ExtraData, RenameTemplates } from '@shared/common.constants';
+import { MODULE_MAP } from './modules/moduleMap';
+import { ProcessingError } from '@util/errors';
 
 type WithFileListHandlingArgs<T extends object> = {
     fileOptions: FileOptions;
@@ -217,5 +219,50 @@ export const populateDataDict = async ({
             return;
         default:
             return;
+    }
+};
+
+type RunProcessingModuleOpts = {
+    onBeforeRun?: () => void;
+    onProgress?: (label: string, progress: number) => void;
+    commonContext?: CommonContext;
+};
+
+export const runProcessingModule = async (
+    processingModule: ProcessingModule,
+    fileOptions: FileOptions,
+    opts: RunProcessingModuleOpts,
+) => {
+    const { onBeforeRun, onProgress, commonContext } = opts;
+
+    if (processingModule.type === ProcessingModuleType.branch) throw new Error('Branch not supported yet');
+
+    const moduleHandler = MODULE_MAP[processingModule.type];
+
+    onBeforeRun?.();
+
+    if (!moduleHandler) {
+        output.log(`Module ${processingModule.type} not yet supported`);
+        return;
+    }
+
+    output.log(`Processing module ${processingModule.type}`);
+
+    try {
+        /** One module's processing */
+        await withFileListHandling({
+            fileOptions,
+            clientOptions: processingModule.options,
+            moduleHandler,
+            onProgress,
+            context: commonContext,
+        });
+    } catch (e) {
+        if (e instanceof ProcessingError) {
+            // in future we may ignore
+        } else {
+            console.error('[runPipeline]', e);
+            throw e;
+        }
     }
 };

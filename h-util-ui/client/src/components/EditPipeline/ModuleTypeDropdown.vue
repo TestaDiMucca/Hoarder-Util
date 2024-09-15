@@ -46,8 +46,13 @@ const menuItems: MenuItem[] = [
     onClick: handleModuleTypeSelect(ProcessingModuleType.report)
   },
   {
+    type: 'item',
+    label: 'Direct to pipeline',
+    onClick: handleModuleTypeSelect(ProcessingModuleType.runPipeline)
+  },
+  {
     type: 'group',
-    label: 'Media compression',
+    label: 'Media operations',
     items: [
       {
         type: 'item',
