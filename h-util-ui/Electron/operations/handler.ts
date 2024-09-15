@@ -5,7 +5,7 @@ import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
 import { messageWindow, updateTaskProgress } from '@util/ipc';
 import { CommonContext, FileOptions } from '@util/types';
 
-import { fileListToFileOptions, withFileListHandling } from './handler.helpers';
+import { fileListToFileOptions, runProcessingModule, withFileListHandling } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
 import { addNumericalStat, addPipelineRunToStats } from '@util/stats';
 
@@ -38,6 +38,7 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
     let handled = 0;
     let currentModule: ProcessingModuleType = ProcessingModuleType.iterate;
     let timeTaken = 0;
+    let handledProgress = 0;
 
     const commonContext: CommonContext | undefined = hasReporter
         ? { eventLog: [], pipelineName: pipeline.name }
@@ -45,45 +46,22 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
 
     await withTimer(
         async () => {
-            await promises.each(pipeline.processingModules, async (processingModule) => {
-                if (processingModule.type === ProcessingModuleType.branch) throw new Error('Branch not supported yet');
+            await promises.each(pipeline.processingModules, async (processingModule) =>
+                runProcessingModule(processingModule, fileOptions, {
+                    onBeforeRun: () => {
+                        currentModule = processingModule.type;
+                        handledProgress = Math.ceil((handled / pipeline.processingModules.length) * 100);
 
-                const moduleHandler = MODULE_MAP[processingModule.type];
+                        mainUpdate(currentModule, handledProgress);
 
-                currentModule = processingModule.type;
-                const handledProgress = Math.ceil((handled / pipeline.processingModules.length) * 100);
-
-                mainUpdate(currentModule, handledProgress);
-
-                handled++;
-
-                if (!moduleHandler) {
-                    output.log(`Module ${processingModule.type} not yet supported`);
-                    return;
-                }
-
-                output.log(`Processing module ${processingModule.type}`);
-
-                try {
-                    /** One module's processing */
-                    await withFileListHandling({
-                        fileOptions,
-                        clientOptions: processingModule.options,
-                        moduleHandler,
-                        onProgress: (label, progress) => {
-                            mainUpdate(currentModule, handledProgress, label, progress);
-                        },
-                        context: commonContext,
-                    });
-                } catch (e) {
-                    if (e instanceof ProcessingError) {
-                        // in future we may ignore
-                    } else {
-                        console.error('[runPipeline]', e);
-                        throw e;
-                    }
-                }
-            });
+                        handled++;
+                    },
+                    onProgress: (label, progress) => {
+                        mainUpdate(currentModule, handledProgress, label, progress);
+                    },
+                    commonContext,
+                }),
+            );
         },
         (time) => {
             timeTaken = time;

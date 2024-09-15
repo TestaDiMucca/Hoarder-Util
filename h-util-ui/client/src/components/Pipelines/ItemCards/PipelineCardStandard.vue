@@ -43,8 +43,11 @@ const onDragActiveChange = (active: boolean) => {
 
 <style scoped>
 .pipeline-name {
-  padding: 1em;
+  padding: 1em 2em;
   font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .pipeline-drop {

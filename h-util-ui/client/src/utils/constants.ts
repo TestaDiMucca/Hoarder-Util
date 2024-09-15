@@ -19,6 +19,7 @@ import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/Option
 import OptionsFilter from 'src/components/EditPipeline/PipelineOptions/OptionsFilter.vue';
 import OptionsDynamicRename from 'src/components/EditPipeline/PipelineOptions/OptionsDynamicRename.vue';
 import OptionsRuleFilter from 'src/components/EditPipeline/PipelineOptions/OptionsRuleFilter.vue';
+import OptionsPipelineSelect from 'src/components/EditPipeline/PipelineOptions/OptionsPipelineSelect.vue';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -94,6 +95,8 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
             return OptionsDynamicRename;
         case ProcessingModuleType.ruleFilter:
             return OptionsRuleFilter;
+        case ProcessingModuleType.runPipeline:
+            return OptionsPipelineSelect;
         default:
             return OptionsStandard;
     }

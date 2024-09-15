@@ -9,6 +9,7 @@ import { writeFile } from 'fs/promises';
 import { filterTest } from './operations/filterTest';
 import { renameTest } from './operations/renameTest';
 import output from '@util/output';
+import pipelineCache from '@util/cache';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
 
 const DATA_FILE = 'data.json';
@@ -20,6 +21,8 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     ipcMain.handle(IpcMessageType.loadData, async () => {
         const data = await loadJsonStore<Storage>(dataFilePath);
         if (data?.pipelines) {
+            pipelineCache.cachePipelines(data.pipelines);
+
             const stats = await getStatsFromStore();
 
             if (!stats) return data;
