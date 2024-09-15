@@ -4,6 +4,7 @@ import { Rule, Operator } from '@shared/rules.types';
 import { availableOperatorsForAttrType, getDefaultGroupRule, getDefaultRule } from '@shared/rules.utils';
 import DropdownMenu, { MenuItem } from './DropdownMenu.vue';
 import Delete from 'vue-material-design-icons/Delete.vue'
+import { ExtraData, RenameTemplates } from '@shared/common.constants';
 
 type Props = {
   rule: Rule;
@@ -17,6 +18,7 @@ const props = defineProps<Props>();
 
 const currentRule = ref(props.rule);
 const isGroup = computed(() => currentRule.value.type !== 'basic');
+const attributeOptions = computed(() => [...Object.values(RenameTemplates), ...Object.values(ExtraData)])
 
 const emit = defineEmits(['update-rule'])
 const nestLevel = (props.nested ?? 0);
@@ -104,7 +106,8 @@ const availableOperators = computed<MenuItem[]>(() => (currentRule.value.type ==
 
     <div v-else :class="{ 'rule-row': true, 'sub-component': nestLevel > 0 }">
       <div class="single-rule">
-        <q-input type="text" v-model="currentRule.attribute" placeholder="Enter attribute" label="Attribute" />
+        <q-select class="dropdown" v-model="currentRule.attribute" label="Attribute" :hide-dropdown-icon="true"
+          :options="attributeOptions" />
 
         <button class="operator-button">
           {{ currentRule.operator }}
@@ -138,6 +141,7 @@ const availableOperators = computed<MenuItem[]>(() => (currentRule.value.type ==
 
 .single-rule .q-field {
   flex-grow: 1;
+  min-width: 25%;
 }
 
 .operator-button {

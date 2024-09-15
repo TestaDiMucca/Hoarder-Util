@@ -144,7 +144,7 @@ type PopulateDataDictArgs = {
     /** Populate with non formatted, standard version */
     raw?: boolean;
     /** Arbitrary string option to use with some certain data fetches */
-    option?: string;
+    option?: string | string[];
 };
 
 // todo: refactor to opts obj
@@ -214,7 +214,7 @@ export const populateDataDict = async ({
             return;
         case ExtraData.ocr:
             if (!option) return;
-            const ocrResult = await searchForTextInImage(filePath, [option]);
+            const ocrResult = await searchForTextInImage(filePath, Array.isArray(option) ? option : [option]);
             dataDict[ExtraData.ocr] = String(ocrResult);
             return;
         default:

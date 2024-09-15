@@ -1,3 +1,5 @@
+import { searchForTextInImage } from '@common/fileops';
+import { ExtraData } from './common.constants';
 import { AttributeType, BasicRule, LogicalGroup, Operator, Rule } from './rules.types';
 
 // TODO: @common
@@ -46,6 +48,10 @@ export function evaluateBasicRule<T extends string = string>(
                 : attrType === AttributeType.date
                   ? new Date(rule.value)
                   : rule.value;
+
+        //   if (rule.attribute === ExtraData.ocr) {
+        //     const result = await searchForTextInImage(data.filePath, [rule.value]);
+        //   }
 
         switch (rule.operator) {
             case Operator.eq:

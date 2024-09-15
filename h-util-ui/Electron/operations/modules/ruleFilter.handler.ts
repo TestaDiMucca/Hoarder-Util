@@ -15,15 +15,26 @@ const ruleFilterHandler: ModuleHandler = {
         const { fileName, rootPath } = splitFileNameFromPath(fileWithMeta.filePath);
 
         const dataDict: DataDict = {};
+        const ocrOptions: string[] = [];
 
-        await promises.each(getRuleAttrsUsed(rules), async (tag) => {
-            await populateDataDict({ dataDict, tag, filePath: fileWithMeta.filePath, raw: true });
-        });
+        await promises.each(
+            getRuleAttrsUsed(rules, (rule) => {
+                if (rule.type === 'basic' && rule.attribute === ExtraData.ocr) {
+                    ocrOptions.push(rule.value);
+                }
+            }),
+            async (tag) => {
+                await populateDataDict({
+                    dataDict,
+                    tag,
+                    filePath: fileWithMeta.filePath,
+                    raw: true,
+                    option: ocrOptions,
+                });
+            },
+        );
 
-        const excluded = evaluateRule(rules, {
-            name: fileName,
-            path: rootPath,
-        });
+        const excluded = evaluateRule(rules, dataDict);
 
         const inverse = opts.clientOptions?.inverse;
         if ((excluded && !inverse) || (!excluded && inverse)) {
@@ -39,10 +50,14 @@ const ruleFilterHandler: ModuleHandler = {
 
 export default ruleFilterHandler;
 
-const getRuleAttrsUsed = (rules: Rule): Array<RenameTemplates | ExtraData | string> => {
+const getRuleAttrsUsed = (
+    rules: Rule,
+    onRuleEvaluated?: (rule: Rule) => void,
+): Array<RenameTemplates | ExtraData | string> => {
     const attrsUsed = new Set<string>();
 
     crawlRules(rules, (rule) => {
+        onRuleEvaluated?.(rule);
         attrsUsed.add(rule.attribute);
     });
 

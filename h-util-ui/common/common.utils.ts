@@ -1,5 +1,6 @@
 import dateFormat from 'dateformat';
-import { defaultTimeMask } from './common.constants';
+import { defaultTimeMask, ExtraData, RenameTemplates } from './common.constants';
+import { AttributeType } from './rules.types';
 
 /** Just gets a default date time stamp */
 export function formatDate(date: Date): string {
@@ -37,3 +38,19 @@ export function slugify(text: string): string {
             .trim()
     );
 }
+
+export const getAttributeDataType = (attribute: RenameTemplates | ExtraData) => {
+    switch (attribute) {
+        case RenameTemplates.DateCreated:
+        case RenameTemplates.DateModified:
+        case RenameTemplates.ExifTaken:
+            return AttributeType.date;
+        case RenameTemplates.MetaTrackNo:
+        case ExtraData.FileSize:
+            return AttributeType.number;
+        case ExtraData.ocr:
+            return AttributeType.boolean;
+        default:
+            return AttributeType.string;
+    }
+};
