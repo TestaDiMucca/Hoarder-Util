@@ -1,13 +1,10 @@
 import { detachPromise, promises, withTimer } from '@common/common';
-import output from '@util/output';
-import { ProcessingError } from '@util/errors';
 import { ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
 import { messageWindow, updateTaskProgress } from '@util/ipc';
 import { CommonContext, FileOptions } from '@util/types';
 
-import { fileListToFileOptions, runProcessingModule, withFileListHandling } from './handler.helpers';
-import { MODULE_MAP } from './modules/moduleMap';
-import { addNumericalStat, addPipelineRunToStats } from '@util/stats';
+import { fileListToFileOptions, runProcessingModule } from './handler.helpers';
+import { addPipelineRunStat } from '../data/stats.db';
 
 let taskId = 0;
 
@@ -40,9 +37,10 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
     let timeTaken = 0;
     let handledProgress = 0;
 
-    const commonContext: CommonContext | undefined = hasReporter
-        ? { eventLog: [], pipelineName: pipeline.name }
-        : undefined;
+    const commonContext: CommonContext = {
+        pipelineId: pipeline.id,
+        ...(hasReporter ? { eventLog: [], pipelineName: pipeline.name } : {}),
+    };
 
     await withTimer(
         async () => {
@@ -72,8 +70,8 @@ export const handleRunPipeline = async (params: ProcessingRequest) => {
 
     detachPromise({
         cb: async () => {
-            await addPipelineRunToStats(pipeline.id!);
-            await addNumericalStat('msRan', timeTaken);
+            await addPipelineRunStat(pipeline.id!, 'times_ran', 1);
+            await addPipelineRunStat(pipeline.id!, 'time_taken', timeTaken);
         },
     });
 

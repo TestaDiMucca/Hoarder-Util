@@ -43,7 +43,7 @@ export const loadUserData = async () => {
 
     if (!ipcRenderer) return null;
 
-    return await ipcRenderer?.loadData<Storage>();
+    return await ipcRenderer?.invoke<null, Storage>(IpcMessageType.loadData);
 };
 
 export const loadStats = async () => {
@@ -54,18 +54,12 @@ export const loadStats = async () => {
     return await ipcRenderer?.loadStats<StatsStorage>();
 };
 
-export const saveUserData = (data: VueStore['pipelines']) => {
+const removeVueRefs = <T>(source: T): T => JSON.parse(JSON.stringify(source));
+
+export const saveUserData = (pipelines: VueStore['pipelines']) => {
     const ipcRenderer = getIpcRenderer();
 
-    const serialized = JSON.stringify(
-        {
-            pipelines: data,
-        },
-        null,
-        2,
-    );
-
-    ipcRenderer?.send(IpcMessageType.saveData, [serialized]);
+    ipcRenderer?.invoke(IpcMessageType.saveData, { pipelines: removeVueRefs(pipelines) });
 };
 
 // todo: use @common

@@ -56,10 +56,11 @@ model Events {
 }
 
 model PipelineStats {
-  id           Int      @id @default(autoincrement())
-  pipeline     Pipeline @relation(fields: [pipeline_id], references: [id], onDelete: Cascade)
-  pipeline_id  Int      @unique
-  times_ran    Int      @default(0)
-  time_taken   Int      @default(0)
-  times_edited Int      @default(0)
+  id               Int      @id @default(autoincrement())
+  pipeline         Pipeline @relation(fields: [pipeline_id], references: [id], onDelete: Cascade)
+  pipeline_id      Int      @unique
+  times_ran        Int      @default(0)
+  time_taken       Int      @default(0)
+  bytes_compressed Int      @default(0)
+  words_parsed     Int      @default(0)
 }

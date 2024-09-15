@@ -68,6 +68,9 @@ export type Storage = {
     pipelines: Record<string, Pipeline>;
 };
 
+/**
+ * @deprecated replaced by SQLite stats
+ */
 export type StatsStorage = {
     /** Times each pipeline got ran */
     pipelineRuns: Record<string, number>;
@@ -76,6 +79,15 @@ export type StatsStorage = {
     /** Amount of time spent running tasks */
     msRan: number;
     /** Number of words read from parser */
+    wordsParsed: number;
+};
+
+export type PipelineStatsPayload = {
+    pipelineId: string;
+    pipelineName: string;
+    timesRan: number;
+    timeTaken: number;
+    bytesCompressed: number;
     wordsParsed: number;
 };
 

@@ -11,7 +11,12 @@ export const upsertPipeline = async (pipeline: Pipeline) => {
         where: {
             uuid: pipeline.id,
         },
-        update: {},
+        update: {
+            // todo: condense, re-use
+            name: pipeline.name,
+            color: pipeline.color,
+            manual_ranking: pipeline.manualRanking,
+        },
         create: {
             uuid: pipeline.id ?? uuidv4(),
             name: pipeline.name,
@@ -27,15 +32,17 @@ export const upsertPipeline = async (pipeline: Pipeline) => {
  * These are not bulk so we can use the upsert. Not high traffic throughput application
  * so for now will only bulk when necessary.
  */
-export const upsertModule = async (processingModules: ProcessingModule) =>
+export const upsertModule = async (processingModule: ProcessingModule) =>
     db.module.upsert({
         where: {
-            uuid: processingModules.id,
+            uuid: processingModule.id,
         },
-        update: {},
+        update: {
+            data: JSON.stringify(processingModule),
+        },
         create: {
-            uuid: processingModules.id,
-            data: JSON.stringify(processingModules),
+            uuid: processingModule.id,
+            data: JSON.stringify(processingModule),
         },
     });
 
@@ -54,12 +61,27 @@ export const joinModuleWithPipeline = async (moduleId: number, pipelineId: numbe
         },
     });
 
-export const removePipeline = (pipelineUuid: string) =>
-    db.pipeline.delete({
+export const removePipeline = async (pipelineUuid: string, removeModules = true) => {
+    /** When modules become re-usable, we'll want to check that there's only 1 pipeline here */
+    if (removeModules) {
+        await db.$executeRaw`
+        DELETE FROM Module
+        WHERE id IN (
+            SELECT r.id FROM Module m
+            JOIN PipelineModule pm ON pm.module_id = m.id
+            JOIN Pipeline p ON p.id = pm.pipeline_id
+            WHERE p.uuid = ${pipelineUuid}
+        );
+        `;
+    }
+
+    /** Join table rows should cascade */
+    await db.pipeline.delete({
         where: {
             uuid: pipelineUuid,
         },
     });
+};
 
 export const getAllPipelines = async (withStats = false): Promise<Pipeline[]> => {
     const fetched = await db.pipeline.findMany({
@@ -73,8 +95,6 @@ export const getAllPipelines = async (withStats = false): Promise<Pipeline[]> =>
         },
     });
 
-    console.log('sql fetch', fetched);
-
     return fetched.map((pipelineRow) => {
         return {
             id: pipelineRow.uuid,
@@ -83,6 +103,7 @@ export const getAllPipelines = async (withStats = false): Promise<Pipeline[]> =>
             created: pipelineRow.created.toISOString(),
             modified: pipelineRow.modified.toISOString(),
             color: pipelineRow.color ?? undefined,
+            timesRan: pipelineRow.pipeline_stats?.[0]?.times_ran,
             processingModules: pipelineRow.pipeline_modules.map(({ module }) => ({
                 ...(JSON.parse(module.data) as ProcessingModule),
             })),
