@@ -1,5 +1,5 @@
 import { IpcMessageType } from '@shared/common.constants';
-import { StatsStorage, Storage } from '@shared/common.types';
+import { PipelineStatsPayload, Storage } from '@shared/common.types';
 import { VueStore } from './store';
 import { PageViews } from './types';
 
@@ -51,7 +51,7 @@ export const loadStats = async () => {
 
     if (!ipcRenderer) return null;
 
-    return await ipcRenderer?.loadStats<StatsStorage>();
+    return await ipcRenderer?.invoke<null, PipelineStatsPayload[]>(IpcMessageType.getStats);
 };
 
 const removeVueRefs = <T>(source: T): T => JSON.parse(JSON.stringify(source));

@@ -21,6 +21,7 @@ export const getStats = async (): Promise<PipelineStatsPayload[]> => {
         wordsParsed: r.words_parsed,
         timeTaken: r.time_taken,
         bytesCompressed: r.bytes_compressed,
+        filesProcessed: r.files_processed,
     }));
 };
 
