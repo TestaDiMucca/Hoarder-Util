@@ -10,7 +10,6 @@ contextBridge.exposeInMainWorld('browserWindow', {
  * Thread: https://github.com/electron/electron/issues/35587
  * Preload scripts cannot support importing modules. Molto trieste
  */
-
 contextBridge.exposeInMainWorld('electronIpc', {
     send: ipcRenderer.send,
     invoke: ipcRenderer.invoke,

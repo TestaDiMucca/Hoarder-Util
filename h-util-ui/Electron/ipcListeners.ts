@@ -1,16 +1,18 @@
 import path from 'path';
+import { writeFile } from 'fs/promises';
 import { app, dialog } from 'electron';
 import { IpcMessageType } from '@shared/common.constants';
-import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
 import { getStatsFromStore } from '@util/stats';
-import { ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
+import { Pipeline, ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
 import { getMainWindow, handleErrorMessage } from '@util/ipc';
-import { writeFile } from 'fs/promises';
-import { filterTest } from './operations/filterTest';
-import { renameTest } from './operations/renameTest';
 import output from '@util/output';
 import pipelineCache from '@util/cache';
+
+import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
+import { filterTest } from './operations/filterTest';
+import { renameTest } from './operations/renameTest';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
+import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 
 const DATA_FILE = 'data.json';
 
@@ -19,6 +21,11 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     const dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
 
     ipcMain.handle(IpcMessageType.loadData, async () => {
+        // for testing only
+        void getAllPipelines()
+            .then((p) => console.log('from sqlite', p))
+            .catch((e) => console.error(e));
+
         const data = await loadJsonStore<Storage>(dataFilePath);
         if (data?.pipelines) {
             pipelineCache.cachePipelines(data.pipelines);
@@ -144,5 +151,11 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     });
 
     ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));
-    ipcMain.on(IpcMessageType.saveData, (_, data: string[]) => saveJsonStore(dataFilePath, data[0]));
+    ipcMain.on(IpcMessageType.saveData, (_, data: string[]) => {
+        saveJsonStore(dataFilePath, data[0]);
+        const parsed = JSON.parse(data[0]) as { pipelines: Record<string, Pipeline> };
+
+        // todo: quite terrible, we should move this to invoke.
+        Object.values(parsed.pipelines).forEach((pl) => upsertPipeline(pl));
+    });
 };
