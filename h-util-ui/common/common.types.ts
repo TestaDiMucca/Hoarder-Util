@@ -51,7 +51,7 @@ export type ProcessingModule = BranchingModule | ActionModule;
 
 export type Pipeline = {
     /** Should only be missing on new pipelines */
-    id?: string;
+    id: string;
     name: string;
     created?: string;
     modified?: string;

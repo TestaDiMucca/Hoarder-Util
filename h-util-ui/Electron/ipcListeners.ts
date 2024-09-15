@@ -14,6 +14,7 @@ import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { promises } from '@common/common';
 import { getStats } from './data/stats.db';
+import { db } from './data/database';
 
 const DATA_FILE = 'data.json';
 
@@ -124,6 +125,19 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     ipcMain.handle(IpcMessageType.saveData, async (_e, data: Storage) => {
         const pipelineList = Object.values(data.pipelines);
 
-        await promises.each(pipelineList, (pipeline) => upsertPipeline(pipeline));
+        const currentPipelineIds: string[] = [];
+        await promises.each(pipelineList, async (pipeline) => {
+            await upsertPipeline(pipeline);
+            currentPipelineIds.push(pipeline.id!);
+        });
+
+        /** Remove others */
+        await db.pipeline.deleteMany({
+            where: {
+                uuid: {
+                    notIn: currentPipelineIds,
+                },
+            },
+        });
     });
 };

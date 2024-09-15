@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import MenuVert from 'vue-material-design-icons/DotsVertical.vue'
 import MenuBars from 'vue-material-design-icons/Menu.vue'
+import { v4 as uuidv4 } from 'uuid';
 
 import DeleteConfirmModal from '../../common/DeleteConfirmModal.vue';
 import store from '@utils/store';
@@ -28,7 +29,7 @@ const selectPipeline = () => {
 const duplicatePipeline = () => {
   const { id, ...pipelineData } = props.pipelineItem;
 
-  const created = store.upsertPipeline({ ...pipelineData, name: `${pipelineData.name} - copy` });
+  const created = store.upsertPipeline({ ...pipelineData, name: `${pipelineData.name} - copy`, id: uuidv4() });
 
   if (!created) return;
 
