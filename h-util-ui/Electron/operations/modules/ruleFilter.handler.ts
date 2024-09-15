@@ -5,6 +5,7 @@ import { crawlRules, evaluateRule } from '@shared/rules.utils';
 import { Rule } from '@shared/rules.types';
 import { ExtraData, RenameTemplates } from '@shared/common.constants';
 import { promises } from '@common/common';
+import { addPipelineRunStat } from '../../data/stats.db';
 
 const ruleFilterHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
@@ -12,7 +13,7 @@ const ruleFilterHandler: ModuleHandler = {
 
         if (!rules) return;
 
-        const { fileName, rootPath } = splitFileNameFromPath(fileWithMeta.filePath);
+        const { fileName } = splitFileNameFromPath(fileWithMeta.filePath);
 
         const dataDict: DataDict = {};
         const ocrOptions: string[] = [];
@@ -31,6 +32,9 @@ const ruleFilterHandler: ModuleHandler = {
                     raw: true,
                     option: ocrOptions,
                 });
+
+                if (ocrOptions?.length && opts.context?.pipelineId)
+                    void addPipelineRunStat(opts.context.pipelineId, 'words_parsed', ocrOptions.length);
             },
         );
 

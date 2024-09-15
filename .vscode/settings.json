@@ -1,14 +1,17 @@
 {
     "cSpell.words": [
         "Allister",
+        "AUTOINCREMENT",
         "Chakra",
         "dagre",
+        "datasource",
         "DATETAG",
         "Deduper",
         "exif",
         "ffmeta",
         "ffprobe",
         "fileops",
+        "fkey",
         "graphlib",
         "Hirokit",
         "Jkwok",

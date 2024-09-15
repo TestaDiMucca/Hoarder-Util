@@ -1,16 +1,20 @@
 import path from 'path';
+import { writeFile } from 'fs/promises';
 import { app, dialog } from 'electron';
 import { IpcMessageType } from '@shared/common.constants';
-import { loadJsonStore, saveJsonStore } from './ElectronStore/jsonStore';
-import { getStatsFromStore } from '@util/stats';
-import { ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
+import { Pipeline, ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
 import { getMainWindow, handleErrorMessage } from '@util/ipc';
-import { writeFile } from 'fs/promises';
-import { filterTest } from './operations/filterTest';
-import { renameTest } from './operations/renameTest';
 import output from '@util/output';
 import pipelineCache from '@util/cache';
+
+import { loadJsonStore } from './ElectronStore/jsonStore';
+import { filterTest } from './operations/filterTest';
+import { renameTest } from './operations/renameTest';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
+import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
+import { promises } from '@common/common';
+import { getStats } from './data/stats.db';
+import { db } from './data/database';
 
 const DATA_FILE = 'data.json';
 
@@ -18,50 +22,23 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     /** Create handlers before window is ready */
     const dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
 
-    ipcMain.handle(IpcMessageType.loadData, async () => {
-        const data = await loadJsonStore<Storage>(dataFilePath);
-        if (data?.pipelines) {
-            pipelineCache.cachePipelines(data.pipelines);
-
-            const stats = await getStatsFromStore();
-
-            if (!stats) return data;
-
-            const mapped: Storage = { pipelines: {} };
-            Object.keys(data.pipelines).forEach((pipelineId) => {
-                mapped.pipelines[pipelineId] = {
-                    ...data.pipelines[pipelineId],
-                    timesRan: stats.pipelineRuns[pipelineId] ?? 0,
-                };
-            });
-
-            return mapped;
-        }
-
-        return data;
-    });
-    ipcMain.handle(IpcMessageType.getStats, async () => {
-        const stats = await getStatsFromStore();
-        const data = await loadJsonStore<Storage>(dataFilePath);
-        // replace the id with name
-
-        if (!stats || !data) return {};
-
-        const pipelineRuns = Object.entries(stats?.pipelineRuns).reduce<Record<string, number>>(
-            (a, [pipelineId, runCount], i) => {
-                const pipelineName = data.pipelines[pipelineId]?.name ?? `Unknown/Deleted ${i}`;
-
-                a[pipelineName] = runCount;
-                return a;
-            },
-            {},
-        );
+    ipcMain.handle(IpcMessageType.loadData, async (): Promise<Storage> => {
+        const pipelineList = await getAllPipelines(true);
+        const pipelines = pipelineList.reduce<Record<string, Pipeline>>((a, v) => {
+            a[v.id ?? 'unknown'] = v;
+            return a;
+        }, {});
+        pipelineCache.cachePipelines(pipelines);
 
         return {
-            ...stats,
-            pipelineRuns,
+            pipelines,
         };
     });
+
+    ipcMain.handle(IpcMessageType.getStats, async () => {
+        return getStats();
+    });
+
     ipcMain.handle(IpcMessageType.selectDirectory, async () => {
         const mainWindow = getMainWindow();
         if (!mainWindow) throw new Error('No main window registered');
@@ -144,5 +121,23 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     });
 
     ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));
-    ipcMain.on(IpcMessageType.saveData, (_, data: string[]) => saveJsonStore(dataFilePath, data[0]));
+
+    ipcMain.handle(IpcMessageType.saveData, async (_e, data: Storage) => {
+        const pipelineList = Object.values(data.pipelines);
+
+        const currentPipelineIds: string[] = [];
+        await promises.each(pipelineList, async (pipeline) => {
+            await upsertPipeline(pipeline);
+            currentPipelineIds.push(pipeline.id!);
+        });
+
+        /** Remove others */
+        await db.pipeline.deleteMany({
+            where: {
+                uuid: {
+                    notIn: currentPipelineIds,
+                },
+            },
+        });
+    });
 };
