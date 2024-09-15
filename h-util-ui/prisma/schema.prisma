@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./hUtil.db"
+}
+
+model Pipeline {
+  id               Int              @id @default(autoincrement())
+  uuid             String
+  name             String
+  created          DateTime         @default(now())
+  modified         DateTime         @updatedAt
+  color            String?
+  manual_ranking   Int              @default(100)
+  pipeline_stats   PipelineStats[]
+  pipeline_modules PipelineModule[]
+}
+
+model PipelineModule {
+  id          Int @id @default(autoincrement())
+  pipeline_id Int
+  module_id   Int
+
+  pipeline Pipeline @relation(fields: [pipeline_id], references: [id], onDelete: Cascade)
+  module   Module   @relation(fields: [module_id], references: [id], onDelete: Restrict)
+}
+
+model Module {
+  id   Int    @id
+  uuid String
+
+  pipeline_modules PipelineModule[]
+}
+
+model Stats {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Int
+}
+
+model PipelineStats {
+  id           Int      @id @default(autoincrement())
+  pipeline     Pipeline @relation(fields: [pipeline_id], references: [id], onDelete: Cascade)
+  pipeline_id  Int
+  times_ran    Int      @default(0)
+  time_taken   Int      @default(0)
+  times_edited Int      @default(0)
+}
