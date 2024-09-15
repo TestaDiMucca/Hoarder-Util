@@ -30,10 +30,13 @@
     "sqlite-rebuild": "cd node_modules/better-sqlite3 && npm run build-release",
     "postinstall": "electron-builder install-app-deps",
     "up:win": "up_using_window.cmd",
+    "migrate": "npx prisma migrate dev --name",
+    "migrate:deploy": "npx prisma migrate deploy",
+    "prisma:studio": "npx prisma studio",
+    "prisma:generate": "npx prisma generate",
     "packages:sync": "cd .. && cp ./packages/common/src/* ./h-util-ui/Electron/packages/common/ && cp ./packages/fileops/src/* ./h-util-ui/Electron/packages/fileops/"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.11",
     "@types/jest": "^29.5.12",
     "@types/module-alias": "^2.0.4",
     "concurrently": "^7.6.0",

@@ -15,6 +15,7 @@ import AppUpdater from './AutoUpdate';
 import output from './util/output';
 import { handleErrorMessage, registerMainWindow } from './util/ipc';
 import { addListenersToIpc } from './ipcListeners';
+import { disconnectPrisma } from './data/database';
 
 async function createWindow() {
     addListenersToIpc(ipcMain);
@@ -110,3 +111,10 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
     handleErrorMessage(String(reason));
 });
+
+['SIGTERM', 'SIGINT', 'exit'].forEach((signal) =>
+    process.on(signal, async () => {
+        await disconnectPrisma();
+        process.exit();
+    }),
+);
