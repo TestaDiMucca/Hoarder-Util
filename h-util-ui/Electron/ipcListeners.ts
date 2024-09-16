@@ -5,23 +5,17 @@ import { IpcMessageType } from '@shared/common.constants';
 import { Pipeline, ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
 import { getMainWindow, handleErrorMessage } from '@util/ipc';
 import output from '@util/output';
+import { promises } from '@common/common';
 import pipelineCache from '@util/cache';
 
-import { loadJsonStore } from './ElectronStore/jsonStore';
 import { filterTest } from './operations/filterTest';
 import { renameTest } from './operations/renameTest';
 import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
-import { promises } from '@common/common';
 import { getStats } from './data/stats.db';
 import { db } from './data/database';
 
-const DATA_FILE = 'data.json';
-
 export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
-    /** Create handlers before window is ready */
-    const dataFilePath = path.join(app.getPath('userData'), DATA_FILE);
-
     ipcMain.handle(IpcMessageType.loadData, async (): Promise<Storage> => {
         const pipelineList = await getAllPipelines(true);
         const pipelines = pipelineList.reduce<Record<string, Pipeline>>((a, v) => {
@@ -35,9 +29,7 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         };
     });
 
-    ipcMain.handle(IpcMessageType.getStats, async () => {
-        return getStats();
-    });
+    ipcMain.handle(IpcMessageType.getStats, getStats);
 
     ipcMain.handle(IpcMessageType.selectDirectory, async () => {
         const mainWindow = getMainWindow();
@@ -46,11 +38,8 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
             properties: ['openDirectory'],
         });
-        if (canceled) {
-            return;
-        } else {
-            return filePaths[0];
-        }
+
+        return canceled ? null : filePaths[0];
     });
 
     ipcMain.handle('versions', () => {
