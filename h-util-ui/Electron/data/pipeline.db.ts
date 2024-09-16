@@ -19,7 +19,7 @@ export const upsertPipeline = async (pipeline: Pipeline) => {
             uuid: pipeline.id ?? uuidv4(),
             name: pipeline.name,
             color: pipeline.color,
-            manual_ranking: pipeline.manualRanking,
+            manual_ranking: Number(pipeline.manualRanking),
         },
     });
 

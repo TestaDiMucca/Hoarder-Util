@@ -20,9 +20,6 @@ const filterHandler: ModuleHandler = {
             addEventLogForReport(opts, fileName, 'filtered');
         }
     },
-    onDone: async (_opts, _store, fileOptions) => {
-        fileOptions.filesWithMeta = fileOptions.filesWithMeta.filter((f) => !f.remove);
-    },
 };
 
 export default filterHandler;

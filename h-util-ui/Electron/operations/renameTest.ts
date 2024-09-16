@@ -10,6 +10,7 @@ export const renameTest = async (renameTestRequest: RenameTestRequest) => {
 
     const fileOptions = fileListToFileOptions(filePaths);
 
+    // todo: fix
     await withFileListHandling({
         fileOptions,
         clientOptions: { value: templateString },

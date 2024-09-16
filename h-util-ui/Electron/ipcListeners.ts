@@ -14,6 +14,7 @@ import { handleClientMessage, handleRunPipeline } from './operations/handler';
 import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
 import { db } from './data/database';
+import { runPipelineForFiles } from './operations/filePipelineRunner';
 
 export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     ipcMain.handle(IpcMessageType.loadData, async (): Promise<Storage> => {
@@ -104,9 +105,10 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
             return;
         }
 
-        const pipeline = JSON.parse(d[0]) as ProcessingRequest;
-        handleRunPipeline(pipeline);
-        output.log(`Run pipeline ${pipeline.pipeline.name} w/ ${pipeline.filePaths.length} files`);
+        const request = JSON.parse(d[0]) as ProcessingRequest;
+        // handleRunPipeline(pipeline);
+        runPipelineForFiles(request);
+        output.log(`Run pipeline ${request.pipeline.name} w/ ${request.filePaths.length} files`);
     });
 
     ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));

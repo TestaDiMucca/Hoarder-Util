@@ -16,6 +16,7 @@ export type ModuleOptions<T extends object> = {
     clientOptions?: ActionModule['options'];
 };
 
+/** Object wrapper for file list to allow us to modify the reference */
 export type FileOptions = {
     filesWithMeta: FileWithMeta[];
 };
@@ -29,14 +30,16 @@ export type ModuleHandler<T extends object = {}, S = Record<string, any>> = {
     onDone?: (
         opts: Partial<ModuleOptions<T>>,
         dataStore: S,
-        fileOptions: { filesWithMeta: FileWithMeta[] },
+        fileOptions?: { filesWithMeta: FileWithMeta[] },
     ) => Promise<void>;
 };
 
 export type FileWithMeta = {
     filePath: string;
+    /** We usually apply this, but for test mode, we append this */
     newFilePath?: string;
+    /** @deprecated we can just drop the file processing now */
     previouslySkipped?: boolean;
-    /** Flag for removal at end of handler */
+    /** Flag telling the pipeline to stop processing this */
     remove?: boolean;
 };

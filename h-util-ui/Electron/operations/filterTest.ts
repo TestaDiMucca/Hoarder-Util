@@ -13,6 +13,7 @@ export const filterTest = async (filterTestRequest: FilterTestRequest) => {
     const fileOptions = fileListToFileOptions(filePaths);
     const usesRules = type === ProcessingModuleType.ruleFilter;
 
+    // todo: fix - "remove" should be tacked on fileWithMeta
     await withFileListHandling({
         fileOptions,
         clientOptions: usesRules

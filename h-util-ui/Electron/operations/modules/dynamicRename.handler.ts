@@ -12,6 +12,7 @@ type RequiredDataContext = {
     requiredData?: Set<DataNeeded>;
     /** Tags used */
     tags?: string[];
+    /** Don't apply changes, just modify fileWithMeta */
     testMode?: boolean;
 };
 
