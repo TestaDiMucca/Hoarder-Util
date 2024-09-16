@@ -1,24 +1,27 @@
-import { RenameTestRequest } from '@shared/common.types';
-import { fileListToFileOptions, withFileListHandling } from './handler.helpers';
+import { ProcessingModule, ProcessingModuleType, RenameTestRequest } from '@shared/common.types';
+import { fileListToFileOptions } from './handler.helpers';
 import { splitFileNameFromPath } from '@common/fileops';
-import dynamicRenameHandler from './modules/dynamicRename.handler';
+import { promises } from '@common/common';
+import { runModuleForFile } from './handler';
 
 export const renameTest = async (renameTestRequest: RenameTestRequest) => {
     const { filePaths, templateString } = renameTestRequest;
 
-    const moduleHandler = dynamicRenameHandler;
-
     const fileOptions = fileListToFileOptions(filePaths);
 
-    // todo: fix
-    await withFileListHandling({
-        fileOptions,
-        clientOptions: { value: templateString },
-        moduleHandler,
-        context: {
-            testMode: true,
-        },
-    });
+    const mockModule: ProcessingModule = {
+        id: '0',
+        type: ProcessingModuleType.dynamicRename,
+        options: { value: templateString },
+    };
+
+    await promises.each(fileOptions.filesWithMeta, async (fileWithMeta) =>
+        runModuleForFile({
+            processingModule: mockModule,
+            fileWithMeta,
+            commonContext: {},
+        }),
+    );
 
     return fileOptions.filesWithMeta.map((fileWithMeta) => {
         const { fileName: ogName } = splitFileNameFromPath(fileWithMeta.filePath);

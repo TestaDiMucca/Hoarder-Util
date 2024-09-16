@@ -1,28 +1,40 @@
-import { FilterTestRequest, ProcessingModuleType } from '@shared/common.types';
-import { fileListToFileOptions, withFileListHandling } from './handler.helpers';
+import { FilterTestRequest, ProcessingModule, ProcessingModuleType } from '@shared/common.types';
+import { fileListToFileOptions } from './handler.helpers';
 import { splitFileNameFromPath } from '@common/fileops';
-import { MODULE_MAP } from './modules/moduleMap';
+import { promises } from '@common/common';
+import { runModuleForFile } from './handler';
 
 export const filterTest = async (filterTestRequest: FilterTestRequest) => {
     const { filePaths, invert, type } = filterTestRequest;
 
-    const moduleHandler = MODULE_MAP[type!];
-
-    if (!moduleHandler) throw new Error(`No handler found for ${type}`);
-
     const fileOptions = fileListToFileOptions(filePaths);
     const usesRules = type === ProcessingModuleType.ruleFilter;
 
-    // todo: fix - "remove" should be tacked on fileWithMeta
-    await withFileListHandling({
-        fileOptions,
-        clientOptions: usesRules
-            ? { inverse: invert, rules: filterTestRequest.rules, value: '' }
-            : { value: filterTestRequest.filter, inverse: invert },
-        moduleHandler,
-    });
+    const mockModule: ProcessingModule = {
+        id: '0',
+        type,
+        options: {
+            inverse: invert,
+            ...(usesRules ? { rules: filterTestRequest.rules, value: '' } : { value: filterTestRequest.filter }),
+        },
+    };
 
-    const remainingFiles = new Set(...[fileOptions.filesWithMeta.map((f) => f.filePath)]);
+    await promises.each(fileOptions.filesWithMeta, async (fileWithMeta) =>
+        runModuleForFile({
+            processingModule: mockModule,
+            commonContext: {},
+            fileWithMeta,
+        }),
+    );
+
+    const remainingFiles = new Set(
+        ...[
+            fileOptions.filesWithMeta.reduce<string[]>((a, f) => {
+                if (!f.remove) a.push(f.filePath);
+                return a;
+            }, []),
+        ],
+    );
 
     return filePaths.reduce<string[]>((a, p) => {
         if (!remainingFiles.has(p)) {

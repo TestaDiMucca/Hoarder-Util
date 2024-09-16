@@ -10,11 +10,10 @@ import pipelineCache from '@util/cache';
 
 import { filterTest } from './operations/filterTest';
 import { renameTest } from './operations/renameTest';
-import { handleClientMessage, handleRunPipeline } from './operations/handler';
+import { handleClientMessage, runPipelineForFiles } from './operations/handler';
 import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
 import { db } from './data/database';
-import { runPipelineForFiles } from './operations/filePipelineRunner';
 
 export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     ipcMain.handle(IpcMessageType.loadData, async (): Promise<Storage> => {
@@ -106,7 +105,6 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         }
 
         const request = JSON.parse(d[0]) as ProcessingRequest;
-        // handleRunPipeline(pipeline);
         runPipelineForFiles(request);
         output.log(`Run pipeline ${request.pipeline.name} w/ ${request.filePaths.length} files`);
     });
