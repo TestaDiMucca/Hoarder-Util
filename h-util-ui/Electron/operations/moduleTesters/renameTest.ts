@@ -1,8 +1,8 @@
 import { ProcessingModule, ProcessingModuleType, RenameTestRequest } from '@shared/common.types';
-import { fileListToFileOptions } from './handler.helpers';
+import { fileListToFileOptions } from '../handler.helpers';
 import { splitFileNameFromPath } from '@common/fileops';
 import { promises } from '@common/common';
-import { runModuleForFile } from './handler';
+import { runModuleForFile } from '../handler';
 
 export const renameTest = async (renameTestRequest: RenameTestRequest) => {
     const { filePaths, templateString } = renameTestRequest;
@@ -19,7 +19,9 @@ export const renameTest = async (renameTestRequest: RenameTestRequest) => {
         runModuleForFile({
             processingModule: mockModule,
             fileWithMeta,
-            commonContext: {},
+            commonContext: {
+                testMode: true,
+            },
         }),
     );
 

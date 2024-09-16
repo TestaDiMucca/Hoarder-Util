@@ -135,7 +135,7 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
     });
 };
 
-export const runModuleForFile = async ({
+export const runModuleForFile = async <T extends object = {}>({
     processingModule,
     fileWithMeta,
     commonContext,
@@ -144,7 +144,7 @@ export const runModuleForFile = async ({
 }: {
     processingModule: ProcessingModule;
     fileWithMeta: FileWithMeta;
-    commonContext: CommonContext;
+    commonContext: CommonContext & T;
     moduleDataStores?: ModuleDataStore;
     onDoneMap?: OnDoneMap;
 }) => {

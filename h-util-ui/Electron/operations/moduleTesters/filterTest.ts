@@ -1,8 +1,8 @@
 import { FilterTestRequest, ProcessingModule, ProcessingModuleType } from '@shared/common.types';
-import { fileListToFileOptions } from './handler.helpers';
+import { fileListToFileOptions } from '../handler.helpers';
 import { splitFileNameFromPath } from '@common/fileops';
 import { promises } from '@common/common';
-import { runModuleForFile } from './handler';
+import { runModuleForFile } from '../handler';
 
 export const filterTest = async (filterTestRequest: FilterTestRequest) => {
     const { filePaths, invert, type } = filterTestRequest;
