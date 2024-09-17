@@ -5,7 +5,7 @@ import store from '@utils/store';
 
 const props = defineProps<PipelineOptionsProps>();
 
-const pipelineOptions = computed(() => Object.values(store.state.pipelines).map(pipeline => ({
+const pipelineOptions = computed(() => Object.values(store.state.pipelines).filter(p => p.id !== store.state.selectedPipeline?.id).map(pipeline => ({
   label: pipeline.name,
   value: pipeline.id ?? '-'
 })))

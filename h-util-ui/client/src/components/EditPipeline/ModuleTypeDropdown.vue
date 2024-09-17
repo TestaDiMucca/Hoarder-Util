@@ -21,34 +21,26 @@ const menuItems: MenuItem[] = [
   },
   {
     type: 'item',
-    label: 'Metadata tag',
-    onClick: handleModuleTypeSelect(ProcessingModuleType.metadata)
-  },
-  {
-    type: 'item',
-    label: 'Date prefix',
-    onClick: handleModuleTypeSelect(ProcessingModuleType.datePrefix)
-  },
-  {
-    type: 'item',
     label: 'Dynamic renaming',
     onClick: handleModuleTypeSelect(ProcessingModuleType.dynamicRename)
   },
   { type: 'separator' },
   {
     type: 'item',
-    label: 'Iterate',
-    onClick: handleModuleTypeSelect(ProcessingModuleType.iterate)
-  },
-  {
-    type: 'item',
     label: 'Log results',
     onClick: handleModuleTypeSelect(ProcessingModuleType.report)
   },
+
   {
-    type: 'item',
-    label: 'Direct to pipeline',
-    onClick: handleModuleTypeSelect(ProcessingModuleType.runPipeline)
+    type: 'group',
+    label: 'Flow control',
+    items: [
+      {
+        type: 'item',
+        label: 'Direct to pipeline',
+        onClick: handleModuleTypeSelect(ProcessingModuleType.runPipeline)
+      },
+    ]
   },
   {
     type: 'group',
@@ -64,6 +56,11 @@ const menuItems: MenuItem[] = [
         label: 'Compress video',
         onClick: handleModuleTypeSelect(ProcessingModuleType.compressVideo)
       },
+      {
+        type: 'item',
+        label: 'Metadata tag',
+        onClick: handleModuleTypeSelect(ProcessingModuleType.metadata)
+      },
     ]
   },
   {
@@ -77,13 +74,29 @@ const menuItems: MenuItem[] = [
       },
       {
         type: 'item',
-        label: 'Filter file',
+        label: 'Search image for text',
+        onClick: handleModuleTypeSelect(ProcessingModuleType.ocr)
+      },
+    ]
+  },
+  {
+    type: 'group',
+    label: 'Legacy',
+    items: [
+      {
+        type: 'item',
+        label: 'Filter file by name',
         onClick: handleModuleTypeSelect(ProcessingModuleType.filter)
       },
       {
         type: 'item',
-        label: 'Search image for text',
-        onClick: handleModuleTypeSelect(ProcessingModuleType.ocr)
+        label: 'Date prefix',
+        onClick: handleModuleTypeSelect(ProcessingModuleType.datePrefix)
+      },
+      {
+        type: 'item',
+        label: 'Iterate',
+        onClick: handleModuleTypeSelect(ProcessingModuleType.iterate)
       },
     ]
   }

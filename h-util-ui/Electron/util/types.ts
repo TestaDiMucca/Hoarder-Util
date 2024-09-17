@@ -1,6 +1,7 @@
 import { ActionModule } from '@shared/common.types';
 
 export type CommonContext = {
+    /** Providing this enables the event recorder */
     eventLog?: string[];
     pipelineName?: string;
     pipelineId?: string;
