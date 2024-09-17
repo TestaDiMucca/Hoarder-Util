@@ -5,7 +5,7 @@ import { app } from 'electron';
 const options = {
     file: {
         level: 'info',
-        filename: path.join(app.getPath('userData'), 'logs/h-util-out.log'),
+        filename: path.join(app?.getPath('userData') ?? '.', 'logs/h-util-out.log'),
         handleExceptions: true,
         format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
         maxsize: 5242880, // 5MB

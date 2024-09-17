@@ -5,16 +5,19 @@ import { formatDateString, getFileSize, splitFileNameFromPath } from '@common/fi
 import { ModuleHandler } from '@util/types';
 import { sleep } from '@common/common';
 import { addEventLogForReport } from '../handler.helpers';
+import { ProcessingError } from '@util/errors';
 
 type FilesScanned = {
     scanned?: string[];
+    rootPath?: string;
 };
 
 const iterateHandler: ModuleHandler<{}, FilesScanned> = {
     handler: async ({ filePath }, _, dataStore) => {
-        const { fileName } = splitFileNameFromPath(filePath);
+        const { fileName, rootPath } = splitFileNameFromPath(filePath);
 
         if (!dataStore.scanned) dataStore.scanned = [];
+        if (!dataStore.rootPath) dataStore.rootPath = rootPath;
 
         if (!fileName) return;
 
@@ -24,17 +27,18 @@ const iterateHandler: ModuleHandler<{}, FilesScanned> = {
         await sleep(500);
     },
     filter: () => true,
-    onDone: async (opts, dataStore, fileOpts) => {
-        const firstFile = fileOpts.filesWithMeta[0];
+    onDone: async (opts, dataStore) => {
+        const rootPath = dataStore.rootPath;
 
-        if (!firstFile) return;
+        if (!rootPath) return;
 
-        const { rootPath } = splitFileNameFromPath(firstFile.filePath);
-
-        const outputName = String(opts.clientOptions?.value ?? 'ScannedOutput_%date%').replace(
+        const outputName = String(opts.clientOptions?.value || 'ScannedOutput_%date%').replace(
             '%date%',
             formatDateString(new Date()) ?? String(Date.now()),
         );
+
+        if (!outputName) throw new ProcessingError('No output name provided');
+
         const filePath = path.join(rootPath, outputName);
 
         if (!dataStore.scanned || dataStore.scanned.length === 0) return;

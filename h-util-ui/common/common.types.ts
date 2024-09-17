@@ -18,8 +18,11 @@ export enum ProcessingModuleType {
 
 /** Options that work by switching on/off only */
 export type ProcessingModuleBooleanOptions = {
+    /** Ignores a module erroring and continues to process file */
     ignoreErrors?: boolean;
+    /** Stops pipeline for file if it ever gets skipped */
     skipPreviouslyFailed?: boolean;
+    /** Inverts any boolean logic */
     inverse?: boolean;
 };
 

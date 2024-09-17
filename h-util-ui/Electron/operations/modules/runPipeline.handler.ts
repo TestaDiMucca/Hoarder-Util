@@ -1,9 +1,8 @@
-import { promises } from '@common/common';
 import { ModuleHandler } from '@util/types';
-import { runProcessingModule } from '../handler.helpers';
 import { Storage } from '@shared/common.types';
 import { ProcessingError } from '@util/errors';
 import pipelineCache from '@util/cache';
+import { runPipelineForFiles } from '../handler';
 
 type StoredPipelines = {
     pipelines?: Storage['pipelines'];
@@ -25,15 +24,10 @@ const runPipelineHandler: ModuleHandler<{}, StoredPipelines> = {
 
         if (!targetPipeline) throw new ProcessingError('Target pipeline not found');
 
-        await promises.each(targetPipeline.processingModules, async (processingModule) =>
-            runProcessingModule(
-                processingModule,
-                { filesWithMeta: [fileWithMeta] },
-                {
-                    commonContext: opts.context,
-                },
-            ),
-        );
+        await runPipelineForFiles({
+            pipeline: targetPipeline,
+            filePaths: [fileWithMeta.filePath],
+        });
     },
 };
 
