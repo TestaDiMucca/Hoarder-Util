@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onBeforeMount, watch } from 'vue';
+import { computed, ref, onBeforeMount, watch, provide } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import Palette from 'vue-material-design-icons/Palette.vue'
 import cloneDeep from 'lodash/cloneDeep';
@@ -22,6 +22,7 @@ const pipelineModules = ref<ProcessingModule[]>([
 const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
 const pipelineColor = ref<string>();
 const pipelineRanking = ref(DEFAULT_RANKING);
+const pipelineId = ref<string>();
 
 onBeforeMount(() => {
   const selected = store.state.selectedPipeline;
@@ -31,7 +32,10 @@ onBeforeMount(() => {
   pipelineName.value = selected.name;
   pipelineColor.value = selected.color;
   pipelineRanking.value = selected.manualRanking ?? DEFAULT_RANKING;
+  pipelineId.value = selected.id;
 })
+
+provide('pipelineModules', pipelineModules);
 
 const handleModuleUpdated = (newData: ProcessingModule | null, index: number) => {
   const targetedModule = pipelineModules.value[index];

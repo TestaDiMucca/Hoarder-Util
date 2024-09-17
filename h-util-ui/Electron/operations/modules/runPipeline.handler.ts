@@ -3,6 +3,8 @@ import { Storage } from '@shared/common.types';
 import { ProcessingError } from '@util/errors';
 import pipelineCache from '@util/cache';
 import { runPipelineForFiles } from '../handler';
+import { addEventLogForReport } from '../handler.helpers';
+import { splitFileNameFromPath } from '@common/fileops';
 
 type StoredPipelines = {
     pipelines?: Storage['pipelines'];
@@ -23,6 +25,10 @@ const runPipelineHandler: ModuleHandler<{}, StoredPipelines> = {
         const targetPipeline = dataStore.pipelines[opts.clientOptions.value];
 
         if (!targetPipeline) throw new ProcessingError('Target pipeline not found');
+
+        const { fileName } = splitFileNameFromPath(fileWithMeta.filePath);
+
+        addEventLogForReport(opts, fileName, 'pipeline', targetPipeline.name);
 
         await runPipelineForFiles({
             pipeline: targetPipeline,
