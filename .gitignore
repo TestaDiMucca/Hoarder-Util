@@ -19,3 +19,4 @@ dist_electron/
 tsconfig.tsbuildinfo
 h-util-ui/Electron/packages
 eng.traineddata
+*.log
