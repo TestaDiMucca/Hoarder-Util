@@ -60,6 +60,8 @@ const removeRule = (index: number) => {
   if (currentRule.value.rules.length === 0) {
     /** Revert to basic */
     currentRule.value = getDefaultRule();
+  } else if (currentRule.value.rules.length === 1) {
+    currentRule.value = currentRule.value.rules[0];
   }
 };
 

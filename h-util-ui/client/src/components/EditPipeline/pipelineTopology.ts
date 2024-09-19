@@ -67,11 +67,18 @@ export const buildPipelineTopology = (pipelineModules: ProcessingModule[]) => {
                     return;
                 }
 
+                // todo: common with below
                 links.push({
                     id: `link-${pipelineModule.id}-${branch.targetModule}`,
                     source: pipelineModule.id,
                     label: branch.label,
+                    animated: true,
+                    type: 'smoothstep',
                     target: branch.targetModule,
+                    markerEnd: MarkerType.ArrowClosed,
+                    style: {
+                        strokeWidth: '2px',
+                    },
                 });
             });
         } else if (pipelineModule.nextModule && validNodeIds.has(pipelineModule.nextModule)) {

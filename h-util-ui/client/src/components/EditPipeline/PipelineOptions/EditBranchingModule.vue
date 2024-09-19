@@ -41,7 +41,7 @@ const editBranch = (branchData: ProcessingBranch | null, index: number) => {
 <template>
   <section class="branching-options">
     <div v-for="(branch, i) of processingModule.branches" class="branch-options">
-      <OptionsBranch :branch="branch" :index="i" :handle-branch-change="editBranch" />
+      <OptionsBranch :module-id="processingModule.id" :branch="branch" :index="i" :handle-branch-change="editBranch" />
     </div>
     <button @click="addBranch">Add branch</button>
   </section>

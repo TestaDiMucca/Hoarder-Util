@@ -20,6 +20,7 @@ import OptionsFilter from 'src/components/EditPipeline/PipelineOptions/OptionsFi
 import OptionsDynamicRename from 'src/components/EditPipeline/PipelineOptions/OptionsDynamicRename.vue';
 import OptionsRuleFilter from 'src/components/EditPipeline/PipelineOptions/OptionsRuleFilter.vue';
 import OptionsPipelineSelect from 'src/components/EditPipeline/PipelineOptions/OptionsPipelineSelect.vue';
+import { getDefaultRule } from '@shared/rules.utils';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -108,7 +109,11 @@ export const getDefaultModule = (id: string, branching = false): ProcessingModul
         ? {
               id,
               type: ProcessingModuleType.branch,
-              branches: [],
+              branches: [
+                  {
+                      rules: getDefaultRule(),
+                  },
+              ],
           }
         : {
               id,
