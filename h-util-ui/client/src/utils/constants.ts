@@ -103,16 +103,23 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
 };
 
 /** Get a default starter module */
-export const getDefaultModule = (id: string): ActionModule => ({
-    id,
-    type: ProcessingModuleType.datePrefix,
-    options: {
-        value: '',
-        inverse: false,
-        ignoreErrors: true,
-        skipPreviouslyFailed: false,
-    },
-});
+export const getDefaultModule = (id: string, branching = false): ProcessingModule =>
+    branching
+        ? {
+              id,
+              type: ProcessingModuleType.branch,
+              branches: [],
+          }
+        : {
+              id,
+              type: ProcessingModuleType.datePrefix,
+              options: {
+                  value: '',
+                  inverse: false,
+                  ignoreErrors: true,
+                  skipPreviouslyFailed: false,
+              },
+          };
 
 export const MAX_TASKS = 5;
 

@@ -7,6 +7,7 @@ export type ChartNodeData = {
     label: string;
     pipelineModule?: ProcessingModule;
     fromModuleId?: string;
+    branchIndex?: number;
 };
 
 type ChartNode = Node & {
@@ -26,13 +27,14 @@ export const buildPipelineTopology = (pipelineModules: ProcessingModule[]) => {
     const links: ChartLink[] = [];
     const validNodeIds = new Set<string>(pipelineModules.map((m) => m.id));
 
-    const addNewButtonNode = (fromModuleId: string) => {
+    const addNewButtonNode = (fromModuleId: string, linkLabel?: string, branchIndex?: number) => {
         const id = uuidv4();
         nodes.push({
             id,
             data: {
                 label: 'Add new',
                 fromModuleId,
+                branchIndex,
             },
             type: 'new',
             targetPosition: Position.Top,
@@ -41,6 +43,7 @@ export const buildPipelineTopology = (pipelineModules: ProcessingModule[]) => {
         links.push({
             id: `link-${fromModuleId}-${id}`,
             source: fromModuleId,
+            label: linkLabel,
             target: id,
             style: { strokeDasharray: 1 },
             markerEnd: MarkerType.ArrowClosed,
@@ -54,19 +57,20 @@ export const buildPipelineTopology = (pipelineModules: ProcessingModule[]) => {
                 label: pipelineModule.type,
                 pipelineModule,
             },
-            type: pipelineModule.type === ProcessingModuleType.branch ? 'branch' : 'default',
+            type: 'default',
         });
 
         if (pipelineModule.type === ProcessingModuleType.branch) {
-            pipelineModule.branches.forEach((branch) => {
+            pipelineModule.branches.forEach((branch, i) => {
                 if (!branch.targetModule || !validNodeIds.has(branch.targetModule)) {
-                    addNewButtonNode(pipelineModule.id);
+                    addNewButtonNode(pipelineModule.id, branch.label, i);
                     return;
                 }
 
                 links.push({
                     id: `link-${pipelineModule.id}-${branch.targetModule}`,
                     source: pipelineModule.id,
+                    label: branch.label,
                     target: branch.targetModule,
                 });
             });

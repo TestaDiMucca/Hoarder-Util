@@ -28,6 +28,7 @@ export type ProcessingModuleBooleanOptions = {
 
 export type ProcessingBranch = {
     rules: Rule;
+    label?: string;
     targetModule?: string;
 };
 

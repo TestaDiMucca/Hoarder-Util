@@ -40,6 +40,7 @@ const menuItems: MenuItem[] = [
         label: 'Direct to pipeline',
         onClick: handleModuleTypeSelect(ProcessingModuleType.runPipeline)
       },
+      { type: 'item', label: 'Branching', onClick: handleModuleTypeSelect(ProcessingModuleType.branch) }
     ]
   },
   {

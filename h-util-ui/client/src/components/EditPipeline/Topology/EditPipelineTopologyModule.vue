@@ -3,6 +3,7 @@ import { ProcessingModule, ProcessingModuleType } from '@shared/common.types';
 import { computed, ref } from 'vue';
 import EditPipelineModule from '../EditPipelineModule.vue';
 import { MODULE_MATERIAL_ICONS } from '@utils/constants';
+import EditBranchingModule from '../PipelineOptions/EditBranchingModule.vue';
 
 const props = defineProps<{
   processingModule: ProcessingModule;
@@ -30,8 +31,8 @@ const closeEditor = () => {
   </div>
 
   <q-dialog v-model="editor" backdrop-filter="blur(5px)">
-    <EditPipelineModule v-if="processingModule.type !== ProcessingModuleType.branch"
-      :processing-module="processingModule" :handle-module-updated="handleModuleUpdated" :onClose="closeEditor" />
+    <EditPipelineModule :processing-module="processingModule" :handle-module-updated="handleModuleUpdated"
+      :onClose="closeEditor" />
   </q-dialog>
 </template>
 
