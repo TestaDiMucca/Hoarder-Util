@@ -35,7 +35,6 @@ const editBranch = (branchData: ProcessingBranch | null, index: number) => {
     branches: newBranches
   }, props.processingModule.id);
 }
-
 </script>
 
 <template>
@@ -46,3 +45,13 @@ const editBranch = (branchData: ProcessingBranch | null, index: number) => {
     <button @click="addBranch">Add branch</button>
   </section>
 </template>
+
+<style scoped>
+.branching-options {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+</style>

@@ -43,21 +43,50 @@ const handleModuleUpdate = (opt) => {
 }
 
 // todo: "new module", and "none", and optimize
-const moduleOptions = (pipelineModules?.value ?? []).filter(m => m.id !== props.moduleId).map(m => ({
+const moduleOptions = computed(() => (pipelineModules?.value ?? []).filter(m => m.id !== props.moduleId).map(m => ({
   label: m.type,
   value: m.id
-}))
+})))
 
-const currentSelectedModule = computed(() => moduleOptions.find(o => o.value === props.branch.targetModule))
+const currentSelectedModule = computed(() => moduleOptions.value.find(o => o.value === props.branch.targetModule))
 
 </script>
 
 <template>
-  <q-input type="text" :model-value="branch.label" @update:modelValue="handleLabelChange" label="Branch label"
-    :placeholder="`branch ${index}`" />
-
-  <RuleEditor :rule="branch.rules" :onUpdatedRule="handleRuleUpdates" />
-
-  <q-select v-if="moduleOptions.length > 0" :model-value="currentSelectedModule" :options="moduleOptions"
-    @update:model-value="handleModuleUpdate" :hide-dropdown-icon="true" label="To existing module" />
+  <section class="branch-container">
+    <div class="main-options">
+      <q-input class="option" type="text" :model-value="branch.label" @update:modelValue="handleLabelChange"
+        label="Branch label" :placeholder="`Branch ${index}`" />
+      <q-select v-if="moduleOptions.length > 0" class="option" :model-value="currentSelectedModule"
+        :options="moduleOptions" @update:model-value="handleModuleUpdate" :hide-dropdown-icon="true"
+        label="To existing module" />
+    </div>
+    <q-expansion-item expand-separator label="Rules" :hide-expand-icon="true">
+      <template v-slot:header="{ expanded }">
+        <q-item-section>
+          {{ expanded ? 'Collapse' : 'Expand' }} rules
+        </q-item-section>
+      </template>
+      <RuleEditor :rule="branch.rules" :onUpdatedRule="handleRuleUpdates" />
+    </q-expansion-item>
+  </section>
 </template>
+
+<style scoped>
+.main-options {
+  display: flex;
+  gap: 5px;
+  min-width: 400px;
+  ;
+}
+
+.main-options .option {
+  width: 50%;
+}
+
+.branch-container {
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+</style>

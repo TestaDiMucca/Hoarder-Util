@@ -64,7 +64,7 @@ const handleNewModules = (fromModuleId?: string, branchIndex?: number) => {
     const sourceModule = getModuleIndexById(fromModuleId);
 
     if (pipelineModules.value[sourceModule]?.type !== ProcessingModuleType.branch) pipelineModules.value[sourceModule].nextModule = newModuleId
-    else if (pipelineModules.value[sourceModule]?.type === ProcessingModuleType.branch && branchIndex) {
+    else if (pipelineModules.value[sourceModule]?.type === ProcessingModuleType.branch && typeof branchIndex === 'number') {
       pipelineModules.value[sourceModule].branches[branchIndex].targetModule = newModuleId;
     }
   }
