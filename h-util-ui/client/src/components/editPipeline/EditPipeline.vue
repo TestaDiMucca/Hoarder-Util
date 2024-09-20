@@ -83,17 +83,6 @@ const handleSavePipeline = () => {
   returnHome()
 };
 
-// TEMP: Make sure links work correctly by auto connecting in sequence
-watch(pipelineModules.value, () => {
-  let nextModule: ProcessingModule;
-  for (let i = 0; i < pipelineModules.value.length; i++) {
-    nextModule = pipelineModules.value[i + 1];
-    const currentModule = pipelineModules.value[i];
-
-    if (nextModule && currentModule.type !== ProcessingModuleType.branch) currentModule.nextModule = nextModule.id;
-  }
-})
-
 const returnHome = () => {
   store.setSelectedPipeline(null);
   navigateTo(PageViews.Home);
