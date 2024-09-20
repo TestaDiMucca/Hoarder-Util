@@ -1,5 +1,6 @@
 import { Rule } from './rules.types';
 
+/** Do not modify these, they shouldn't be user facing anymore */
 export enum ProcessingModuleType {
     datePrefix = 'Date Prefix',
     metadata = 'Metadata Tagging',
