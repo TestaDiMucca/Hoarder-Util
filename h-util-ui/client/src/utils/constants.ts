@@ -12,7 +12,7 @@ import Rename from 'vue-material-design-icons/RenameBoxOutline.vue';
 import Branching from 'vue-material-design-icons/FamilyTree.vue';
 import Pipe from 'vue-material-design-icons/Pipe.vue';
 
-import { ActionModule, ProcessingModule, ProcessingModuleType } from './types';
+import { ProcessingModule, ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
 import OptionsStandard from 'src/components/EditPipeline/PipelineOptions/OptionsStandard.vue';
 import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/OptionsDirectory.vue';
@@ -20,6 +20,7 @@ import OptionsFilter from 'src/components/EditPipeline/PipelineOptions/OptionsFi
 import OptionsDynamicRename from 'src/components/EditPipeline/PipelineOptions/OptionsDynamicRename.vue';
 import OptionsRuleFilter from 'src/components/EditPipeline/PipelineOptions/OptionsRuleFilter.vue';
 import OptionsPipelineSelect from 'src/components/EditPipeline/PipelineOptions/OptionsPipelineSelect.vue';
+import { getDefaultRule } from '@shared/rules.utils';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -36,6 +37,22 @@ export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.ruleFilter]: '📏',
     [ProcessingModuleType.branch]: '🌳',
     [ProcessingModuleType.runPipeline]: '🪈',
+};
+
+export const MODULE_LABEL: Record<ProcessingModuleType, string> = {
+    [ProcessingModuleType.subfolder]: 'Place in directory',
+    [ProcessingModuleType.compressImage]: 'Compress image',
+    [ProcessingModuleType.compressVideo]: 'Compress video',
+    [ProcessingModuleType.datePrefix]: 'Date prefix',
+    [ProcessingModuleType.metadata]: 'Metadata tagging',
+    [ProcessingModuleType.iterate]: 'Iterate (Test module)',
+    [ProcessingModuleType.filter]: 'Filter by name',
+    [ProcessingModuleType.ocr]: 'Text parsing (OCR)',
+    [ProcessingModuleType.report]: 'Output report',
+    [ProcessingModuleType.dynamicRename]: 'Dynamic rename',
+    [ProcessingModuleType.ruleFilter]: 'Filter with rules',
+    [ProcessingModuleType.branch]: 'Branching',
+    [ProcessingModuleType.runPipeline]: 'Forward to Pipeline',
 };
 
 /** Icon representation of the module operations */
@@ -103,16 +120,27 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
 };
 
 /** Get a default starter module */
-export const getDefaultModule = (id: string): ActionModule => ({
-    id,
-    type: ProcessingModuleType.datePrefix,
-    options: {
-        value: '',
-        inverse: false,
-        ignoreErrors: true,
-        skipPreviouslyFailed: false,
-    },
-});
+export const getDefaultModule = (id: string, branching = false): ProcessingModule =>
+    branching
+        ? {
+              id,
+              type: ProcessingModuleType.branch,
+              branches: [
+                  {
+                      rules: getDefaultRule(),
+                  },
+              ],
+          }
+        : {
+              id,
+              type: ProcessingModuleType.datePrefix,
+              options: {
+                  value: '',
+                  inverse: false,
+                  ignoreErrors: true,
+                  skipPreviouslyFailed: false,
+              },
+          };
 
 export const MAX_TASKS = 5;
 

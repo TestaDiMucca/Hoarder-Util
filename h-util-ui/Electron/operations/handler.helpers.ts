@@ -13,6 +13,9 @@ import { slugify } from '@shared/common.utils';
 
 import { FileOptions, FileWithMeta, ModuleOptions } from '@util/types';
 import { ExtraData, RenameTemplates } from '@shared/common.constants';
+import { Rule } from '@shared/rules.types';
+import { promises } from '@common/common';
+import { crawlRules, evaluateRule } from '@shared/rules.utils';
 
 export const addEventLogForReport = (
     opts: Partial<ModuleOptions<{}>>,
@@ -119,4 +122,52 @@ export const populateDataDict = async ({
         default:
             return;
     }
+};
+
+type EvaluateRulesOpts = {
+    onDataDict?: (dataDict: DataDict, ocrOptions: string[]) => void;
+    /** If operation multiple evaluations on one file, this prevents pulling data again */
+    dataDict?: DataDict;
+};
+
+export const evaluateRulesForFile = async (filePath: string, rules: Rule, opts: EvaluateRulesOpts = {}) => {
+    const dataDict: DataDict = {};
+    const ocrOptions: string[] = [];
+
+    if (!opts.dataDict) {
+        await promises.each(
+            getRuleAttrsUsed(rules, (rule) => {
+                if (rule.type === 'basic' && rule.attribute === ExtraData.ocr) {
+                    ocrOptions.push(rule.value);
+                }
+            }),
+            async (tag) => {
+                await populateDataDict({
+                    dataDict,
+                    tag,
+                    filePath: filePath,
+                    raw: true,
+                    option: ocrOptions,
+                });
+            },
+        );
+
+        opts.onDataDict?.(dataDict, ocrOptions);
+    }
+
+    return evaluateRule(rules, opts.dataDict ?? dataDict);
+};
+
+const getRuleAttrsUsed = (
+    rules: Rule,
+    onRuleEvaluated?: (rule: Rule) => void,
+): Array<RenameTemplates | ExtraData | string> => {
+    const attrsUsed = new Set<string>();
+
+    crawlRules(rules, (rule) => {
+        onRuleEvaluated?.(rule);
+        attrsUsed.add(rule.attribute);
+    });
+
+    return [...attrsUsed];
 };

@@ -57,12 +57,16 @@ const handleModuleUpdatedById = (newData: ProcessingModule | null, id: string) =
 
 const getModuleIndexById = (id: string) => pipelineModules.value.findIndex(m => m.id === id);
 
-const handleNewModules = (fromModuleId?: string) => {
+const handleNewModules = (fromModuleId?: string, branchIndex?: number) => {
   const newModuleId = uuidv4();
+
   if (fromModuleId) {
     const sourceModule = getModuleIndexById(fromModuleId);
 
     if (pipelineModules.value[sourceModule]?.type !== ProcessingModuleType.branch) pipelineModules.value[sourceModule].nextModule = newModuleId
+    else if (pipelineModules.value[sourceModule]?.type === ProcessingModuleType.branch && typeof branchIndex === 'number') {
+      pipelineModules.value[sourceModule].branches[branchIndex].targetModule = newModuleId;
+    }
   }
   pipelineModules.value.push(getDefaultModule(newModuleId))
 }
@@ -78,17 +82,6 @@ const handleSavePipeline = () => {
 
   returnHome()
 };
-
-// TEMP: Make sure links work correctly by auto connecting in sequence
-watch(pipelineModules.value, () => {
-  let nextModule: ProcessingModule;
-  for (let i = 0; i < pipelineModules.value.length; i++) {
-    nextModule = pipelineModules.value[i + 1];
-    const currentModule = pipelineModules.value[i];
-
-    if (nextModule && currentModule.type !== ProcessingModuleType.branch) currentModule.nextModule = nextModule.id;
-  }
-})
 
 const returnHome = () => {
   store.setSelectedPipeline(null);
@@ -150,8 +143,14 @@ const vueFlowTopology = computed(() => buildPipelineTopology(pipelineModules.val
               :handle-module-updated="handleModuleUpdatedById" />
           </template>
 
+          <template #node-branch="props: NodeProps<ChartNodeData>">
+            <EditPipelineTopologyModule v-if="props.data.pipelineModule" :processing-module="props.data.pipelineModule"
+              :handle-module-updated="handleModuleUpdatedById" />
+          </template>
+
           <template #node-new="props: NodeProps<ChartNodeData>">
-            <EditPipelineNewModule :handle-new-modules="() => handleNewModules(props.data.fromModuleId)"
+            <EditPipelineNewModule
+              :handle-new-modules="() => handleNewModules(props.data.fromModuleId, props.data.branchIndex)"
               :from-id="props.data.fromModuleId" />
           </template>
         </VueFlow>

@@ -7,6 +7,7 @@ import { CommonContext, FileOptions, FileWithMeta, ModuleHandler } from '@util/t
 import { addEventLogForReport, fileListToFileOptions } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
 import { addPipelineRunStat } from '../data/stats.db';
+import branchingHandler from './modules/branching.handler';
 
 let taskId = 0;
 const MAX_MODULE_LENGTH = 100;
@@ -79,8 +80,19 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
                 // todo: refactor/clean
                 try {
                     while (!!nextModule && modulesIterated < MAX_MODULE_LENGTH && handling) {
-                        // TODO: support
-                        if (nextModule.type === ProcessingModuleType.branch) continue;
+                        if (nextModule.type === ProcessingModuleType.branch) {
+                            const matchingModuleId: string | null = await branchingHandler(
+                                nextModule,
+                                fileWithMeta.filePath,
+                            );
+                            console.log('matches,', matchingModuleId);
+                            modulesIterated++;
+                            const searchModule: ProcessingModule | null = matchingModuleId
+                                ? modulesById[matchingModuleId]
+                                : null;
+                            nextModule = searchModule ?? null;
+                            continue;
+                        }
 
                         await runModuleForFile({
                             processingModule: nextModule,

@@ -10,11 +10,12 @@ import { cloneObject } from '@utils/helpers';
 import { getModuleCanInvert } from '@utils/module.helpers';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
 import ModuleTypeDropdown from './ModuleTypeDropdown.vue';
-import { ProcessingModuleBooleanOptions } from '@shared/common.types';
+import { ProcessingModule, ProcessingModuleBooleanOptions } from '@shared/common.types';
+import EditBranchingModule from './PipelineOptions/EditBranchingModule.vue';
 
 interface Props {
-  processingModule: ActionModule;
-  handleModuleUpdated: (newData: ActionModule | null, id: string) => void;
+  processingModule: ProcessingModule;
+  handleModuleUpdated: (newData: ProcessingModule | null, id: string) => void;
   onClose: () => void;
 }
 
@@ -28,17 +29,27 @@ const commitModuleChanges = () => {
 }
 
 const handleModuleTypeSelect = (type: ProcessingModuleType) => {
-  if (type === ProcessingModuleType.branch) return;
+  // TODO: cleanup
+  if (type === ProcessingModuleType.branch) {
+    localModule.value = getDefaultModule(props.processingModule.id, true);
+    return;
+  }
 
   const newData: ActionModule = {
-    ...getDefaultModule(uuidv4()),
+    ...getDefaultModule(props.processingModule.id) as ActionModule,
     type
   }
 
   localModule.value = newData;
 }
 
+const handleUpdateModule = (newData: ProcessingModule, _id: string) => {
+  localModule.value = newData;
+}
+
 const updateOptionValue = <T = string>(newValue: T, flag: keyof ActionModule['options'] = 'value') => {
+  if (localModule.value.type === ProcessingModuleType.branch) return;
+
   const newData: ActionModule = {
     ...localModule.value,
     options: {
@@ -55,6 +66,8 @@ const handleModuleOptionUpdated = <T = string>(flag: keyof ActionModule['options
 }
 
 const handleToggleModuleOption = (option: keyof ProcessingModuleBooleanOptions) => {
+  if (localModule.value.type === ProcessingModuleType.branch) return;
+
   const newData: ActionModule = cloneObject(localModule.value);
 
   newData.options[option] = localModule.value.options[option] ? false : true;
@@ -88,29 +101,35 @@ const optionTooltip = computed(() => OPTION_TOOLTIP[localModule.value.type]);
         </span>
       </div>
 
-      <div v-if="!!optionsComponent"><span class="options-header">Options</span>
-        <Help v-if="!!optionTooltip" :size="12" />
-        <q-tooltip :delay="500" :offset="[0, 10]">{{ optionTooltip }}</q-tooltip>
-      </div>
+      <section v-if="localModule.type !== ProcessingModuleType.branch">
+        <div v-if="!!optionsComponent"><span class="options-header">Options</span>
+          <Help v-if="!!optionTooltip" :size="12" />
+          <q-tooltip :delay="500" :offset="[0, 10]">{{ optionTooltip }}</q-tooltip>
+        </div>
 
-      <component v-if="!!optionsComponent" :is="optionsComponent" :currentOptions="processingModule.options"
-        :moduleType="localModule.type" :handleOptionChange="handleModuleOptionUpdated" />
+        <component v-if="!!optionsComponent" :is="optionsComponent" :currentOptions="localModule.options"
+          :moduleType="localModule.type" :handleOptionChange="handleModuleOptionUpdated" />
+
+        <div>
+          <q-checkbox v-model="localModule.options.ignoreErrors" @change="handleToggleModuleOption('ignoreErrors')"
+            label="Ignore errors"><q-tooltip :delay="500" :offset="[0, 10]">Continue processing if a particular file
+              errors.</q-tooltip></q-checkbox>
+          <q-checkbox v-model="(localModule.options.skipPreviouslyFailed)"
+            @change="handleToggleModuleOption('skipPreviouslyFailed')" label="Skip previously failed"><q-tooltip
+              :delay="500" :offset="[0, 10]">Next module will ignore files that weren't processed in the
+              last.</q-tooltip></q-checkbox>
+          <q-checkbox v-if="inversionAvailable" v-model="localModule.options.inverse"
+            @change="handleToggleModuleOption('inverse')" label="Invert logic"><q-tooltip :delay="500"
+              :offset="[0, 10]">Invert any logical decisions in this module as a whole.</q-tooltip></q-checkbox>
+        </div>
+      </section>
+
+      <section v-if="localModule.type === ProcessingModuleType.branch">
+        <EditBranchingModule :processing-module="localModule" :handle-module-updated="handleUpdateModule" />
+      </section>
 
       <DeleteConfirmModal v-model="confirmDelete" :onConfirm="handleRemoveModule"
         :deleteTargetName="localModule.type" />
-
-      <div>
-        <q-checkbox v-model="localModule.options.ignoreErrors" @change="handleToggleModuleOption('ignoreErrors')"
-          label="Ignore errors"><q-tooltip :delay="500" :offset="[0, 10]">Continue processing if a particular file
-            errors.</q-tooltip></q-checkbox>
-        <q-checkbox v-model="(localModule.options.skipPreviouslyFailed)"
-          @change="handleToggleModuleOption('skipPreviouslyFailed')" label="Skip previously failed"><q-tooltip
-            :delay="500" :offset="[0, 10]">Next module will ignore files that weren't processed in the
-            last.</q-tooltip></q-checkbox>
-        <q-checkbox v-if="inversionAvailable" v-model="localModule.options.inverse"
-          @change="handleToggleModuleOption('inverse')" label="Invert logic"><q-tooltip :delay="500"
-            :offset="[0, 10]">Invert any logical decisions in this module as a whole.</q-tooltip></q-checkbox>
-      </div>
     </q-card-section>
 
     <q-card-actions class="actions-bar" align="right">
