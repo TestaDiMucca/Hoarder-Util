@@ -7,6 +7,7 @@ import { VueComponent } from './utils/util.types'
 import { addErrorListeners, getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
 import store from './utils/store'
 import { PageViews } from '@utils/types'
+import DrawerNav from './components/Nav/DrawerNav.vue'
 
 const $q = useQuasar();
 
@@ -48,15 +49,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app-container">
-    <component :is="currentView" />
-  </div>
+  <q-layout class="app-container" view="hHh Lpr lff" container>
+    <DrawerNav />
+    <q-page-container>
+      <component :is="currentView" />
+    </q-page-container>
+  </q-layout>
 </template>
 
 <style scoped>
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 90vh;
+  /* height: 90vh; */
 }
 </style>

@@ -17,7 +17,7 @@ const handleNewPipeline = () => navigateTo(PageViews.Edit);
 <template>
   <PageLayout>
     <template #top-bar>
-      <span>Visual H-Util</span>
+      <span class="select-none">Visual H-Util</span>
       <nav class="controls">
         <AboutModal :open-button="Information" />
         <PlusBox class="icon-button create-button" @click="handleNewPipeline" title="Create a new pipeline" />
