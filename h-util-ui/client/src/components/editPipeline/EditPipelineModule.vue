@@ -7,7 +7,7 @@ import Help from 'vue-material-design-icons/HelpCircle.vue'
 import { ActionModule, ProcessingModuleType } from '@utils/types';
 import { getDefaultModule, getOptionsComponent, MODULE_MATERIAL_ICONS, OPTION_TOOLTIP } from '@utils/constants';
 import { cloneObject } from '@utils/helpers';
-import { getModuleCanInvert } from '@utils/module.helpers';
+import { getModuleCanInvert } from '@utils/models.helpers';
 import DeleteConfirmModal from '../common/DeleteConfirmModal.vue';
 import ModuleTypeDropdown from './ModuleTypeDropdown.vue';
 import { ProcessingModule, ProcessingModuleBooleanOptions } from '@shared/common.types';

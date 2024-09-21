@@ -54,7 +54,8 @@ export const loadStats = async () => {
     return await ipcRenderer?.invoke<null, PipelineStatsPayload[]>(IpcMessageType.getStats);
 };
 
-const removeVueRefs = <T>(source: T): T => JSON.parse(JSON.stringify(source));
+/** Strip Vue stuff to be able to send objects */
+export const removeVueRefs = <T>(source: T): T => JSON.parse(JSON.stringify(source));
 
 export const saveUserData = (pipelines: VueStore['pipelines']) => {
     const ipcRenderer = getIpcRenderer();
@@ -62,7 +63,7 @@ export const saveUserData = (pipelines: VueStore['pipelines']) => {
     ipcRenderer?.invoke(IpcMessageType.saveData, { pipelines: removeVueRefs(pipelines) });
 };
 
-// todo: use @common
+// todo: GH Issue #69
 export const sortObjects = <T extends Record<string, any>>(list: T[], key: keyof T, ascending: boolean = true): T[] => {
     return [
         ...list.sort((a, b) => {
@@ -77,7 +78,7 @@ export const sortObjects = <T extends Record<string, any>>(list: T[], key: keyof
     ];
 };
 
-// todo: use @common
+// todo: GH Issue #69
 export const formatMilliseconds = (ms: number): string => {
     // Calculate hours, minutes, seconds, and milliseconds
     const hours = Math.floor(ms / (1000 * 60 * 60));
@@ -97,7 +98,7 @@ export const formatMilliseconds = (ms: number): string => {
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
 };
 
-// todo: use @common
+// todo: GH Issue #69
 export const formatBytes = (bytes: number): string => {
     if (bytes === 0) return '0B';
 

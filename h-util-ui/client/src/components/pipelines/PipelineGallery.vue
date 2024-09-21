@@ -38,7 +38,6 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
     <div v-for="pipeline in sortedPipelines" :key="pipeline.id!" class="gallery-item">
       <PipelineItem :pipeline-item="pipeline" :cardStyle="cardStyle" />
     </div>
-
   </div>
 </template>
 

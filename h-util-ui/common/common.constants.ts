@@ -25,6 +25,8 @@ export enum IpcMessageType {
     testRename = 'test-rename',
     /** Run a test rename, filter, or otherwise */
     runTest = 'run-test',
+    /** An "aqueduct" operation */
+    aqueducts = 'aqueducts',
 }
 
 export enum RenameTemplates {

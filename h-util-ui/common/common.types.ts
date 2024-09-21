@@ -140,3 +140,28 @@ export type RenameTestRequest = {
     templateString: string;
     filePaths: string[];
 };
+
+export type Aqueduct = {
+    id: string;
+    pipelineId: string;
+    name: string;
+    description?: string;
+    directories: string[];
+};
+
+export type AqueductMessage =
+    | {
+          type: 'load';
+      }
+    | {
+          type: 'save';
+          data: Aqueduct;
+      }
+    | {
+          type: 'run';
+          aqueductId: string;
+      };
+
+export type AqueductLoadResponse = {
+    data: Aqueduct[];
+};

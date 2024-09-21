@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "acquaeductus",
         "Allister",
         "AUTOINCREMENT",
         "Chakra",
@@ -19,6 +20,7 @@
         "Muzaque",
         "muzaques",
         "nihao",
+        "Novus",
         "PACKARINO",
         "parseable",
         "rankdir",
@@ -32,5 +34,6 @@
     "vetur.validation.template": false,
     "vetur.format.defaultFormatter.html": "none",
     // Set the default
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cSpell.language": "en,it"
 }

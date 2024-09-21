@@ -29,11 +29,4 @@ const handleNewPipeline = () => navigateTo(PageViews.Edit);
   display: flex;
   gap: 0.5em;
 }
-
-
-
-.create-button {
-  display: flex;
-  color: var(--q-lightColor);
-}
 </style>

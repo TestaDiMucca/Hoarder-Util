@@ -31,6 +31,8 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
 
     ipcMain.handle(IpcMessageType.getStats, getStats);
 
+    ipcMain.handle(IpcMessageType.aqueducts, (msg) => console.log(msg));
+
     ipcMain.handle(IpcMessageType.selectDirectory, async () => {
         const mainWindow = getMainWindow();
         if (!mainWindow) throw new Error('No main window registered');
