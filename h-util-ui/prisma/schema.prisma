@@ -20,6 +20,7 @@ model Pipeline {
   manual_ranking   Int              @default(100)
   pipeline_stats   PipelineStats[]
   pipeline_modules PipelineModule[]
+  aqueducts        Aqueduct[]
 }
 
 model PipelineModule {
@@ -64,4 +65,14 @@ model PipelineStats {
   bytes_compressed Int      @default(0)
   words_parsed     Int      @default(0)
   files_processed  Int      @default(0)
+}
+
+model Aqueduct {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique
+  pipeline    Pipeline @relation(fields: [pipeline_id], references: [id], onDelete: Cascade)
+  pipeline_id Int
+  name        String
+  description String?
+  directories String
 }

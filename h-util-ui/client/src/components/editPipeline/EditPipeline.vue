@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onBeforeMount, watch, provide } from 'vue';
+import { computed, ref, onBeforeMount, provide } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import Palette from 'vue-material-design-icons/Palette.vue'
 import cloneDeep from 'lodash/cloneDeep';
