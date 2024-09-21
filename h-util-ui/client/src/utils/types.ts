@@ -12,4 +12,6 @@ export { ProcessingModuleType } from '../../../common/common.types';
 export enum PageViews {
     Home = '/',
     Edit = '/new',
+    Directories = '/directories',
+    Internals = '/internals',
 }
