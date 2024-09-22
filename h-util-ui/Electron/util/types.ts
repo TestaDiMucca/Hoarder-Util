@@ -1,5 +1,7 @@
 import { ActionModule } from '@shared/common.types';
 
+export type OptionalKey<T extends object, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export type CommonContext = {
     /** Providing this enables the event recorder */
     eventLog?: string[];

@@ -26,6 +26,10 @@ const handleNew = () => {
   selectedAqueduct.value = getDefaultAqueduct();
 }
 
+const handleEdit = (aqueduct: Aqueduct) => {
+  selectedAqueduct.value = aqueduct;
+}
+
 const clearSelection = () => {
   selectedAqueduct.value = null;
 }
@@ -34,7 +38,7 @@ const clearSelection = () => {
 <template>
   <EditAqueduct v-if="selectedAqueduct" :aqueduct="selectedAqueduct" :return-home="clearSelection"
     :onNewAdded="fetchAqueducts" />
-  <AqueductGallery v-else :aqueducts="stateStore.aqueducts" :handle-new="handleNew" />
+  <AqueductGallery v-else :aqueducts="stateStore.aqueducts" :handle-new="handleNew" :handleEdit="handleEdit" />
 </template>
 
 <style scoped></style>

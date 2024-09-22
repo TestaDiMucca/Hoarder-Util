@@ -23,6 +23,7 @@ const pipelineOptions = computed(() => Object.values(store.state.pipelines).filt
 
 const selectedOption = computed(() => pipelineOptions.value.find(o => o.value === localAqueduct.value.pipelineId));
 
+// TODO: Common directory display/editor card component
 const handleDirPrompt = async (index: number) => {
   const folder = await getIpcRenderer()?.selectFolder();
 
