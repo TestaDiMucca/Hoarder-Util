@@ -14,6 +14,7 @@ import { handleClientMessage, runPipelineForFiles } from './operations/handler';
 import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
 import { db } from './data/database';
+import { handleAqueductMessage } from './operations/aqueduct';
 
 export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     ipcMain.handle(IpcMessageType.loadData, async (): Promise<Storage> => {
@@ -30,6 +31,8 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     });
 
     ipcMain.handle(IpcMessageType.getStats, getStats);
+
+    ipcMain.handle(IpcMessageType.aqueducts, (_e, msg) => handleAqueductMessage(msg));
 
     ipcMain.handle(IpcMessageType.selectDirectory, async () => {
         const mainWindow = getMainWindow();

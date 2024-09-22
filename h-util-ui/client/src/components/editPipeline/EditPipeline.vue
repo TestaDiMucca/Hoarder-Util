@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onBeforeMount, watch, provide } from 'vue';
+import { computed, ref, onBeforeMount, provide } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import Palette from 'vue-material-design-icons/Palette.vue'
 import cloneDeep from 'lodash/cloneDeep';
@@ -19,7 +19,7 @@ const pipelineModules = ref<ProcessingModule[]>([
   getDefaultModule(uuidv4())
 ]);
 
-const pipelineName = ref(`New pipeline ${new Date().toISOString()}`);
+const pipelineName = ref(`Nova fistula ${new Date().toISOString()}`);
 const pipelineColor = ref<string>();
 const pipelineRanking = ref(DEFAULT_RANKING);
 const pipelineId = ref<string>();

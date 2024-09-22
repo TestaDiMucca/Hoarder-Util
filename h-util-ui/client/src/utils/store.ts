@@ -3,9 +3,11 @@ import { v4 as uuidV4 } from 'uuid';
 
 import { Pipeline, TaskQueue } from './types';
 import { saveUserData } from './helpers';
+import { Aqueduct } from '@shared/common.types';
 
 export type VueStore = {
     pipelines: Record<string, Pipeline>;
+    aqueducts: Aqueduct[] | null;
     selectedPipeline: Pipeline | null;
     taskQueue: TaskQueue;
 };
@@ -13,6 +15,7 @@ export type VueStore = {
 /** See composition API for more info */
 const state = reactive<VueStore>({
     pipelines: {},
+    aqueducts: null,
     selectedPipeline: null,
     taskQueue: [],
 });
@@ -21,6 +24,7 @@ const onPipelinesUpdated = () => {
     saveUserData({ ...state.pipelines });
 };
 
+// TODO: Send to main node process instead and refetch
 const upsertPipeline = (pipeline: Pipeline) => {
     if (!pipeline.id) {
         pipeline.id = uuidV4();
@@ -50,8 +54,13 @@ const setSelectedPipeline = (pipeline: Pipeline | null) => {
     state.selectedPipeline = pipeline;
 };
 
+const setAqueducts = (aqueducts: Aqueduct[]) => {
+    state.aqueducts = aqueducts;
+};
+
 export default {
     state,
+    setAqueducts,
     upsertPipeline,
     removePipeline,
     setAllPipelines,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import HomePage from './components/HomePage.vue'
+import Pipelines from './components/Pipelines/Pipelines.vue'
 import EditPipeline from './components/EditPipeline/EditPipeline.vue'
 import { VueComponent } from './utils/util.types'
 import { addErrorListeners, getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
@@ -18,7 +18,7 @@ const $q = useQuasar();
 $q.dark.set(true);
 
 const routes: Record<PageViews, VueComponent> = {
-  [PageViews.Home]: HomePage,
+  [PageViews.Home]: Pipelines,
   [PageViews.Edit]: EditPipeline,
   [PageViews.Directories]: Directories,
   [PageViews.Internals]: Internals
@@ -32,7 +32,7 @@ window.addEventListener('hashchange', () => {
 const pathName = computed(() => currentPath.value.slice(1) || '/');
 
 const currentView = computed<VueComponent>(() => {
-  return routes[pathName.value] ?? HomePage
+  return routes[pathName.value] ?? Pipelines
 })
 
 /** App setup */

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import PipelineGallery from './Pipelines/PipelineGallery.vue';
+import PipelineGallery from './PipelineGallery.vue';
 import PlusBox from 'vue-material-design-icons/PlusBox.vue'
 import Information from 'vue-material-design-icons/Information.vue'
-import AboutModal from './About/AboutModal.vue';
+import AboutModal from '../About/AboutModal.vue';
 import { navigateTo, PageViews } from '@utils/helpers';
 import PageLayout from 'src/layout/PageLayout.vue';
 
@@ -22,20 +22,11 @@ const handleNewPipeline = () => navigateTo(PageViews.Edit);
       <PipelineGallery />
     </template>
   </PageLayout>
-
-
 </template>
 
 <style scoped>
 .controls {
   display: flex;
   gap: 0.5em;
-}
-
-
-
-.create-button {
-  display: flex;
-  color: var(--q-lightColor);
 }
 </style>

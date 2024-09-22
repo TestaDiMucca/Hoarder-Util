@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import FileCompare from 'vue-material-design-icons/FileCompare.vue'
-import Apps from 'vue-material-design-icons/Apps.vue'
-import ListStatus from 'vue-material-design-icons/ListStatus.vue';
+import PipeValve from 'vue-material-design-icons/PipeValve.vue'
+import Waves from 'vue-material-design-icons/Waves.vue';
 import WrenchCog from 'vue-material-design-icons/WrenchCog.vue'
 import { PageViews } from '@utils/types';
 import { navigateTo } from '@utils/helpers';
@@ -35,7 +35,7 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
             <FileCompare />
           </q-item-section>
 
-          <q-item-section>
+          <q-item-section class="main-title">
             Visual H-Util
           </q-item-section>
         </q-item>
@@ -45,7 +45,7 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
         <q-item :disable="menuDisabled" :active="pathName === PageViews.Home || pathName === PageViews.Edit"
           @click="handleNavigate(PageViews.Home)" clickable v-ripple>
           <q-item-section avatar>
-            <Apps />
+            <PipeValve />
           </q-item-section>
 
           <q-item-section>
@@ -56,7 +56,7 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
         <q-item :disable="menuDisabled" :active="pathName === PageViews.Directories"
           @click="handleNavigate(PageViews.Directories)" clickable v-ripple>
           <q-item-section avatar>
-            <ListStatus />
+            <Waves />
           </q-item-section>
 
           <q-item-section>
@@ -79,4 +79,9 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
   </q-drawer>
 </template>
 
-<style scoped></style>
+<style scoped>
+.main-title {
+  font-weight: 600;
+  user-select: none;
+}
+</style>

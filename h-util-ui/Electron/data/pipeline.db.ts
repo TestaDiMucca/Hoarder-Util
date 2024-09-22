@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Pipeline as DbPipeline } from '@prisma/client';
 import { Pipeline, ProcessingModule } from '@shared/common.types';
 import { promises } from '@common/common';
 import { db } from './database';
+import { OptionalKey } from '@util/types';
 
 export const upsertPipeline = async (pipeline: Pipeline) => {
     const processingModules = await promises.mapSeries(pipeline.processingModules, (module) => upsertModule(module));
@@ -81,8 +83,8 @@ export const removePipeline = async (pipelineUuid: string, removeModules = true)
     });
 };
 
-export const getAllPipelines = async (withStats = false): Promise<Pipeline[]> => {
-    const fetched = await db.pipeline.findMany({
+const fetchAll = (withStats = false) =>
+    db.pipeline.findMany({
         include: {
             pipeline_modules: {
                 include: {
@@ -92,6 +94,9 @@ export const getAllPipelines = async (withStats = false): Promise<Pipeline[]> =>
             pipeline_stats: withStats,
         },
     });
+
+export const getAllPipelines = async (withStats = false): Promise<Pipeline[]> => {
+    const fetched = await fetchAll(withStats);
 
     return fetched.map((pipelineRow) => {
         return {
@@ -108,3 +113,18 @@ export const getAllPipelines = async (withStats = false): Promise<Pipeline[]> =>
         };
     });
 };
+
+type JoinedDbRow = Awaited<ReturnType<typeof fetchAll>>[number];
+
+export const pipelineDbToObject = (pipelineRow: OptionalKey<JoinedDbRow, 'pipeline_stats'>): Pipeline => ({
+    id: pipelineRow.uuid,
+    name: pipelineRow.name,
+    manualRanking: pipelineRow.manual_ranking,
+    created: pipelineRow.created.toISOString(),
+    modified: pipelineRow.modified.toISOString(),
+    color: pipelineRow.color ?? undefined,
+    timesRan: pipelineRow.pipeline_stats?.[0]?.times_ran,
+    processingModules: pipelineRow.pipeline_modules.map(({ module }) => ({
+        ...(JSON.parse(module.data) as ProcessingModule),
+    })),
+});

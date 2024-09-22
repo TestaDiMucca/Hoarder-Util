@@ -119,6 +119,7 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
     }
 };
 
+// TODO: this isn't a constant, find better home e.g. models.helpers
 /** Get a default starter module */
 export const getDefaultModule = (id: string, branching = false): ProcessingModule =>
     branching
