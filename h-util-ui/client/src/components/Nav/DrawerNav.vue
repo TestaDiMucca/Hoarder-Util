@@ -6,6 +6,7 @@ import Waves from 'vue-material-design-icons/Waves.vue';
 import WrenchCog from 'vue-material-design-icons/WrenchCog.vue'
 import { PageViews } from '@utils/types';
 import { navigateTo } from '@utils/helpers';
+import NavTasks from './NavTasks.vue';
 
 const props = defineProps<{
   pathName: string;
@@ -30,6 +31,7 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
     @mouseleave="miniState = true" mini-to-overlay :width="200" :breakpoint="500" bordered>
     <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: '0' }">
       <q-list padding>
+
         <q-item>
           <q-item-section avatar>
             <FileCompare />
@@ -74,7 +76,9 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
             Tools & Internals
           </q-item-section>
         </q-item>
+
       </q-list>
+      <NavTasks />
     </q-scroll-area>
   </q-drawer>
 </template>
@@ -83,5 +87,9 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
 .main-title {
   font-weight: 600;
   user-select: none;
+}
+
+.main-menu {
+  flex-grow: 1;
 }
 </style>

@@ -7,7 +7,6 @@ import { VueComponent } from './utils/util.types'
 import { addErrorListeners, getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
 import store from './utils/store'
 import { PageViews } from '@utils/types'
-import TaskList from './components/TaskList/TaskList.vue';
 import DrawerNav from './components/Nav/DrawerNav.vue'
 import Internals from './components/Internals/Internals.vue'
 import Directories from './components/Directories/Directories.vue'
@@ -65,17 +64,12 @@ onMounted(() => {
       <component :is="currentView" />
     </q-page-container>
   </q-layout>
-
-  <section class="task-list-container">
-    <TaskList />
-  </section>
 </template>
 
 <style scoped>
 .app-container {
   display: flex;
   flex-direction: column;
-  /* height: 90vh; */
 }
 
 .task-list-container {
