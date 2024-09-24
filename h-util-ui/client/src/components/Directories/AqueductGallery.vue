@@ -29,11 +29,14 @@ defineProps<Props>();
       <PlusBox class="icon-button create-button" @click="handleNew" title="Create a new pipeline" />
     </template>
     <template #content>
-      <section class="aqueduct-gallery">
-        <div v-for="aqueduct in aqueducts">
-          {{ aqueduct.name }} - <span class="edit-button" @click="handleEdit(aqueduct)">Edit</span> - <span
-            class="edit-button" @click="handleRun(aqueduct.id)">Run</span>
-        </div>
+      <section class="gallery-container">
+        <q-card v-for="aqueduct in aqueducts" class="gallery-item">
+          <div class="card-title">{{ aqueduct.name }}</div>
+          <div>
+            <span class="text-button" @click="handleEdit(aqueduct)">Edit</span> - <span class="text-button"
+              @click="handleRun(aqueduct.id)">Run</span>
+          </div>
+        </q-card>
         <div v-if="!aqueducts || aqueducts.length === 0">
           No aqueducts. Aqueducts enable connecting directories to pipelines.
         </div>
@@ -43,7 +46,24 @@ defineProps<Props>();
 </template>
 
 <style scoped>
-.edit-button {
-  cursor: pointer;
+.gallery-container {
+  display: grid;
+  width: 100%;
+
+  justify-content: center;
+  gap: 10px;
+  overflow-y: auto;
+  padding: 0.5em;
+
+  grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
+}
+
+.gallery-item {
+  padding: 1em;
+}
+
+.card-title {
+  font-size: 1.3em;
+  font-weight: 600;
 }
 </style>

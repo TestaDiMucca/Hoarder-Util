@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { Aqueduct, AqueductMessage } from '@shared/common.types';
+import Delete from 'vue-material-design-icons/Delete.vue'
 import PageLayout from 'src/layout/PageLayout.vue';
 
 import store from '@utils/store';
@@ -49,6 +50,8 @@ const handleSave = async () => {
 
   props.onNewAdded();
   props.returnHome();
+
+  console.log(localAqueduct.value)
 }
 </script>
 
@@ -68,11 +71,15 @@ const handleSave = async () => {
         :options="pipelineOptions" label="Target pipeline" :hide-dropdown-icon="true" />
 
       <div class="directories">
-        <div v-for="(_, index) in localAqueduct.directories" :key="index">
-          <!-- <q-input v-model="localAqueduct.directories[index]" type="text" /> -->
-          <div class="select-directory" @click="handleDirPrompt(index)">Dir: {{ localAqueduct.directories[index]
-            }}</div>
-          <button @click="removeDirectory(index)">Remove</button>
+        <div v-for="(_, index) in localAqueduct.directories" :key="index" class="directory-row">
+          <div class="select-directory" @click="handleDirPrompt(index)">
+            <span v-if="!localAqueduct.directories[index] || localAqueduct.directories[index].length === 0"
+              class="no-dir">
+              Click to select directory
+            </span>
+            <span>{{ localAqueduct.directories[index] }}</span>
+          </div>
+          <Delete @click="removeDirectory(index)" class="remove-btn icon-button" :size="18" />
         </div>
         <button @click="addDirectory">Add directory</button>
       </div>
@@ -88,4 +95,22 @@ const handleSave = async () => {
   </PageLayout>
 </template>
 
-<style scoped></style>
+<style scoped>
+.directories {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+  margin-top: 1em;
+}
+
+.directory-row {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.no-dir {
+  opacity: 0.5;
+}
+</style>

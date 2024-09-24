@@ -43,3 +43,12 @@
   display: flex;
   color: var(--q-lightColor);
 }
+
+.text-button {
+  cursor: pointer;
+  transition: color 0.5s;
+}
+
+.text-button:hover {
+  color: var(--q-lightColor);
+}
