@@ -67,6 +67,14 @@ export const handleAqueductMessage = async (message: AqueductMessage) => {
                 }
             });
             break;
+        case 'delete':
+            await db.aqueduct.delete({
+                where: {
+                    uuid: message.aqueDuctId,
+                },
+            });
+
+            break;
         case 'save':
             const { data } = message;
 

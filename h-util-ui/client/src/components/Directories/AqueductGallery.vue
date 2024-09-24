@@ -5,12 +5,16 @@ import { Aqueduct, AqueductMessage } from '@shared/common.types';
 import PageLayout from 'src/layout/PageLayout.vue';
 import { getIpcRenderer } from '@utils/helpers';
 import { IpcMessageType } from '@shared/common.constants';
+import AqueductItem from './AqueductItem.vue';
 
 type Props = {
   aqueducts: Aqueduct[] | null;
   handleNew: () => void;
   handleEdit: (a: Aqueduct) => void;
+  onAqueductsChange: () => void;
 }
+
+const props = defineProps<Props>();
 
 const handleRun = (id: string) => {
   getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, {
@@ -19,7 +23,14 @@ const handleRun = (id: string) => {
   })
 }
 
-defineProps<Props>();
+const handleDelete = async (aqueDuctId: string) => {
+  await getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, {
+    type: 'delete',
+    aqueDuctId
+  })
+
+  props.onAqueductsChange();
+}
 </script>
 
 <template>
@@ -30,13 +41,8 @@ defineProps<Props>();
     </template>
     <template #content>
       <section class="gallery-container">
-        <q-card v-for="aqueduct in aqueducts" class="gallery-item">
-          <div class="card-title">{{ aqueduct.name }}</div>
-          <div>
-            <span class="text-button" @click="handleEdit(aqueduct)">Edit</span> - <span class="text-button"
-              @click="handleRun(aqueduct.id)">Run</span>
-          </div>
-        </q-card>
+        <AqueductItem v-for="aqueduct in aqueducts" :aqueduct="aqueduct" @edit="handleEdit(aqueduct)"
+          @run="handleRun(aqueduct.id)" @delete="handleDelete(aqueduct.id)" />
         <div v-if="!aqueducts || aqueducts.length === 0">
           No aqueducts. Aqueducts enable connecting directories to pipelines.
         </div>
@@ -56,10 +62,6 @@ defineProps<Props>();
   padding: 0.5em;
 
   grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
-}
-
-.gallery-item {
-  padding: 1em;
 }
 
 .card-title {

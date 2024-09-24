@@ -3,6 +3,7 @@
  */
 
 .icon-button {
+  display: inline-block;
   cursor: pointer;
   transform-origin: center;
   transition: transform 0.5s;
@@ -51,4 +52,9 @@
 
 .text-button:hover {
   color: var(--q-lightColor);
+}
+
+.card-border {
+    border: 1px solid #ccc;
+  border-radius: 5px;
 }

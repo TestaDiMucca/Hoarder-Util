@@ -64,7 +64,7 @@ const onDirSelected = (index: number) => (folder: string) => {
 
       <PipelineSelector :value="localAqueduct.pipelineId" v-on:option-selected="onPipelineSelected" />
 
-      <div class="directories">
+      <div class="directories card-border">
         <div v-for="(_, index) in localAqueduct.directories" :key="index" class="directory-row">
           <DirectoryPicker :onSelectedDirectory="onDirSelected(index)" :value="localAqueduct.directories[index]" />
 
@@ -87,9 +87,6 @@ const onDirSelected = (index: number) => (folder: string) => {
 <style scoped>
 .directories {
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-
   margin-top: 1em;
 }
 

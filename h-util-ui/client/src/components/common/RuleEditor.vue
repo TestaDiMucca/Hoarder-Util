@@ -87,7 +87,7 @@ const availableOperators = computed<MenuItem[]>(() => (currentRule.value.type ==
 </script>
 
 <template>
-  <div class="rule-editor">
+  <div class="rule-editor card-border">
     <div v-if="currentRule.type !== 'basic'" class="sub-component">
       <div class="group-type">
         <label>Group Type:</label>
@@ -130,8 +130,6 @@ const availableOperators = computed<MenuItem[]>(() => (currentRule.value.type ==
 .rule-editor {
   margin: 10px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .single-rule {
