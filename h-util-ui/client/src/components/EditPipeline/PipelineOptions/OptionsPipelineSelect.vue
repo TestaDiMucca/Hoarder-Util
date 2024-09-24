@@ -1,16 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { PipelineOptionsProps } from './pipelineOptions.common';
-import store from '@utils/store';
+import PipelineSelector from 'src/components/common/PipelineSelector.vue';
 
 const props = defineProps<PipelineOptionsProps>();
-
-const pipelineOptions = computed(() => Object.values(store.state.pipelines).filter(p => p.id !== store.state.selectedPipeline?.id).map(pipeline => ({
-  label: pipeline.name,
-  value: pipeline.id ?? '-'
-})))
-
-const selectedOption = computed(() => pipelineOptions.value.find(o => o.value === props.currentOptions.value));
 
 const handleSelectOption = (opt) => {
   props.currentOptions.value = opt.value;
@@ -18,6 +10,5 @@ const handleSelectOption = (opt) => {
 </script>
 
 <template>
-  <q-select class="dropdown" :model-value="selectedOption" @update:model-value="handleSelectOption"
-    :options="pipelineOptions" label="Target pipeline" :hide-dropdown-icon="true" />
+  <PipelineSelector :value="String(currentOptions.value)" v-on:option-selected="handleSelectOption" />
 </template>

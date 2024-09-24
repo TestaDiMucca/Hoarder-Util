@@ -153,6 +153,7 @@ export type AqueductMessage =
     | {
           type: 'load';
       }
+    | { type: 'delete'; aqueDuctId: string }
     | {
           type: 'save';
           data: Aqueduct;

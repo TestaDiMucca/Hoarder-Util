@@ -53,7 +53,7 @@ const currentSelectedModule = computed(() => moduleOptions.value.find(o => o.val
 </script>
 
 <template>
-  <section class="branch-container">
+  <section class="branch-container card-border">
     <div class="main-options">
       <q-input class="option" type="text" :model-value="branch.label" @update:modelValue="handleLabelChange"
         label="Branch label" :placeholder="`Branch ${index}`" />
@@ -86,7 +86,5 @@ const currentSelectedModule = computed(() => moduleOptions.value.find(o => o.val
 
 .branch-container {
   padding: 0.5em;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 </style>

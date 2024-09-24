@@ -5,12 +5,16 @@ import { Aqueduct, AqueductMessage } from '@shared/common.types';
 import PageLayout from 'src/layout/PageLayout.vue';
 import { getIpcRenderer } from '@utils/helpers';
 import { IpcMessageType } from '@shared/common.constants';
+import AqueductItem from './AqueductItem.vue';
 
 type Props = {
   aqueducts: Aqueduct[] | null;
   handleNew: () => void;
   handleEdit: (a: Aqueduct) => void;
+  onAqueductsChange: () => void;
 }
+
+const props = defineProps<Props>();
 
 const handleRun = (id: string) => {
   getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, {
@@ -19,7 +23,14 @@ const handleRun = (id: string) => {
   })
 }
 
-defineProps<Props>();
+const handleDelete = async (aqueDuctId: string) => {
+  await getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, {
+    type: 'delete',
+    aqueDuctId
+  })
+
+  props.onAqueductsChange();
+}
 </script>
 
 <template>
@@ -29,11 +40,9 @@ defineProps<Props>();
       <PlusBox class="icon-button create-button" @click="handleNew" title="Create a new pipeline" />
     </template>
     <template #content>
-      <section class="aqueduct-gallery">
-        <div v-for="aqueduct in aqueducts">
-          {{ aqueduct.name }} - <span class="edit-button" @click="handleEdit(aqueduct)">Edit</span> - <span
-            class="edit-button" @click="handleRun(aqueduct.id)">Run</span>
-        </div>
+      <section class="gallery-container">
+        <AqueductItem v-for="aqueduct in aqueducts" :aqueduct="aqueduct" @edit="handleEdit(aqueduct)"
+          @run="handleRun(aqueduct.id)" @delete="handleDelete(aqueduct.id)" />
         <div v-if="!aqueducts || aqueducts.length === 0">
           No aqueducts. Aqueducts enable connecting directories to pipelines.
         </div>
@@ -43,7 +52,20 @@ defineProps<Props>();
 </template>
 
 <style scoped>
-.edit-button {
-  cursor: pointer;
+.gallery-container {
+  display: grid;
+  width: 100%;
+
+  justify-content: center;
+  gap: 10px;
+  overflow-y: auto;
+  padding: 0.5em;
+
+  grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
+}
+
+.card-title {
+  font-size: 1.3em;
+  font-weight: 600;
 }
 </style>
