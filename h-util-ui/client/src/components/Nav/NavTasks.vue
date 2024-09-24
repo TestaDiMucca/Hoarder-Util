@@ -6,6 +6,7 @@ import { SpawnedTask } from '@utils/types';
 import { MAX_TASKS } from '@utils/constants';
 import store from '@utils/store';
 import NavTaskItem from './NavTaskItem.vue';
+import Sleep from 'vue-material-design-icons/Sleep.vue'
 
 const existingTasks = ref<Record<number, SpawnedTask>>({});
 const lowestId = ref<number>(0);
@@ -41,9 +42,13 @@ const sortedTaskList = computed(() => {
 </script>
 
 <template>
-  <q-list class="task-area">
-    <NavTaskItem v-for="spawnedTask in sortedTaskList" :key="spawnedTask.id" :task="spawnedTask" />
-  </q-list>
+  <q-scroll-area class="task-area">
+    <q-list class="task-container">
+      <NavTaskItem v-for="spawnedTask in sortedTaskList" :key="spawnedTask.id" :task="spawnedTask" />
+      <Sleep v-if="sortedTaskList.length === 0" class="no-tasks" />
+      <q-tooltip v-if="sortedTaskList.length === 0" :delay="500" :offset="[0, 10]">No current tasks</q-tooltip>
+    </q-list>
+  </q-scroll-area>
 </template>
 
 <style scoped>
@@ -52,9 +57,22 @@ const sortedTaskList = computed(() => {
   bottom: 1em;
   width: 100%;
 
-  max-height: 100px;
-  overflow-y: auto;
+  height: 100px;
+  /* overflow-y: auto; */
 
   border-top: 1px solid gray;
+}
+
+.task-container {
+  width: 100%;
+
+}
+
+.no-tasks {
+  opacity: 0.5;
+}
+
+.no-tasks svg {
+  margin-top: 1em;
 }
 </style>

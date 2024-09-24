@@ -8,7 +8,7 @@ import { CardStyles, SortBy, sortPipelines, SortType } from './pipelineGallery.h
 const stateStore = ref(store.state)
 const sortBy = ref(SortBy.name)
 const sortType = ref(SortType.asc)
-const cardStyle = ref(CardStyles.standard);
+const cardStyle = stateStore.value.settings.cardStyle;
 
 const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.value.pipelines), sortBy.value, sortType.value))
 </script>
@@ -24,8 +24,7 @@ const sortedPipelines = computed(() => sortPipelines(Object.values(stateStore.va
             :hide-dropdown-icon="true" />
           <q-select class="dropdown" v-model="sortType" :options="Object.values(SortType)" label="Order"
             :hide-dropdown-icon="true" />
-          <q-select class="dropdown" v-model="cardStyle" :options="Object.values(CardStyles)" label="Card style"
-            :hide-dropdown-icon="true" />
+
         </q-card>
       </q-popup-proxy>
     </button>
