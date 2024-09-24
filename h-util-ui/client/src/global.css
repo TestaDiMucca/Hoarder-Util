@@ -58,3 +58,7 @@
     border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+.q-circular-progress__svg {
+  color:var(--q-lightColor);
+}

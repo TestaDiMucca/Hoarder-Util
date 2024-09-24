@@ -1,12 +1,11 @@
 <script setup lang="ts">
-/** @deprecated */
 import { computed, ref } from 'vue';
 import debounce from 'lodash/debounce';
 import { getIpcRenderer } from '@utils/helpers';
 import { SpawnedTask } from '@utils/types';
 import { MAX_TASKS } from '@utils/constants';
 import store from '@utils/store';
-import TaskListItem from './TaskListItem.vue';
+import NavTaskItem from './NavTaskItem.vue';
 
 const existingTasks = ref<Record<number, SpawnedTask>>({});
 const lowestId = ref<number>(0);
@@ -42,46 +41,20 @@ const sortedTaskList = computed(() => {
 </script>
 
 <template>
-  <div class="list-container">
-    <span v-if="sortedTaskList.length === 0" class="nothing">
-      No tasks at this moment
-    </span>
-    <div v-if="sortedTaskList.length > 0">
-      <div v-for="spawnedTask in sortedTaskList" :key="spawnedTask.id">
-        <TaskListItem :task="spawnedTask" />
-      </div>
-    </div>
-  </div>
-
+  <q-list class="task-area">
+    <NavTaskItem v-for="spawnedTask in sortedTaskList" :key="spawnedTask.id" :task="spawnedTask" />
+  </q-list>
 </template>
 
 <style scoped>
-.list-container {
-  /* background: var(--q-backingColor); */
-  padding: 1em;
-  font-size: x-small;
-  border-radius: 5px 5px 0 0;
-  width: 70%;
-  margin: auto;
-  border-top: 1px solid var(--q-lightColor);
-  position: relative;
-}
-
-.list-container::after {
-  content: "";
-  z-index: -1;
+.task-area {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--q-backingColor);
-  opacity: 0.8;
-  mix-blend-mode: multiply;
-  backdrop-filter: blur(10px);
-}
+  bottom: 1em;
+  width: 100%;
 
-.nothing {
-  opacity: 0.5;
+  max-height: 100px;
+  overflow-y: auto;
+
+  border-top: 1px solid gray;
 }
 </style>

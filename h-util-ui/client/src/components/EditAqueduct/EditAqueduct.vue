@@ -17,15 +17,6 @@ type Props = {
 const props = defineProps<Props>();
 const localAqueduct = ref(props.aqueduct);
 
-// TODO: Common directory display/editor card component
-const handleDirPrompt = async (index: number) => {
-  const folder = await getIpcRenderer()?.selectFolder();
-
-  if (!folder) return;
-
-  localAqueduct.value.directories[index] = folder;
-}
-
 const addDirectory = () => {
   localAqueduct.value.directories.push('');
 }

@@ -1,0 +1,53 @@
+<script setup lang="ts">
+import { SpawnedTask } from '@utils/types';
+import { computed } from 'vue';
+
+interface Props {
+  task: SpawnedTask & { pipelineName: string; }
+}
+
+const props = defineProps<Props>();
+
+const letter = computed(() => props.task.pipelineName[0] ?? '?')
+</script>
+
+<template>
+  <q-item>
+    <q-item-section avatar>
+      <q-circular-progress show-value :value="task.progress" size="24px" :thickness="0.5" track-color="grey-8">
+        <span>{{ letter }}</span>
+      </q-circular-progress>
+    </q-item-section>
+    <q-item-section>
+      <div class="task-info">
+        <div class="pipeline-name"> {{ task.pipelineName }}</div>
+        <div class="file-name">{{ task.name }}</div>
+      </div>
+    </q-item-section>
+  </q-item>
+</template>
+
+<style scoped>
+.task-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.pipeline-name {
+  max-width: 100%;
+  font-size: smaller;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-name {
+  font-size: x-small;
+  opacity: 0.7;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
