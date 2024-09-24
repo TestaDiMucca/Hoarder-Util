@@ -1,29 +1,14 @@
 <script setup lang="ts">
-import { getIpcRenderer } from '@utils/helpers';
 import { PipelineOptionsProps } from './pipelineOptions.common';
-import { computed } from 'vue';
+import DirectoryPicker from 'src/components/common/DirectoryPicker.vue';
 
 const props = defineProps<PipelineOptionsProps>();
 
-const handleDirPrompt = async () => {
-  const ipcRenderer = getIpcRenderer();
-
-  if (!ipcRenderer) return;
-
-  const folder = await ipcRenderer.selectFolder();
-  props.handleOptionChange('value', folder)
+const onDirSelected = (dir: string) => {
+  props.handleOptionChange('value', dir)
 }
-
-const directoryDisplay = computed(() => String(props.currentOptions.value ?? '').length ? props.currentOptions.value : 'Select a directory')
 </script>
 
 <template>
-  <div class="select-directory" @click="handleDirPrompt">{{
-    directoryDisplay }}</div>
+  <DirectoryPicker :value="String(currentOptions.value)" :onSelectedDirectory="onDirSelected" />
 </template>
-
-<style scoped>
-.select-directory {
-  cursor: pointer;
-}
-</style>

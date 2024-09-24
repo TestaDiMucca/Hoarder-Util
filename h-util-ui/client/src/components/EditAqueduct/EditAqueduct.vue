@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { Aqueduct, AqueductMessage } from '@shared/common.types';
 import Delete from 'vue-material-design-icons/Delete.vue'
 import PageLayout from 'src/layout/PageLayout.vue';
 
-import store from '@utils/store';
 import { getIpcRenderer, removeVueRefs } from '@utils/helpers';
 import { IpcMessageType } from '@shared/common.constants';
+import PipelineSelector from '../common/PipelineSelector.vue';
+import DirectoryPicker from '../common/DirectoryPicker.vue';
 
 type Props = {
   aqueduct: Aqueduct;
@@ -16,14 +17,6 @@ type Props = {
 const props = defineProps<Props>();
 const localAqueduct = ref(props.aqueduct);
 
-// TODO: common pipeline selector component
-const pipelineOptions = computed(() => Object.values(store.state.pipelines).filter(p => p.id !== store.state.selectedPipeline?.id).map(pipeline => ({
-  label: pipeline.name,
-  value: pipeline.id ?? '-'
-})))
-
-const selectedOption = computed(() => pipelineOptions.value.find(o => o.value === localAqueduct.value.pipelineId));
-
 // TODO: Common directory display/editor card component
 const handleDirPrompt = async (index: number) => {
   const folder = await getIpcRenderer()?.selectFolder();
@@ -31,10 +24,6 @@ const handleDirPrompt = async (index: number) => {
   if (!folder) return;
 
   localAqueduct.value.directories[index] = folder;
-}
-
-const handleSelectOption = (opt) => {
-  localAqueduct.value.pipelineId = opt.value;
 }
 
 const addDirectory = () => {
@@ -50,8 +39,14 @@ const handleSave = async () => {
 
   props.onNewAdded();
   props.returnHome();
+}
 
-  console.log(localAqueduct.value)
+const onPipelineSelected = (id: string) => {
+  localAqueduct.value.pipelineId = id;
+}
+
+const onDirSelected = (index: number) => (folder: string) => {
+  localAqueduct.value.directories[index] = folder;
 }
 </script>
 
@@ -67,18 +62,12 @@ const handleSave = async () => {
       <q-input type="text" v-model="localAqueduct.name" label="Name" />
       <q-input type="textarea" v-model="localAqueduct.description" label="Description" />
 
-      <q-select class="dropdown" :model-value="selectedOption" @update:model-value="handleSelectOption"
-        :options="pipelineOptions" label="Target pipeline" :hide-dropdown-icon="true" />
+      <PipelineSelector :value="localAqueduct.pipelineId" v-on:option-selected="onPipelineSelected" />
 
       <div class="directories">
         <div v-for="(_, index) in localAqueduct.directories" :key="index" class="directory-row">
-          <div class="select-directory" @click="handleDirPrompt(index)">
-            <span v-if="!localAqueduct.directories[index] || localAqueduct.directories[index].length === 0"
-              class="no-dir">
-              Click to select directory
-            </span>
-            <span>{{ localAqueduct.directories[index] }}</span>
-          </div>
+          <DirectoryPicker :onSelectedDirectory="onDirSelected(index)" :value="localAqueduct.directories[index]" />
+
           <Delete @click="removeDirectory(index)" class="remove-btn icon-button" :size="18" />
         </div>
         <button @click="addDirectory">Add directory</button>
@@ -108,9 +97,5 @@ const handleSave = async () => {
   display: flex;
   gap: 5px;
   justify-content: center;
-}
-
-.no-dir {
-  opacity: 0.5;
 }
 </style>
