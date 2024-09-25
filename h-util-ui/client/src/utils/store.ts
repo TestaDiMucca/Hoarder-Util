@@ -4,12 +4,18 @@ import { v4 as uuidV4 } from 'uuid';
 import { Pipeline, TaskQueue } from './types';
 import { saveUserData } from './helpers';
 import { Aqueduct } from '@shared/common.types';
+import { CardStyles } from 'src/components/Pipelines/pipelineGallery.helpers';
+
+export type AppSettings = {
+    cardStyle: CardStyles;
+};
 
 export type VueStore = {
     pipelines: Record<string, Pipeline>;
     aqueducts: Aqueduct[] | null;
     selectedPipeline: Pipeline | null;
     taskQueue: TaskQueue;
+    settings: AppSettings;
 };
 
 /** See composition API for more info */
@@ -18,6 +24,9 @@ const state = reactive<VueStore>({
     aqueducts: null,
     selectedPipeline: null,
     taskQueue: [],
+    settings: {
+        cardStyle: CardStyles.standard,
+    },
 });
 
 const onPipelinesUpdated = () => {
@@ -58,8 +67,13 @@ const setAqueducts = (aqueducts: Aqueduct[]) => {
     state.aqueducts = aqueducts;
 };
 
+const setCardStyles = (cardStyle: CardStyles) => {
+    state.settings.cardStyle = cardStyle;
+};
+
 export default {
     state,
+    setCardStyles,
     setAqueducts,
     upsertPipeline,
     removePipeline,
