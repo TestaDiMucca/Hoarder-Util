@@ -4,8 +4,15 @@ import ImportSection from './ImportSection.vue';
 import { CardStyles } from '../Pipelines/pipelineGallery.helpers';
 import store from '@utils/store';
 import InternalsCards from './InternalsCards.vue';
+import { watch } from 'vue';
+import { useQuasar } from 'quasar'
 
 const handleChangeCardStyle = store.setCardStyles;
+const $q = useQuasar();
+
+watch(() => store.state.settings.darkMode, () => {
+  $q.dark.set(store.state.settings.darkMode);
+})
 </script>
 
 <template>
@@ -24,6 +31,9 @@ const handleChangeCardStyle = store.setCardStyles;
             <q-select class="dropdown" :model-value="store.state.settings.cardStyle"
               :options="Object.values(CardStyles)" @update:model-value="handleChangeCardStyle" label="Card style"
               :hide-dropdown-icon="true" />
+
+            <q-toggle :model-value="store.state.settings.darkMode" @update:model-value="store.toggleDarkMode"
+              label="Dark mode" />
           </template>
         </InternalsCards>
         <InternalsCards>
@@ -43,6 +53,6 @@ const handleChangeCardStyle = store.setCardStyles;
 .sections-container {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--spacer-gap);
 }
 </style>

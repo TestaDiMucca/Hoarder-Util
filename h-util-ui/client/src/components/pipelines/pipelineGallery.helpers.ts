@@ -15,9 +15,9 @@ export enum SortBy {
 }
 
 export enum CardStyles {
-    standard = 'standard',
+    standard = 'Standard',
     // swatch = 'swatch',
-    compact = 'compact',
+    compact = 'Compact',
     // detailed = 'detailed',
 }
 

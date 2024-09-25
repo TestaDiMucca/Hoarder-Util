@@ -135,7 +135,7 @@ const availableOperators = computed<MenuItem[]>(() => (currentRule.value.type ==
 .single-rule {
   display: flex;
   width: 100%;
-  gap: 1em;
+  gap: var(--spacer-gap);
   align-items: center;
 }
 
@@ -167,7 +167,7 @@ const availableOperators = computed<MenuItem[]>(() => (currentRule.value.type ==
 
 .group-type {
   display: flex;
-  gap: 5px;
+  gap: var(--spacer-gap);
   align-items: baseline;
   justify-content: center;
 }

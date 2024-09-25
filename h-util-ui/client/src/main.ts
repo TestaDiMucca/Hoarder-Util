@@ -23,6 +23,19 @@ myApp.use(Quasar, {
         notify: {
             timeout: 1500,
         },
+        brand: {
+            primary: '#efc648',
+            secondary: '#ffc14f',
+            accent: '#db5240',
+
+            dark: '#332c2c',
+            'dark-page': '#171111',
+
+            positive: '#34bf54',
+            negative: '#ad0014',
+            info: '#31CCEC',
+            warning: '#F2C037',
+        },
     },
 });
 

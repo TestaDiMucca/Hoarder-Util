@@ -13,7 +13,7 @@ const letter = computed(() => props.task.pipelineName[0] ?? '?')
 
 <template>
   <q-item class="container">
-    <q-item-section avatar>
+    <q-item-section :class="{ done: task.progress === 100 }" avatar>
       <q-circular-progress show-value :value="task.progress" size="24px" :thickness="0.5" track-color="grey-8">
         <span>{{ letter }}</span>
       </q-circular-progress>
@@ -30,6 +30,11 @@ const letter = computed(() => props.task.pipelineName[0] ?? '?')
   display: flex;
   flex-direction: column;
   width: 80%;
+}
+
+.done {
+  filter: saturate(0.5);
+  opacity: 0.7;
 }
 
 .pipeline-name {

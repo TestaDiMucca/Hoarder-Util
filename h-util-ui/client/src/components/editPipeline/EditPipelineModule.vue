@@ -156,7 +156,7 @@ const optionTooltip = computed(() => OPTION_TOOLTIP[localModule.value.type]);
 .module-title {
   display: flex;
   justify-content: center;
-  gap: 0.2em;
+  gap: var(--spacer-gap);
   align-items: start;
   padding-left: 0;
 }

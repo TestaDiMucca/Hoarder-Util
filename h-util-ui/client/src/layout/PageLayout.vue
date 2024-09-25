@@ -21,6 +21,7 @@
 
 .top-bar {
   background-color: var(--q-backingColor);
+  color: white;
   /* color: var(--q-lightColor); */
   height: 3.5rem;
   width: 100%;

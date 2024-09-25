@@ -83,7 +83,7 @@ const onDirSelected = (index: number) => (folder: string) => {
 
 .directory-row {
   display: flex;
-  gap: 5px;
+  gap: var(--spacer-gap);
   justify-content: center;
 }
 </style>

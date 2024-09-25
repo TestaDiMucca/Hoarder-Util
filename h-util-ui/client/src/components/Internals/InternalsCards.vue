@@ -14,7 +14,7 @@
   width: 100%;
   margin-bottom: 5px;
   display: flex;
-  gap: 5px;
+  gap: var(--spacer-gap);
 }
 
 .headers {
