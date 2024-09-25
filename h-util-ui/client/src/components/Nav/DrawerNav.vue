@@ -84,6 +84,10 @@ const menuDisabled = computed(() => props.pathName === PageViews.Edit);
 </template>
 
 <style scoped>
+.full-width {
+  width: 100%;
+}
+
 .main-title {
   font-weight: 600;
   user-select: none;

@@ -42,13 +42,11 @@ const sortedTaskList = computed(() => {
 </script>
 
 <template>
-  <q-scroll-area class="task-area">
-    <q-list class="task-container">
-      <NavTaskItem v-for="spawnedTask in sortedTaskList" :key="spawnedTask.id" :task="spawnedTask" />
-      <Sleep v-if="sortedTaskList.length === 0" class="no-tasks" />
-      <q-tooltip v-if="sortedTaskList.length === 0" :delay="500" :offset="[0, 10]">No current tasks</q-tooltip>
-    </q-list>
-  </q-scroll-area>
+  <q-list class="task-area">
+    <NavTaskItem v-for="spawnedTask in sortedTaskList" :key="spawnedTask.id" :task="spawnedTask" />
+    <Sleep v-if="sortedTaskList.length === 0" class="no-tasks" />
+    <q-tooltip v-if="sortedTaskList.length === 0" :delay="500" :offset="[0, 10]">No current tasks</q-tooltip>
+  </q-list>
 </template>
 
 <style scoped>
@@ -58,14 +56,13 @@ const sortedTaskList = computed(() => {
   width: 100%;
 
   height: 100px;
-  /* overflow-y: auto; */
+  overflow-x: hidden;
 
   border-top: 1px solid gray;
 }
 
 .task-container {
   width: 100%;
-
 }
 
 .no-tasks {

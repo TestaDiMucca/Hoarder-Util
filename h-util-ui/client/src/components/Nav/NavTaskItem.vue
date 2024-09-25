@@ -12,17 +12,15 @@ const letter = computed(() => props.task.pipelineName[0] ?? '?')
 </script>
 
 <template>
-  <q-item>
+  <q-item class="container">
     <q-item-section avatar>
       <q-circular-progress show-value :value="task.progress" size="24px" :thickness="0.5" track-color="grey-8">
         <span>{{ letter }}</span>
       </q-circular-progress>
     </q-item-section>
-    <q-item-section>
-      <div class="task-info">
-        <div class="pipeline-name"> {{ task.pipelineName }}</div>
-        <div class="file-name">{{ task.name }}</div>
-      </div>
+    <q-item-section class="task-info">
+      <div class="pipeline-name"> {{ task.pipelineName }}</div>
+      <div class="file-name">{{ task.name }}</div>
     </q-item-section>
   </q-item>
 </template>
@@ -31,7 +29,7 @@ const letter = computed(() => props.task.pipelineName[0] ?? '?')
 .task-info {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 80%;
 }
 
 .pipeline-name {
@@ -43,6 +41,7 @@ const letter = computed(() => props.task.pipelineName[0] ?? '?')
 }
 
 .file-name {
+  max-width: 100%;
   font-size: x-small;
   opacity: 0.7;
 
