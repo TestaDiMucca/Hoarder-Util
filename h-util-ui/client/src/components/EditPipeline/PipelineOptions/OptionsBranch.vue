@@ -8,38 +8,26 @@ type Props = {
   moduleId: string;
   branch: ProcessingBranch;
   index: number;
-  handleBranchChange: (branch: ProcessingBranch | null, index: number) => void;
 };
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+  (e: 'update', data: Partial<ProcessingBranch> | null): void;
+}>();
+
 const pipelineModules = inject<Ref<ProcessingModule[]>>('pipelineModules');
 
 const handleLabelChange = (label: string | number | null) => {
-  const newBranch = {
-    ...props.branch,
-    label: label ? String(label) : undefined
-  }
-
-  props.handleBranchChange(newBranch, props.index);
+  emit('update', { label: label ? String(label) : undefined })
 }
 
 const handleRuleUpdates = (rules: Rule) => {
-  const newBranch = {
-    ...props.branch,
-    rules
-  }
-
-  props.handleBranchChange(newBranch, props.index);
+  emit('update', { rules });
 }
 
 const handleModuleUpdate = (opt) => {
-  const newBranch = {
-    ...props.branch,
-    targetModule: opt.value
-  }
-
-  props.handleBranchChange(newBranch, props.index);
+  emit('update', { targetModule: opt.value })
 }
 
 // todo: "new module", and "none", and optimize
@@ -67,7 +55,7 @@ const currentSelectedModule = computed(() => moduleOptions.value.find(o => o.val
           {{ expanded ? 'Collapse' : 'Expand' }} rules
         </q-item-section>
       </template>
-      <RuleEditor :rule="branch.rules" :onUpdatedRule="handleRuleUpdates" />
+      <RuleEditor :rule="branch.rules" @update-rule="handleRuleUpdates" />
     </q-expansion-item>
   </section>
 </template>

@@ -10,7 +10,6 @@ type Props = {
   rule: Rule;
   /** Should not pass in, just used recursively for styling/max purposes */
   nested?: number;
-  onUpdatedRule?: (rules: Rule) => void;
 }
 
 const MAX_NESTING = 2;
@@ -26,7 +25,6 @@ const nestLevel = (props.nested ?? 0);
 watch(currentRule, () => {
   if (nestLevel > 0) return;
 
-  props.onUpdatedRule?.(currentRule.value)
   emit('update-rule', currentRule.value)
 }, { deep: true })
 
