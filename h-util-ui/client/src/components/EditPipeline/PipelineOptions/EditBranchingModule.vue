@@ -5,19 +5,19 @@ import { getDefaultRule } from '@shared/rules.utils';
 
 type Props = {
   processingModule: BranchingModule;
-  // TODO: maybe more granular way than sending up the whole list
-  handleModuleUpdated: (newData: BranchingModule, id: string) => void;
 };
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+  (e: 'update', data: Partial<BranchingModule>): void;
+}>();
+
 const addBranch = () => {
-  props.handleModuleUpdated({
-    ...props.processingModule,
-    branches: [...props.processingModule.branches, { rules: getDefaultRule() }]
-  }, props.processingModule.id);
+  emit('update', { branches: [...props.processingModule.branches, { rules: getDefaultRule() }] })
 }
-const editBranch = (branchData: ProcessingBranch | null, index: number) => {
+
+const editBranch = (branchData: Partial<ProcessingBranch> | null, index: number) => {
   const targetedBranch = props.processingModule.branches[index];
 
   if (!targetedBranch) return;
@@ -29,18 +29,19 @@ const editBranch = (branchData: ProcessingBranch | null, index: number) => {
     return;
   }
 
-  newBranches[index] = branchData;
-  props.handleModuleUpdated({
-    ...props.processingModule,
-    branches: newBranches
-  }, props.processingModule.id);
+  newBranches[index] = {
+    ...targetedBranch,
+    ...branchData,
+  };
+
+  emit('update', { branches: newBranches });
 }
 </script>
 
 <template>
   <section class="branching-options">
     <div v-for="(branch, i) of processingModule.branches" class="branch-options">
-      <OptionsBranch :module-id="processingModule.id" :branch="branch" :index="i" :handle-branch-change="editBranch" />
+      <OptionsBranch :module-id="processingModule.id" :branch="branch" :index="i" @update="editBranch($event, i)" />
     </div>
     <button @click="addBranch">Add branch</button>
   </section>

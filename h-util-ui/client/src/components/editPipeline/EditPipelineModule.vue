@@ -43,8 +43,9 @@ const handleModuleTypeSelect = (type: ProcessingModuleType) => {
   localModule.value = newData;
 }
 
-const handleUpdateModule = (newData: ProcessingModule, _id: string) => {
-  localModule.value = newData;
+const handleUpdateModule = (newData: Partial<ProcessingModule>) => {
+  const existing: ProcessingModule = localModule.value;
+  localModule.value = { ...existing, ...newData } as ProcessingModule;
 }
 
 const updateOptionValue = <T = string>(newValue: T, flag: keyof ActionModule['options'] = 'value') => {
@@ -125,7 +126,7 @@ const optionTooltip = computed(() => OPTION_TOOLTIP[localModule.value.type]);
       </section>
 
       <section v-if="localModule.type === ProcessingModuleType.branch">
-        <EditBranchingModule :processing-module="localModule" :handle-module-updated="handleUpdateModule" />
+        <EditBranchingModule :processing-module="localModule" @update="handleUpdateModule" />
       </section>
 
       <DeleteConfirmModal v-model="confirmDelete" :onConfirm="handleRemoveModule"

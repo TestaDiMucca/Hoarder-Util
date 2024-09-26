@@ -19,7 +19,7 @@ const currentRules = computed(() => props.currentOptions.rules ?? getDefaultRule
 
 <template>
   <section class="filter-options">
-    <RuleEditor :onUpdatedRule="handleModuleOptionUpdated" :rule="currentRules" />
+    <RuleEditor @update-rule="handleModuleOptionUpdated" :rule="currentRules" />
 
     <FilterTester :type="ProcessingModuleType.ruleFilter" :options="currentOptions" />
   </section>
