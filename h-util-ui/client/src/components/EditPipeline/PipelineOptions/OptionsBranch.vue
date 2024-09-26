@@ -75,7 +75,7 @@ const currentSelectedModule = computed(() => moduleOptions.value.find(o => o.val
 <style scoped>
 .main-options {
   display: flex;
-  gap: 5px;
+  gap: var(--spacer-gap);
   min-width: 400px;
   ;
 }

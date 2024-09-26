@@ -8,6 +8,7 @@ import { CardStyles } from 'src/components/Pipelines/pipelineGallery.helpers';
 
 export type AppSettings = {
     cardStyle: CardStyles;
+    darkMode: boolean;
 };
 
 export type VueStore = {
@@ -26,6 +27,7 @@ const state = reactive<VueStore>({
     taskQueue: [],
     settings: {
         cardStyle: CardStyles.standard,
+        darkMode: true,
     },
 });
 
@@ -71,8 +73,13 @@ const setCardStyles = (cardStyle: CardStyles) => {
     state.settings.cardStyle = cardStyle;
 };
 
+const toggleDarkMode = () => {
+    state.settings.darkMode = !state.settings.darkMode;
+};
+
 export default {
     state,
+    toggleDarkMode,
     setCardStyles,
     setAqueducts,
     upsertPipeline,

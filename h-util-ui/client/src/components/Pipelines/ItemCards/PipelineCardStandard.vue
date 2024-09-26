@@ -77,7 +77,7 @@ const onDragActiveChange = (active: boolean) => {
   position: relative;
   width: 100%;
   justify-content: center;
-  gap: 5px;
+  gap: var(--spacer-gap);
   padding: 0.5em;
 }
 

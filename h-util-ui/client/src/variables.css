@@ -6,10 +6,10 @@
 body {
   --q-backingColor: #470b0d;
   --q-lightColor: #efc648;
-  --q-primary: var(--q-lightColor);
 
   --card-size-normal: 250px;
   --card-size-compact: 100px;
+  --spacer-gap: 4px;
 }
 
 /* .body--dark {

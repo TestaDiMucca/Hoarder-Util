@@ -27,6 +27,6 @@ const handleNewPipeline = () => navigateTo(PageViews.Edit);
 <style scoped>
 .controls {
   display: flex;
-  gap: 0.5em;
+  gap: var(--spacer-gap);
 }
 </style>

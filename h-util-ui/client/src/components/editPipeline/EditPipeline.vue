@@ -218,7 +218,7 @@ const vueFlowTopology = computed(() => buildPipelineTopology(pipelineModules.val
   cursor: pointer;
   justify-content: center;
   display: flex;
-  gap: 5px;
+  gap: var(--spacer-gap);
 }
 
 .color-input button {

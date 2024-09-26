@@ -50,7 +50,7 @@ const editBranch = (branchData: ProcessingBranch | null, index: number) => {
 .branching-options {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--spacer-gap);
   max-height: 60vh;
   overflow-y: auto;
 }

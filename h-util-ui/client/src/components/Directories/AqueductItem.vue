@@ -35,9 +35,9 @@ const pipelineName = computed(() => {
 <template>
   <q-card class="gallery-item">
     <q-card-section class="section">
-      <div class="run-button card-border">
+      <div @click="$emit('run')" class="run-button card-border">
         <q-tooltip :delay="500" :offset="[0, 10]">Run files through this aqueduct</q-tooltip>
-        <WaterCircle @click=" $emit('run')" class="icon-button" :size="36" />
+        <WaterCircle class="icon-button" :size="36" />
       </div>
 
       <div class="text-content">
