@@ -10,5 +10,5 @@ const handleSelectOption = (opt) => {
 </script>
 
 <template>
-  <PipelineSelector :value="String(currentOptions.value)" v-on:option-selected="handleSelectOption" />
+  <PipelineSelector :value="String(currentOptions.value)" @select="handleSelectOption" />
 </template>

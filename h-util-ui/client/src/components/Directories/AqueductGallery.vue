@@ -11,10 +11,13 @@ type Props = {
   aqueducts: Aqueduct[] | null;
   handleNew: () => void;
   handleEdit: (a: Aqueduct) => void;
-  onAqueductsChange: () => void;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
+
+const emit = defineEmits<{
+  (e: 'update'): void;
+}>();
 
 const handleRun = (id: string) => {
   getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, {
@@ -29,7 +32,7 @@ const handleDelete = async (aqueDuctId: string) => {
     aqueDuctId
   })
 
-  props.onAqueductsChange();
+  emit('update');
 }
 </script>
 

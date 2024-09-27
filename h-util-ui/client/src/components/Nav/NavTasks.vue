@@ -20,7 +20,7 @@ const handleTaskProgress = debounce((stringified) => {
 
   /** Handle overflow removal */
   if (Object.keys(existingTasks.value).length >= MAX_TASKS) delete existingTasks.value[lowestId.value];
-}, 200, {
+}, 100, {
   leading: true,
   trailing: true
 })

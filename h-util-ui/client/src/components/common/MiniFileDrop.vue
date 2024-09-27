@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { FileUploadOptions, useDropzone } from "vue3-dropzone";
 
-interface Props {
-  handleDroppedFiles: (fileList: string[]) => void;
-}
-
 interface ElectronFile extends File {
   path: string;
 }
 
-const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: 'select', f: string[]): void;
+}>();
 
 const onDrop: FileUploadOptions['onDrop'] = async (acceptFiles: ElectronFile[], _rejectReasons) => {
   if (acceptFiles.length) {
-    props.handleDroppedFiles(acceptFiles.map(f => f.path))
+    emit('select', acceptFiles.map(f => f.path))
   }
 }
 

@@ -88,7 +88,7 @@ const templateUsesDateTags = computed(() => hasDateTag(String(props.currentOptio
       </q-card>
     </div>
 
-    <MiniFileDrop v-if="currentOptions.value" :handleDroppedFiles="handleDroppedFiles" />
+    <MiniFileDrop v-if="currentOptions.value" @select="handleDroppedFiles" />
   </section>
 
   <FileListModal :fileList="fileList" :onHide="clearFiles" v-model="showList" action="renamed" />

@@ -3,12 +3,13 @@ import store from '@utils/store';
 import { computed } from 'vue';
 
 type Props = {
-  // todo: vue events
   value: string;
-  onOptionSelected: (optionId: string) => void;
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: 'select', opt: string): void;
+}>();
 
 const pipelineOptions = computed(() => Object.values(store.state.pipelines).filter(p => p.id !== store.state.selectedPipeline?.id).map(pipeline => ({
   label: pipeline.name,
@@ -18,8 +19,7 @@ const pipelineOptions = computed(() => Object.values(store.state.pipelines).filt
 const selectedOption = computed(() => pipelineOptions.value.find(o => o.value === props.value));
 
 const handleSelectOption = (opt) => {
-  props.onOptionSelected(opt.value);
-
+  emit('select', opt.value);
 }
 </script>
 

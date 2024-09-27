@@ -10,5 +10,5 @@ const onDirSelected = (dir: string) => {
 </script>
 
 <template>
-  <DirectoryPicker :value="String(currentOptions.value)" :onSelectedDirectory="onDirSelected" />
+  <DirectoryPicker :value="String(currentOptions.value)" @select="onDirSelected" />
 </template>

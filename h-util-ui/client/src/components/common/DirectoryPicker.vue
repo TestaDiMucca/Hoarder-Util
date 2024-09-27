@@ -3,17 +3,20 @@ import { getIpcRenderer } from '@utils/helpers';
 
 type Props = {
   value: string | null;
-  onSelectedDirectory: (dir: string) => void;
 }
 
 const props = defineProps<Props>();
+
+const emit = defineEmits<{
+  (e: 'select', d: string): void;
+}>();
 
 const handleDirPrompt = async () => {
   const folder = await getIpcRenderer()?.selectFolder();
 
   if (!folder) return;
 
-  props.onSelectedDirectory(folder);
+  emit('select', folder);
 }
 </script>
 
