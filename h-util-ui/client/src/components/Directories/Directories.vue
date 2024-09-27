@@ -37,9 +37,9 @@ const clearSelection = () => {
 
 <template>
   <EditAqueduct v-if="selectedAqueduct" :aqueduct="selectedAqueduct" :return-home="clearSelection"
-    :onNewAdded="fetchAqueducts" />
+    @update="fetchAqueducts" />
   <AqueductGallery v-else :aqueducts="stateStore.aqueducts" :handle-new="handleNew" :handleEdit="handleEdit"
-    :onAqueductsChange="fetchAqueducts" />
+    @update="fetchAqueducts" />
 </template>
 
 <style scoped></style>

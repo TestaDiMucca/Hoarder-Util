@@ -45,6 +45,6 @@ const clearFiles = () => {
 </script>
 
 <template>
-  <MiniFileDrop v-if="options.value || options.rules" :handleDroppedFiles="handleDroppedFiles" />
+  <MiniFileDrop v-if="options.value || options.rules" @select="handleDroppedFiles" />
   <FileListModal v-model="showList" :fileList="fileList" :onHide="clearFiles" action="filtered" />
 </template>

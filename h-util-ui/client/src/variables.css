@@ -4,7 +4,6 @@
  */
 
 body {
-  --q-backingColor: #470b0d;
   --q-lightColor: #efc648;
 
   --card-size-normal: 250px;
@@ -12,8 +11,10 @@ body {
   --spacer-gap: 4px;
 }
 
-/* .body--dark {
+.body--dark {
+  --q-backingColor: #470b0d;
 }
 
 .body--light {
-} */
+  --q-backingColor: #b72428;
+}

@@ -12,9 +12,11 @@ import DirectoryPicker from '../common/DirectoryPicker.vue';
 type Props = {
   aqueduct: Aqueduct;
   returnHome: () => void;
-  onNewAdded: () => void;
 }
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: 'update'): void;
+}>();
 const localAqueduct = ref(props.aqueduct);
 
 const addDirectory = () => {
@@ -28,8 +30,8 @@ const removeDirectory = (index: number) => {
 const handleSave = async () => {
   await getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, { type: 'save', data: removeVueRefs(localAqueduct.value) })
 
-  props.onNewAdded();
   props.returnHome();
+  emit('update');
 }
 
 const onPipelineSelected = (id: string) => {
@@ -53,11 +55,11 @@ const onDirSelected = (index: number) => (folder: string) => {
       <q-input type="text" v-model="localAqueduct.name" label="Name" />
       <q-input type="textarea" v-model="localAqueduct.description" label="Description" />
 
-      <PipelineSelector :value="localAqueduct.pipelineId" v-on:option-selected="onPipelineSelected" />
+      <PipelineSelector :value="localAqueduct.pipelineId" @select="onPipelineSelected" />
 
       <div class="directories card-border">
         <div v-for="(_, index) in localAqueduct.directories" :key="index" class="directory-row">
-          <DirectoryPicker :onSelectedDirectory="onDirSelected(index)" :value="localAqueduct.directories[index]" />
+          <DirectoryPicker @select="onDirSelected(index)" :value="localAqueduct.directories[index]" />
 
           <Delete @click="removeDirectory(index)" class="remove-btn icon-button" :size="18" />
         </div>
