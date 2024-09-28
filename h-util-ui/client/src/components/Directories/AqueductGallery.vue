@@ -20,14 +20,14 @@ const emit = defineEmits<{
 }>();
 
 const handleRun = (id: string) => {
-  getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, {
+  getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, {
     type: 'run',
     aqueductId: id
   })
 }
 
 const handleDelete = async (aqueDuctId: string) => {
-  await getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, {
+  await getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, {
     type: 'delete',
     aqueDuctId
   })

@@ -18,12 +18,9 @@ const showList = ref(false);
 const fileList = ref<string[] | null>(null);
 
 const handleDroppedFiles = async (filePaths: string[]) => {
-  const ipcRenderer = getIpcRenderer();
-  if (!ipcRenderer) return;
-
   showList.value = true;
 
-  const res = await ipcRenderer.invoke<FilterTestRequest, string[]>(IpcMessageType.runTest,
+  const res = await getIpcRenderer().invoke<FilterTestRequest, string[]>(IpcMessageType.runTest,
     {
       filePaths,
       invert: !!props.options.inverse,

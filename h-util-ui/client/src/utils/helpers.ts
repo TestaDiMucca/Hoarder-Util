@@ -24,7 +24,7 @@ export const cloneObject = <T extends object>(obj: T) => {
 export const getIpcRenderer = () => {
     const ipcRenderer = window.electronIpc;
 
-    if (!ipcRenderer) return null;
+    if (!ipcRenderer) throw new Error('No IPC handler');
 
     return ipcRenderer;
 };

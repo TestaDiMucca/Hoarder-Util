@@ -12,8 +12,6 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const ipcRenderer = getIpcRenderer();
-
 const onDrop = (filePaths: string[]) => {
   if (!filePaths.length) return;
 
@@ -27,7 +25,7 @@ const onDrop = (filePaths: string[]) => {
    * There may be cost in serializing the pipeline but either seems trivial at this point but
    * may improve in the future
    */
-  ipcRenderer?.send(IpcMessageType.runPipeline, [JSON.stringify(payload)])
+  getIpcRenderer().send(IpcMessageType.runPipeline, [JSON.stringify(payload)])
 }
 
 

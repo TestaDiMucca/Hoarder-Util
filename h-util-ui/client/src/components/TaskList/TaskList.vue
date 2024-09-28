@@ -11,8 +11,6 @@ import TaskListItem from './TaskListItem.vue';
 const existingTasks = ref<Record<number, SpawnedTask>>({});
 const lowestId = ref<number>(0);
 
-const ipcRenderer = getIpcRenderer();
-
 const handleTaskProgress = debounce((stringified) => {
   const updatedTask = JSON.parse(stringified) as SpawnedTask;
 
@@ -25,7 +23,7 @@ const handleTaskProgress = debounce((stringified) => {
   trailing: true
 })
 
-ipcRenderer?.onTaskProgress(handleTaskProgress)
+getIpcRenderer().onTaskProgress(handleTaskProgress)
 
 const sortedTaskList = computed(() => {
   const list = Object.values(existingTasks.value)
