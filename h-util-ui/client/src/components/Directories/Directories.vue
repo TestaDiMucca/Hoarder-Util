@@ -12,7 +12,7 @@ const stateStore = ref(store.state);
 const selectedAqueduct = ref<Aqueduct | null>(null);
 
 const fetchAqueducts = async () => {
-  const data = await getIpcRenderer()?.invoke<AqueductMessage, AqueductLoadResponse>(IpcMessageType.aqueducts, { type: 'load' });
+  const data = await getIpcRenderer().invoke<AqueductMessage, AqueductLoadResponse>(IpcMessageType.aqueducts, { type: 'load' });
 
   if (data) store.setAqueducts(data.data);
 }

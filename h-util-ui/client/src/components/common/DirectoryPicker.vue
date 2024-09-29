@@ -12,7 +12,7 @@ const emit = defineEmits<{
 }>();
 
 const handleDirPrompt = async () => {
-  const folder = await getIpcRenderer()?.selectFolder();
+  const folder = await getIpcRenderer().selectFolder();
 
   if (!folder) return;
 

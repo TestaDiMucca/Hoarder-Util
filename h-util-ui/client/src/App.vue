@@ -10,6 +10,7 @@ import { PageViews } from '@utils/types'
 import DrawerNav from './components/Nav/DrawerNav.vue'
 import Internals from './components/Internals/Internals.vue'
 import Directories from './components/Directories/Directories.vue'
+import ErrorBoundary from './components/common/ErrorBoundary.vue'
 
 const $q = useQuasar();
 
@@ -38,10 +39,8 @@ const currentView = computed<VueComponent>(() => {
 onMounted(() => {
   sendMessageToMain('App mounted');
 
-  const ipcRenderer = getIpcRenderer();
-
   /** Subscribe to main's messages */
-  ipcRenderer?.onMainMessage((payload: string) => {
+  getIpcRenderer().onMainMessage((payload: string) => {
     const message = payload;
 
     $q.notify(message ?? 'No message')
@@ -61,7 +60,9 @@ onMounted(() => {
   <q-layout class="app-container" view="hHh Lpr lff" container>
     <DrawerNav :path-name="pathName" />
     <q-page-container>
-      <component :is="currentView" />
+      <ErrorBoundary>
+        <component :is="currentView" />
+      </ErrorBoundary>
     </q-page-container>
   </q-layout>
 </template>

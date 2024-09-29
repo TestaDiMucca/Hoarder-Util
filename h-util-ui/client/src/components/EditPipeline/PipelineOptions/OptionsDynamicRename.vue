@@ -48,12 +48,9 @@ const selectSuggestion = (suggestion) => {
 }
 
 const handleDroppedFiles = async (filePaths: string[]) => {
-  const ipcRenderer = getIpcRenderer();
-  if (!ipcRenderer) return;
-
   showList.value = true;
 
-  const res = await ipcRenderer.invoke<RenameTestRequest, string[]>(IpcMessageType.runTest, {
+  const res = await getIpcRenderer().invoke<RenameTestRequest, string[]>(IpcMessageType.runTest, {
     type: ProcessingModuleType.dynamicRename,
     filePaths, templateString: String(props.currentOptions.value)
   });

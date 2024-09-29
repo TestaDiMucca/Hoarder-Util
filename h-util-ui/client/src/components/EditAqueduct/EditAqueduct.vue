@@ -28,7 +28,7 @@ const removeDirectory = (index: number) => {
 }
 
 const handleSave = async () => {
-  await getIpcRenderer()?.invoke<AqueductMessage>(IpcMessageType.aqueducts, { type: 'save', data: removeVueRefs(localAqueduct.value) })
+  await getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, { type: 'save', data: removeVueRefs(localAqueduct.value) })
 
   props.returnHome();
   emit('update');

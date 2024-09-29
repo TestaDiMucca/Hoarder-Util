@@ -15,7 +15,7 @@ const handleExportPipelines = () => {
   loadUserData().then(data => {
     if (!data?.pipelines) return;
 
-    getIpcRenderer()?.saveFile(JSON.stringify(data.pipelines));
+    getIpcRenderer().saveFile(JSON.stringify(data.pipelines));
   })
 }
 
