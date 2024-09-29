@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** @deprecated */
 import { computed, ref } from 'vue';
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import { getIpcRenderer } from '@utils/helpers';
 import { SpawnedTask } from '@utils/types';
 import { MAX_TASKS } from '@utils/constants';
@@ -11,7 +11,7 @@ import TaskListItem from './TaskListItem.vue';
 const existingTasks = ref<Record<number, SpawnedTask>>({});
 const lowestId = ref<number>(0);
 
-const handleTaskProgress = debounce((stringified) => {
+const handleTaskProgress = throttle((stringified) => {
   const updatedTask = JSON.parse(stringified) as SpawnedTask;
 
   existingTasks.value[updatedTask.id] = Object.assign((existingTasks.value[updatedTask.id] ?? {}), updatedTask);

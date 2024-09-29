@@ -9,7 +9,7 @@ import { MODULE_MAP } from './modules/moduleMap';
 import { addPipelineRunStat } from '../data/stats.db';
 import branchingHandler from './modules/branching.handler';
 
-let taskId = 0;
+let globalTaskId = 0;
 const MAX_MODULE_LENGTH = 100;
 
 /** Top level does not know what this is. Gives modules places to store data. */
@@ -22,7 +22,8 @@ type OnDoneMap = Record<string, ModuleHandler['onDone']>;
  * Full flow for running a pipeline.
  */
 export const runPipelineForFiles = async (params: ProcessingRequest) => {
-    taskId++;
+    globalTaskId++;
+    const taskId = globalTaskId;
     const { filePaths, pipeline } = params;
 
     if (filePaths.length === 0 || pipeline.processingModules.length === 0) return;
