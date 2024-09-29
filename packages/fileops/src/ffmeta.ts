@@ -73,7 +73,7 @@ export const compressVideo = async (
 
         ffmpegCaller(filePath)
             .fps(30)
-            .addOptions(['-crf 28'])
+            .addOptions([`-crf ${crf}`])
             .output(getTempName(filePath))
             .on('end', resolve)
             .on('codecData', (data: any) => {
