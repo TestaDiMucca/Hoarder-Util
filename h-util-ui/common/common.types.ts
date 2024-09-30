@@ -15,6 +15,7 @@ export enum ProcessingModuleType {
     ruleFilter = 'Filter with Rules',
     branch = 'branch',
     runPipeline = 'runPipeline',
+    videoConvert = 'Convert to mp4',
 }
 
 /** Options that work by switching on/off only */
