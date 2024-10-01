@@ -1,6 +1,12 @@
 import { detachPromise, promises, withTimer } from '@common/common';
 import { splitFileNameFromPath } from '@common/fileops';
-import { ActionModule, ProcessingModule, ProcessingModuleType, ProcessingRequest } from '@shared/common.types';
+import {
+    ActionModule,
+    BranchingModule,
+    ProcessingModule,
+    ProcessingModuleType,
+    ProcessingRequest,
+} from '@shared/common.types';
 import { ProcessingError } from '@util/errors';
 import { updateTaskProgress } from '@util/ipc';
 import { CommonContext, FileOptions, FileWithMeta, ModuleHandler } from '@util/types';
@@ -78,20 +84,16 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
 
                 mainUpdate(fileName, progress);
 
-                // todo: refactor/clean
                 try {
                     while (!!nextModule && modulesIterated < MAX_MODULE_LENGTH && handling) {
+                        modulesIterated++;
+
                         if (nextModule.type === ProcessingModuleType.branch) {
-                            const matchingModuleId: string | null = await branchingHandler(
-                                nextModule,
-                                fileWithMeta.filePath,
-                            );
-                            console.log('matches,', matchingModuleId);
-                            modulesIterated++;
-                            const searchModule: ProcessingModule | null = matchingModuleId
-                                ? modulesById[matchingModuleId]
-                                : null;
-                            nextModule = searchModule ?? null;
+                            nextModule = await runBranchingModuleForFile({
+                                branchingModule: nextModule,
+                                fileWithMeta,
+                                modulesById,
+                            });
                             continue;
                         }
 
@@ -101,12 +103,13 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
                             commonContext,
                             moduleDataStores,
                             onDoneMap,
+                            onProgress: (_, subProgress) =>
+                                mainUpdate(fileName, progress, nextModule?.type, subProgress),
                         });
 
                         /** Immediately cease all handling if a filter module eliminated this file */
                         if (fileWithMeta.remove) handling = false;
 
-                        modulesIterated++;
                         const searchModule: ProcessingModule | null = nextModule.nextModule
                             ? modulesById[nextModule.nextModule]
                             : null;
@@ -148,20 +151,40 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
     });
 };
 
+export const runBranchingModuleForFile = async ({
+    branchingModule,
+    fileWithMeta,
+    modulesById,
+}: {
+    fileWithMeta: FileWithMeta;
+    branchingModule: BranchingModule;
+    modulesById: Record<string, ProcessingModule>;
+}) => {
+    const matchingModuleId: string | null = await branchingHandler(branchingModule, fileWithMeta.filePath);
+
+    const searchModule: ProcessingModule | null = matchingModuleId ? modulesById[matchingModuleId] : null;
+
+    return searchModule;
+};
+
+/**
+ * Run non branching module.
+ */
 export const runModuleForFile = async <T extends object = {}>({
     processingModule,
     fileWithMeta,
     commonContext,
     moduleDataStores,
     onDoneMap,
+    onProgress,
 }: {
     processingModule: ProcessingModule;
     fileWithMeta: FileWithMeta;
     commonContext: CommonContext & T;
     moduleDataStores?: ModuleDataStore;
     onDoneMap?: OnDoneMap;
+    onProgress?: (label: string, progress: number) => void;
 }) => {
-    // TODO: support
     if (processingModule.type === ProcessingModuleType.branch) return;
 
     const { fileName } = splitFileNameFromPath(fileWithMeta.filePath);
@@ -188,6 +211,7 @@ export const runModuleForFile = async <T extends object = {}>({
             {
                 context: commonContext,
                 clientOptions: processingModule.options,
+                onProgress,
             },
             moduleDataStores?.[processingModule.id] ?? {},
         );
