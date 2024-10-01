@@ -93,6 +93,44 @@ export const compressVideo = async (
             .run();
     });
 
+type CallFfmpegArgs = {
+    filePath: string;
+    outputFilePath: string;
+    onProgress?: (p: number) => void;
+    destroyTempOnError?: boolean;
+    // TODO
+    options?: any;
+};
+
+/**
+ * Meant to be a more generic way to pass to ffmpeg
+ * flesh out options in future
+ */
+export const callFfmpeg = async ({ filePath, outputFilePath, onProgress, destroyTempOnError }: CallFfmpegArgs) =>
+    new Promise((resolve, reject) => {
+        let totalTime: number;
+
+        ffmpegCaller(filePath)
+            .fps(30)
+            .output(outputFilePath)
+            .on('end', resolve)
+            .on('codecData', (data: any) => {
+                totalTime = parseInt(data.duration.replace(/:/g, ''));
+            })
+            .on('progress', (p: FfmpegProgress) => {
+                if (!totalTime || totalTime <= 0) return;
+
+                const time = parseInt(p.timemark.replace(/:/g, ''));
+                onProgress?.((time / totalTime) * 100);
+            })
+            .on('error', (e: Error) => {
+                console.error(e);
+                if (destroyTempOnError) detachPromise({ cb: () => unlink(outputFilePath) });
+                reject(e);
+            })
+            .run();
+    });
+
 type FfmpegProgress = {
     frames: number;
     currentFps: number;

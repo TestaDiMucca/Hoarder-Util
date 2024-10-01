@@ -11,6 +11,7 @@ import FileDocument from 'vue-material-design-icons/FileDocumentArrowRight.vue';
 import Rename from 'vue-material-design-icons/RenameBoxOutline.vue';
 import Branching from 'vue-material-design-icons/FamilyTree.vue';
 import Pipe from 'vue-material-design-icons/Pipe.vue';
+import VideoConvert from 'vue-material-design-icons/VideoSwitch.vue';
 
 import { ProcessingModule, ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
@@ -37,6 +38,7 @@ export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.ruleFilter]: '📏',
     [ProcessingModuleType.branch]: '🌳',
     [ProcessingModuleType.runPipeline]: '🪈',
+    [ProcessingModuleType.videoConvert]: '📼',
 };
 
 export const MODULE_LABEL: Record<ProcessingModuleType, string> = {
@@ -53,6 +55,7 @@ export const MODULE_LABEL: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.ruleFilter]: 'Filter with rules',
     [ProcessingModuleType.branch]: 'Branching',
     [ProcessingModuleType.runPipeline]: 'Forward to Pipeline',
+    [ProcessingModuleType.videoConvert]: 'Convert to mp4',
 };
 
 /** Icon representation of the module operations */
@@ -70,6 +73,7 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
     [ProcessingModuleType.ruleFilter]: Filter,
     [ProcessingModuleType.branch]: Branching,
     [ProcessingModuleType.runPipeline]: Pipe,
+    [ProcessingModuleType.videoConvert]: VideoConvert,
 };
 
 /**
@@ -91,6 +95,7 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.ruleFilter]: '-',
     [ProcessingModuleType.branch]: '-',
     [ProcessingModuleType.runPipeline]: 'Target pipeline',
+    [ProcessingModuleType.videoConvert]: '-',
 };
 
 export const OPTION_TOOLTIP: Partial<Record<ProcessingModuleType, string>> = {
@@ -103,6 +108,7 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
     switch (moduleType) {
         case ProcessingModuleType.datePrefix:
         case ProcessingModuleType.metadata:
+        case ProcessingModuleType.videoConvert:
             return null;
         case ProcessingModuleType.report:
             return OptionsDirectory;

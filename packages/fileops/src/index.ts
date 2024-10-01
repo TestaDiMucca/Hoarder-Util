@@ -4,7 +4,7 @@ import dateFormat from 'dateformat';
 
 import { printf, chunkArray, promises, randomFromArray, withTimer } from '@common/common';
 
-import { writeTags, readTags, compressVideo } from './ffmeta';
+import { writeTags, readTags, compressVideo, callFfmpeg } from './ffmeta';
 import { getExif } from './imgTools';
 
 /** Media files we'll operate on for the date rename util */
@@ -163,6 +163,7 @@ export const ffMeta = {
     writeTags,
     readTags,
     compressVideo,
+    callFfmpeg,
 };
 
 export { getTempName, removeExt, replaceExtension, replaceFile } from './util';

@@ -100,6 +100,17 @@ const menuItems: MenuItem[] = [
         onClick: handleModuleTypeSelect(ProcessingModuleType.iterate)
       },
     ]
+  },
+  {
+    type: 'group',
+    label: 'WIP',
+    items: [
+      {
+        type: 'item',
+        label: 'Convert to mp4',
+        onClick: handleModuleTypeSelect(ProcessingModuleType.videoConvert)
+      }
+    ]
   }
 ]
 </script>
