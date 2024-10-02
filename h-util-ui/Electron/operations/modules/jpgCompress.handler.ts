@@ -18,7 +18,7 @@ const jpgCompressHandler: ModuleHandler = {
         const sizeBefore = await getFileSize(filePath, 'number');
 
         const { fileName } = splitFileNameFromPath(filePath);
-        await compressToLevel(filePath, parsedQuality, (label, progress) =>
+        await compressToLevel(filePath, parsedQuality, (label: string, progress: number) =>
             opts.onProgress?.(`${fileName}:${label}`, progress),
         );
 

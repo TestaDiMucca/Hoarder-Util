@@ -74,7 +74,7 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
             /** We don't know what they are up here, we're not concerned. Modules will handle. */
             const moduleDataStores: ModuleDataStore = {};
 
-            await promises.each(fileOptions.filesWithMeta, async (fileWithMeta) => {
+            await promises.each(fileOptions.filesWithMeta, async (fileWithMeta: FileWithMeta) => {
                 let nextModule: ProcessingModule | null = pipeline.processingModules[0];
                 let modulesIterated = 0;
                 let handling = true;
@@ -132,12 +132,12 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
             });
 
             /** Run all onDone handlers */
-            await promises.each(Object.entries(onDoneMap), async ([moduleId, cb]) => {
+            await promises.each(Object.entries(onDoneMap), async ([moduleId, cb]: any) => {
                 const clientOptions = (modulesById[moduleId] as ActionModule).options;
                 await cb?.({ context: commonContext, clientOptions }, moduleDataStores[moduleId]);
             });
         },
-        (time) => {
+        (time: number) => {
             timeTaken = time;
         },
     );

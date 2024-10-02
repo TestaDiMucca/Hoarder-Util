@@ -5,11 +5,11 @@ import { IpcMessageType } from '@shared/common.constants';
 import { Pipeline, ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
 import { getMainWindow, handleErrorMessage } from '@util/ipc';
 import output from '@util/output';
-import { promises } from '@common/common';
+import { promises } from '@common/common/index';
 import pipelineCache from '@util/cache';
 
-import { filterTest } from './operations/filterTest';
-import { renameTest } from './operations/renameTest';
+import { filterTest } from './operations/moduleTesters/filterTest';
+import { renameTest } from './operations/moduleTesters/renameTest';
 import { handleClientMessage, runPipelineForFiles } from './operations/handler';
 import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
@@ -118,7 +118,7 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         const pipelineList = Object.values(data.pipelines);
 
         const currentPipelineIds: string[] = [];
-        await promises.each(pipelineList, async (pipeline) => {
+        await promises.each(pipelineList, async (pipeline: Pipeline) => {
             await upsertPipeline(pipeline);
             currentPipelineIds.push(pipeline.id!);
         });

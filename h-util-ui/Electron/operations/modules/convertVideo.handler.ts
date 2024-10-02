@@ -14,7 +14,7 @@ const convertVideoHandler: ModuleHandler = {
         await ffMeta.callFfmpeg({
             filePath,
             outputFilePath,
-            onProgress: (progress) => opts.onProgress?.(`${fileName}`, progress),
+            onProgress: (progress: number) => opts.onProgress?.(`${fileName}`, progress),
         });
 
         await unlink(filePath);

@@ -141,7 +141,7 @@ export const evaluateRulesForFile = async (filePath: string, rules: Rule, opts: 
                     ocrOptions.push(rule.value);
                 }
             }),
-            async (tag) => {
+            async (tag: any) => {
                 await populateDataDict({
                     dataDict,
                     tag,

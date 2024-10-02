@@ -3,6 +3,7 @@ import { fileListToFileOptions } from '../handler.helpers';
 import { splitFileNameFromPath } from '@common/fileops';
 import { promises } from '@common/common';
 import { runModuleForFile } from '../handler';
+import { FileWithMeta } from '@util/types';
 
 export const renameTest = async (renameTestRequest: RenameTestRequest) => {
     const { filePaths, templateString } = renameTestRequest;
@@ -15,7 +16,7 @@ export const renameTest = async (renameTestRequest: RenameTestRequest) => {
         options: { value: templateString },
     };
 
-    await promises.each(fileOptions.filesWithMeta, async (fileWithMeta) =>
+    await promises.each(fileOptions.filesWithMeta, async (fileWithMeta: FileWithMeta) =>
         runModuleForFile({
             processingModule: mockModule,
             fileWithMeta,

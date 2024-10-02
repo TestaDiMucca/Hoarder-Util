@@ -25,7 +25,7 @@ const movCompressHandler: ModuleHandler = {
 
         const { fileName } = splitFileNameFromPath(filePath);
 
-        await ffMeta.compressVideo(filePath, parsedQuality, (progress) => opts.onProgress?.(`${fileName}`, progress));
+        await ffMeta.compressVideo(filePath, parsedQuality, (progress: number) => opts.onProgress?.(`${fileName}`, progress));
         await replaceFile(filePath, getTempName(filePath));
 
         const sizeAfter = await getFileSize(filePath, 'number');

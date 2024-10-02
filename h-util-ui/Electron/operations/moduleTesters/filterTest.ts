@@ -3,6 +3,7 @@ import { fileListToFileOptions } from '../handler.helpers';
 import { splitFileNameFromPath } from '@common/fileops';
 import { promises } from '@common/common';
 import { runModuleForFile } from '../handler';
+import { FileWithMeta } from '@util/types';
 
 export const filterTest = async (filterTestRequest: FilterTestRequest) => {
     const { filePaths, invert, type } = filterTestRequest;
@@ -19,7 +20,7 @@ export const filterTest = async (filterTestRequest: FilterTestRequest) => {
         },
     };
 
-    await promises.each(fileOptions.filesWithMeta, async (fileWithMeta) =>
+    await promises.each(fileOptions.filesWithMeta, async (fileWithMeta: FileWithMeta) =>
         runModuleForFile({
             processingModule: mockModule,
             commonContext: {},

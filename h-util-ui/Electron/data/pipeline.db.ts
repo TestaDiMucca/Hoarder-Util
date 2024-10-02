@@ -6,7 +6,7 @@ import { db } from './database';
 import { OptionalKey } from '@util/types';
 
 export const upsertPipeline = async (pipeline: Pipeline) => {
-    const processingModules = await promises.mapSeries(pipeline.processingModules, (module) => upsertModule(module));
+    const processingModules = await promises.mapSeries(pipeline.processingModules, (module: ProcessingModule) => upsertModule(module));
     const dbPipeline = await db.pipeline.upsert({
         where: {
             uuid: pipeline.id,
@@ -25,7 +25,7 @@ export const upsertPipeline = async (pipeline: Pipeline) => {
         },
     });
 
-    await promises.each(processingModules, ({ id }) => joinModuleWithPipeline(id, dbPipeline.id));
+    await promises.each(processingModules, ({ id }: any) => joinModuleWithPipeline(+id, dbPipeline.id));
 };
 
 /**

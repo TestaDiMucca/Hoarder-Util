@@ -54,7 +54,7 @@ export const handleAqueductMessage = async (message: AqueductMessage) => {
             // todo: use shared helper getter to auto do these, or look up hooks in prisma
             const directories: string[] = JSON.parse(aqueduct.directories);
 
-            await promises.each(directories, async (directory) => {
+            await promises.each(directories, async (directory: string) => {
                 try {
                     const filePaths = (await readdir(directory)).map((file) => path.join(directory, file));
 

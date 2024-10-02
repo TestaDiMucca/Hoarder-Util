@@ -29,7 +29,7 @@ const dynamicRenameHandler: ModuleHandler<RequiredDataContext> = {
         const dataDict: DataDict = {};
 
         const tags = (opts.context?.tags ?? []) as RenameTemplates[];
-        await promises.each(tags, async (tag) => populateDataDict({ dataDict, tag, filePath, mask: timeMask }));
+        await promises.each(tags, async (tag: string) => populateDataDict({ dataDict, tag, filePath, mask: timeMask }));
 
         const { fileName } = splitFileNameFromPath(filePath);
 

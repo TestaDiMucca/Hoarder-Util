@@ -10,12 +10,12 @@
     "build": "tsc && yarn build:front",
     "test": "jest",
     "watch": "nodemon --exec yarn serve:electron",
-    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO,PRISMA' --prefix-colors 'red,yellow,green' -k \"yarn serve:front\" \"yarn watch\" \"npm run prisma:studio\"",
+    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",
     "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
     "serve:front": "cd client && yarn dev",
-    "serve:electron": "set ELECTRON_ENABLE_LOGGING=1 && set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build &&  wait-on tcp:3000 && APP_IS_DEV=yes electron --inspect=9229 .",
+    "serve:electron": "set ELECTRON_ENABLE_LOGGING=1 && set APP_IS_NIGHTLY=yes && set APP_IS_DEV=yes && yarn build &&  wait-on tcp:3000 && electron --inspect=9229 .",
     "build:front": "cd client && yarn build",
     "electron:build": "yarn build",
     "electron:builder": "electron-builder",
@@ -59,7 +59,6 @@
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",
     "@prisma/client": "^5.19.1",
-    "better-sqlite3": "^11.3.0",
     "colors": "^1.4.0",
     "dateformat": "^4.6.3",
     "electron-log": "^4.4.8",
@@ -73,10 +72,6 @@
     "tesseract.js": "^5.1.0",
     "winston": "^3.14.2"
   },
-  "workspaces": [
-    "../packages/fileops",
-    "../packages/common"
-  ],
   "type": "commonjs",
   "build": {
     "appId": "com.official-h-util-ui.app",
@@ -94,15 +89,10 @@
       "deleteAppDataOnUninstall": true
     },
     "files": [
-      "dist/**/*",
-      "../packages/**/*"
+      "dist/**/*"
     ],
     "extraResources": [
-      "defaults/**/*",
-      "../packages/**/*"
-    ],
-    "extraFiles": [
-      "../packages/**/*"
+      "defaults/**/*"
     ],
     "directories": {
       "buildResources": "assets",
