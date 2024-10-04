@@ -13,7 +13,7 @@ import Branching from 'vue-material-design-icons/FamilyTree.vue';
 import Pipe from 'vue-material-design-icons/Pipe.vue';
 import VideoConvert from 'vue-material-design-icons/VideoSwitch.vue';
 
-import { ProcessingModule, ProcessingModuleType } from './types';
+import { ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
 import OptionsStandard from 'src/components/EditPipeline/PipelineOptions/OptionsStandard.vue';
 import OptionsDirectory from 'src/components/EditPipeline/PipelineOptions/OptionsDirectory.vue';
@@ -21,7 +21,6 @@ import OptionsFilter from 'src/components/EditPipeline/PipelineOptions/OptionsFi
 import OptionsDynamicRename from 'src/components/EditPipeline/PipelineOptions/OptionsDynamicRename.vue';
 import OptionsRuleFilter from 'src/components/EditPipeline/PipelineOptions/OptionsRuleFilter.vue';
 import OptionsPipelineSelect from 'src/components/EditPipeline/PipelineOptions/OptionsPipelineSelect.vue';
-import { getDefaultRule } from '@shared/rules.utils';
 
 /** If an emoji representation of the modules are needed */
 export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
@@ -124,30 +123,6 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
             return OptionsStandard;
     }
 };
-
-// TODO: this isn't a constant, find better home e.g. models.helpers
-/** Get a default starter module */
-export const getDefaultModule = (id: string, branching = false): ProcessingModule =>
-    branching
-        ? {
-              id,
-              type: ProcessingModuleType.branch,
-              branches: [
-                  {
-                      rules: getDefaultRule(),
-                  },
-              ],
-          }
-        : {
-              id,
-              type: ProcessingModuleType.datePrefix,
-              options: {
-                  value: '',
-                  inverse: false,
-                  ignoreErrors: true,
-                  skipPreviouslyFailed: false,
-              },
-          };
 
 export const MAX_TASKS = 5;
 

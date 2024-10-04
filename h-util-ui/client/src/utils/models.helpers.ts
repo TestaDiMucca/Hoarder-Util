@@ -1,5 +1,6 @@
 import { v4 as uuidV4 } from 'uuid';
-import { Aqueduct, ProcessingModuleType } from '@shared/common.types';
+import { Aqueduct, ProcessingModule, ProcessingModuleType } from '@shared/common.types';
+import { getDefaultRule } from '@shared/rules.utils';
 
 /**
  * Filtering type modules can be inverted
@@ -21,3 +22,26 @@ export const getDefaultAqueduct = (id = uuidV4()): Aqueduct => ({
     pipelineId: '',
     directories: [],
 });
+
+/** Get a default starter module */
+export const getDefaultModule = (id: string, branching = false): ProcessingModule =>
+    branching
+        ? {
+              id,
+              type: ProcessingModuleType.branch,
+              branches: [
+                  {
+                      rules: getDefaultRule(),
+                  },
+              ],
+          }
+        : {
+              id,
+              type: ProcessingModuleType.datePrefix,
+              options: {
+                  value: '',
+                  inverse: false,
+                  ignoreErrors: true,
+                  skipPreviouslyFailed: false,
+              },
+          };

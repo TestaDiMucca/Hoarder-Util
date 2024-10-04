@@ -49,7 +49,6 @@ type PopulateDataDictArgs = {
     option?: string | string[];
 };
 
-// todo: refactor to opts obj
 export const populateDataDict = async ({
     dataDict,
     tag,

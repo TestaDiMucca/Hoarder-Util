@@ -205,7 +205,6 @@ export const runModuleForFile = async <T extends object = {}>({
 
         if (moduleDataStores && !moduleDataStores[processingModule.id]) moduleDataStores[processingModule.id] = {};
 
-        // todo: incremental progress e.g. for media?
         await handler?.(
             fileWithMeta,
             {
