@@ -35,7 +35,7 @@ const onPipelinesUpdated = () => {
     saveUserData({ ...state.pipelines });
 };
 
-// TODO: Send to main node process instead and refetch
+// TODO: GH issue #190
 const upsertPipeline = (pipeline: Pipeline) => {
     if (!pipeline.id) {
         pipeline.id = uuidV4();

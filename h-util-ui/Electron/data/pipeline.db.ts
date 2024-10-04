@@ -12,7 +12,6 @@ export const upsertPipeline = async (pipeline: Pipeline) => {
             uuid: pipeline.id,
         },
         update: {
-            // todo: condense, re-use
             name: pipeline.name,
             color: pipeline.color,
             manual_ranking: pipeline.manualRanking,

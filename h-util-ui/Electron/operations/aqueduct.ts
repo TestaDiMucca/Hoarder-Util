@@ -78,7 +78,6 @@ export const handleAqueductMessage = async (message: AqueductMessage) => {
         case 'save':
             const { data } = message;
 
-            // TODO: one query? sub-query, raw query?
             const targetedPipeline = await db.pipeline.findFirst({
                 where: {
                     uuid: data.pipelineId,

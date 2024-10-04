@@ -8,12 +8,13 @@ import { Background } from '@vue-flow/background'
 
 import { PageViews, ProcessingModule, ProcessingModuleType } from '@utils/types';
 import store from '@utils/store';
-import { DEFAULT_RANKING, getDefaultModule } from '@utils/constants';
+import { DEFAULT_RANKING } from '@utils/constants';
 import { navigateTo } from '@utils/helpers';
 import PageLayout from 'src/layout/PageLayout.vue';
 import { buildPipelineTopology, ChartNodeData } from './pipelineTopology';
 import EditPipelineTopologyModule from './Topology/EditPipelineTopologyModule.vue';
 import EditPipelineNewModule from './Topology/EditPipelineNewModule.vue';
+import { getDefaultModule } from '@utils/models.helpers';
 
 const pipelineModules = ref<ProcessingModule[]>([
   getDefaultModule(uuidv4())
