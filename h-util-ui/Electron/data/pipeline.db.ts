@@ -1,9 +1,46 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Pipeline as DbPipeline } from '@prisma/client';
 import { Pipeline, ProcessingModule } from '@shared/common.types';
 import { promises } from '@common/common';
 import { db } from './database';
 import { OptionalKey } from '@util/types';
+import { database } from './sqlite';
+
+export const sqUpsertPipeline = (pipeline: Pipeline) => {
+    // const upsertPipeline = database.prepare<any, { id: number }>(`--sql
+    //     INSERT INTO Pipeline (uuid, name, color, manual_ranking)
+    //     VALUES (@uuid, @name, @color, @manual_ranking)
+    //     ON CONFLICT(uuid) DO UPDATE SET
+    //         name = excluded.name,
+    //         color = excluded.color,
+    //         manual_ranking = excluded.manual_ranking
+    //         modified = CURRENT_TIMESTAMP
+    //     RETURNING id
+    // `);
+    // const upsertModule = database.prepare<any, { id: number }>(`--sql
+    //     INSERT INTO Module (uuid, name, data)
+    //     VALUES (@uuid, @name, @data)
+    //     ON CONFLICT(uuid) DO UPDATE SET
+    //         name = excluded.name,
+    //         data = excluded.data
+    //     RETURNING id
+    // `);
+    // const upsertPipelineModule = database.prepare(`--sql
+    //     INSERT INTO PipelineModule (pipeline_id, module_id)
+    //     VALUES (@pipeline_id, @module_id)
+    //     ON CONFLICT(pipeline_id, module_id) DO NOTHING
+    // `);
+    // database.transaction(() => {
+    //     const pipelineId = upsertPipeline.get({ uuid: pipeline.id, name: pipeline.name })?.id;
+    //     pipeline.processingModules.forEach((module) => {
+    //         const moduleId = upsertModule.get({
+    //             uuid: module.id,
+    //             data: JSON.stringify(module),
+    //         })?.id;
+    //         upsertPipelineModule.run({ pipeline_id: pipelineId, module_id: moduleId });
+    //     });
+    //     return pipelineId;
+    // });
+};
 
 export const upsertPipeline = async (pipeline: Pipeline) => {
     const processingModules = await promises.mapSeries(pipeline.processingModules, (module) => upsertModule(module));
@@ -12,7 +49,6 @@ export const upsertPipeline = async (pipeline: Pipeline) => {
             uuid: pipeline.id,
         },
         update: {
-            // todo: condense, re-use
             name: pipeline.name,
             color: pipeline.color,
             manual_ranking: pipeline.manualRanking,

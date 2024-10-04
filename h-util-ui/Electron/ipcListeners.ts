@@ -11,7 +11,7 @@ import pipelineCache from '@util/cache';
 import { filterTest } from './operations/filterTest';
 import { renameTest } from './operations/renameTest';
 import { handleClientMessage, runPipelineForFiles } from './operations/handler';
-import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
+import { getAllPipelines, sqUpsertPipeline, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
 import { db } from './data/database';
 import { handleAqueductMessage } from './operations/aqueduct';
@@ -120,6 +120,7 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         const currentPipelineIds: string[] = [];
         await promises.each(pipelineList, async (pipeline) => {
             await upsertPipeline(pipeline);
+            sqUpsertPipeline(pipeline);
             currentPipelineIds.push(pipeline.id!);
         });
 

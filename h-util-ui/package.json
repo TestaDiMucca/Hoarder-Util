@@ -10,7 +10,7 @@
     "build": "tsc && yarn build:front",
     "test": "jest",
     "watch": "nodemon --exec yarn serve:electron",
-    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO,PRISMA' --prefix-colors 'red,yellow,green' -k \"yarn serve:front\" \"yarn watch\" \"npm run prisma:studio\"",
+    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",
     "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
@@ -38,6 +38,7 @@
     "packages:sync": "cd .. && cp ./packages/common/src/* ./h-util-ui/Electron/packages/common/ && cp ./packages/fileops/src/* ./h-util-ui/Electron/packages/fileops/"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
     "@types/jest": "^29.5.12",
     "@types/module-alias": "^2.0.4",
     "@types/sqlite3": "^3.1.11",
