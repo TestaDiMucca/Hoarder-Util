@@ -27,6 +27,7 @@ export enum IpcMessageType {
     runTest = 'run-test',
     /** An "aqueduct" operation */
     aqueducts = 'aqueducts',
+    getDbPath = 'get-db-path',
 }
 
 export enum RenameTemplates {

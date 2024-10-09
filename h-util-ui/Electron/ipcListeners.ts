@@ -11,10 +11,13 @@ import pipelineCache from '@util/cache';
 import { filterTest } from './operations/filterTest';
 import { renameTest } from './operations/renameTest';
 import { handleClientMessage, runPipelineForFiles } from './operations/handler';
-import { getAllPipelines, sqUpsertPipeline, upsertPipeline } from './data/pipeline.db';
+import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
 import { db } from './data/database';
 import { handleAqueductMessage } from './operations/aqueduct';
+
+const DATA_FILE = 'hUtil-fe.sqlite3';
+const dbFilePath = path.join(app.getPath('userData'), DATA_FILE);
 
 export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     ipcMain.handle(IpcMessageType.loadData, async (): Promise<Storage> => {
@@ -43,6 +46,10 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         });
 
         return canceled ? null : filePaths[0];
+    });
+
+    ipcMain.handle(IpcMessageType.getDbPath, () => {
+        return dbFilePath;
     });
 
     ipcMain.handle('versions', () => {
@@ -120,7 +127,6 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
         const currentPipelineIds: string[] = [];
         await promises.each(pipelineList, async (pipeline) => {
             await upsertPipeline(pipeline);
-            sqUpsertPipeline(pipeline);
             currentPipelineIds.push(pipeline.id!);
         });
 

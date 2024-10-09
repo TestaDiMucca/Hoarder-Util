@@ -1,24 +1,22 @@
+/**
+ * This is a workaround to turn off the warning for failing to install
+ * OPFS sqlite3_vfs warning. We aren't using this sqlite-wasm option.
+ */
+(self as any).sqlite3ApiConfig = {
+    warn: () => {},
+};
 import sqlite3InitModule, { Database, type Sqlite3Static } from '@sqlite.org/sqlite-wasm';
-import { tablesSql } from './tablesSql';
+import { tablesSql } from './tables.sql';
+
+const DEFAULT_DATABASE = '/hUtil-fe.sqlite3';
 
 const log = console.log;
 const error = console.error;
 let database: Database | null = null;
 
-const sqliteFlags = {
-    c: true,
-    t: false,
-};
-
-const start = async (sqlite3: Sqlite3Static) => {
+const start = async (sqlite3: Sqlite3Static, _dbPath: string) => {
     log('Running SQLite3 version', sqlite3.version.libVersion);
-    const db = new sqlite3.oo1.DB(
-        '/hUtil.sqlite3',
-        Object.entries(sqliteFlags).reduce<string>((a, [flag, enabled]) => {
-            if (enabled) a += flag;
-            return a;
-        }, ''),
-    );
+    const db = new sqlite3.oo1.JsStorageDb('local');
     database = db;
     await initDbIfNeeded();
 };
@@ -41,6 +39,7 @@ export const queryDatabase = {
         ),
     select: <T>(sql: string, values?: any[]) =>
         database ? (database.selectValues(sql, values) as T[]) : noDatabaseError(),
+    selectObj: <T>(sql: string, values?: any[]) => database!.selectObjects(sql, values) as T[],
 };
 
 const initDbIfNeeded = async () => {
@@ -54,16 +53,14 @@ const initDbIfNeeded = async () => {
     }
 };
 
-export const initializeSQLite = async () => {
+export const initializeSQLite = async (dbPath: string = DEFAULT_DATABASE) => {
     try {
-        log('Loading and initializing SQLite3 module...');
         const sqlite3 = await sqlite3InitModule({
             print: log,
             printErr: error,
         });
-        log('Done initializing. Running demo...');
-        await start(sqlite3);
+        await start(sqlite3, dbPath);
     } catch (err: any) {
-        error('Initialization error:', err.name, err.message);
+        error('[sqlite] Initialization error:', err.name, err.message);
     }
 };
