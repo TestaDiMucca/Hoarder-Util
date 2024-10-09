@@ -63,7 +63,6 @@
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",
     "@prisma/client": "^5.19.1",
-    "better-sqlite3": "^11.3.0",
     "colors": "^1.4.0",
     "dateformat": "^4.6.3",
     "electron-log": "^4.4.8",

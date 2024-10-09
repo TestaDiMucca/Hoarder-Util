@@ -11,6 +11,7 @@ import DrawerNav from './components/Nav/DrawerNav.vue'
 import Internals from './components/Internals/Internals.vue'
 import Directories from './components/Directories/Directories.vue'
 import ErrorBoundary from './components/common/ErrorBoundary.vue'
+import { initializeSQLite } from './data/sqlite'
 
 const $q = useQuasar();
 
@@ -45,6 +46,8 @@ onMounted(() => {
 
     $q.notify(message ?? 'No message')
   })
+
+  initializeSQLite();
 
   loadUserData().then(data => {
     if (!data) return;
