@@ -5,12 +5,26 @@ const log = console.log;
 const error = console.error;
 let database: Database | null = null;
 
+const sqliteFlags = {
+    c: true,
+    t: false,
+};
+
 const start = async (sqlite3: Sqlite3Static) => {
     log('Running SQLite3 version', sqlite3.version.libVersion);
-    const db = new sqlite3.oo1.DB('/hUtil.sqlite3', 'ct');
+    const db = new sqlite3.oo1.DB(
+        '/hUtil.sqlite3',
+        Object.entries(sqliteFlags).reduce<string>((a, [flag, enabled]) => {
+            if (enabled) a += flag;
+            return a;
+        }, ''),
+    );
     database = db;
-    // Your SQLite code here.
     await initDbIfNeeded();
+};
+
+const noDatabaseError = () => {
+    throw new Error('No database');
 };
 
 export const queryDatabase = {
@@ -25,37 +39,19 @@ export const queryDatabase = {
                   })
                 : reject(new Error('No database')),
         ),
+    select: <T>(sql: string, values?: any[]) =>
+        database ? (database.selectValues(sql, values) as T[]) : noDatabaseError(),
 };
 
 const initDbIfNeeded = async () => {
-    for (let i = 0; i < tablesSql.length; i++) {
-        const sql = tablesSql[i];
-        try {
+    try {
+        for (let i = 0; i < tablesSql.length; i++) {
+            const sql = tablesSql[i];
             queryDatabase.run<void>(sql);
-        } catch (e) {
-            console.error('ERROR', e, sql);
         }
+    } catch (e) {
+        console.error(`[sqlite] Error initializing db`, e);
     }
-
-    setTimeout(async () => {
-        const tables = await queryDatabase.run<string>(`
-          SELECT name FROM sqlite_schema 
-WHERE type IN ('table','view') 
-AND name NOT LIKE 'sqlite_%'
-ORDER BY 1;
-          `);
-
-        console.log('tables,', tables);
-
-        const db = database?.selectValues(`
-          SELECT name FROM sqlite_schema 
-WHERE type IN ('table','view') 
-AND name NOT LIKE 'sqlite_%'
-ORDER BY 1;
-          `);
-
-        console.log('db', db);
-    }, 1000);
 };
 
 export const initializeSQLite = async () => {
