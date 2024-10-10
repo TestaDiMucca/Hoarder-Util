@@ -10,7 +10,7 @@
     "build": "tsc && yarn build:front",
     "test": "jest",
     "watch": "nodemon --exec yarn serve:electron",
-    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO,PRISMA' --prefix-colors 'red,yellow,green' -k \"yarn serve:front\" \"yarn watch\" \"npm run prisma:studio\"",
+    "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",
     "front:setup": "cd client && yarn",
     "electron:setup": "yarn",
     "setup": "yarn front:setup && yarn electron:setup",
@@ -34,6 +34,7 @@
     "migrate:deploy": "npx prisma migrate deploy",
     "prisma:studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
+    "rebuild-sqlite3": "electron-rebuild -f -w sqlite3",
     "packages:sync": "cd .. && cp ./packages/common/src/* ./h-util-ui/Electron/packages/common/ && cp ./packages/fileops/src/* ./h-util-ui/Electron/packages/fileops/"
   },
   "devDependencies": {
@@ -43,6 +44,7 @@
     "electron": "^22.3.27",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
+    "electron-rebuild": "^3.2.9",
     "eslint": "^9.7.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
@@ -59,7 +61,6 @@
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",
     "@prisma/client": "^5.19.1",
-    "better-sqlite3": "^11.3.0",
     "colors": "^1.4.0",
     "dateformat": "^4.6.3",
     "electron-log": "^4.4.8",

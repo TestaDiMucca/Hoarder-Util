@@ -16,8 +16,10 @@ import output from './util/output';
 import { handleErrorMessage, registerMainWindow } from './util/ipc';
 import { addListenersToIpc } from './ipcListeners';
 import { disconnectPrisma } from './data/database';
+import { initDbIfNeeded } from './data/sqlite';
 
 async function createWindow() {
+    // await initDbIfNeeded();
     addListenersToIpc(ipcMain);
 
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;

@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Pipeline as DbPipeline } from '@prisma/client';
 import { Pipeline, ProcessingModule } from '@shared/common.types';
 import { promises } from '@common/common';
 import { db } from './database';

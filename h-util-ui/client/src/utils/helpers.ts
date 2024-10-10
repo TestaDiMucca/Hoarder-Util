@@ -2,6 +2,7 @@ import { IpcMessageType } from '@shared/common.constants';
 import { PipelineStatsPayload, Storage } from '@shared/common.types';
 import { VueStore } from './store';
 import { PageViews } from './types';
+import { models } from 'src/data/models';
 
 export { PageViews } from './types';
 
@@ -61,6 +62,11 @@ export const saveUserData = (pipelines: VueStore['pipelines']) => {
     const ipcRenderer = getIpcRenderer();
 
     ipcRenderer?.invoke(IpcMessageType.saveData, { pipelines: removeVueRefs(pipelines) });
+
+    // todo: no need to "bulk" upsert
+    Object.values(removeVueRefs(pipelines)).forEach((pipeline) => {
+        models.pipeline.upsert(pipeline);
+    });
 };
 
 // todo: GH Issue #69
