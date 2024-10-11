@@ -28,12 +28,7 @@ const handleRun = (id: string) => {
 }
 
 const handleDelete = async (aqueDuctId: string) => {
-  await getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, {
-    type: 'delete',
-    aqueDuctId
-  })
-
-  console.log('get', models.aqueducts.remove(aqueDuctId));
+  models.aqueducts.remove(aqueDuctId);
 
   emit('update');
 }

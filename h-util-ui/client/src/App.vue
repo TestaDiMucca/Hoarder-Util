@@ -53,19 +53,13 @@ onMounted(() => {
 
   getIpcRenderer().onStatUpdate(({ pipelineUuid, stats }: UpdateStatPayload) =>
     stats.forEach(({ stat, amount }) => models.stats.addRunStat(pipelineUuid, stat, amount))
-
   );
 
   initializeSQLite().then(() => {
     loading.value = false;
-    console.log(models.pipeline.selectAll());
+    const pipelines = models.pipeline.selectAll();
+    store.setAllPipelines(pipelines);
   });
-
-  loadUserData().then(data => {
-    if (!data) return;
-
-    store.setAllPipelines(data.pipelines);
-  })
 
   addErrorListeners();
 })

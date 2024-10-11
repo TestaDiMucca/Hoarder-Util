@@ -4,7 +4,6 @@ import { ProcessingError } from '@util/errors';
 import output from '@util/output';
 import { ModuleHandler } from '@util/types';
 import { addEventLogForReport } from '../handler.helpers';
-import { addPipelineRunStat } from '../../data/stats.db';
 import { addStat } from '@util/ipc';
 
 const jpgCompressHandler: ModuleHandler = {
@@ -27,7 +26,6 @@ const jpgCompressHandler: ModuleHandler = {
         const reduced = sizeBefore - sizeAfter;
 
         if (opts.context?.pipelineId) {
-            void addPipelineRunStat(opts.context.pipelineId, 'bytes_compressed', reduced);
             addStat({
                 pipelineUuid: opts.context.pipelineId,
                 stats: [

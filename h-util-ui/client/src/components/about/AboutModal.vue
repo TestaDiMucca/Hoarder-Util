@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { PipelineStatsPayload } from '@shared/common.types';
-import { loadStats, } from '@utils/helpers';
 import StatsDisplay from './StatsDisplay.vue';
 import { models } from 'src/data/models';
 
@@ -20,10 +19,8 @@ defineProps<{
 }>();
 
 const getStats = () => {
-  console.log('get stats', models.stats.selectAll());
-  loadStats().then(data => {
-    stats.value = data;
-  })
+  const data = models.stats.selectAll();
+  stats.value = data;
 }
 
 watch(about, (newValue, oldValue) => {

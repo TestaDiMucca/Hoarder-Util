@@ -1,5 +1,6 @@
 import { Aqueduct, Pipeline, PipelineStats, PipelineStatsPayload } from '@shared/common.types';
 import { queryDatabase } from './sqlite';
+import { DEFAULT_RANKING } from '@utils/constants';
 
 export const pipeline = {
     upsert: (pipeline: Pipeline) => {
@@ -12,7 +13,12 @@ export const pipeline = {
             manual_ranking = excluded.manual_ranking,
             modified = CURRENT_TIMESTAMP;
         `;
-        queryDatabase.run(pipelineQuery, [pipeline.id, pipeline.name, pipeline.color, pipeline.manualRanking]);
+        queryDatabase.run(pipelineQuery, [
+            pipeline.id,
+            pipeline.name,
+            pipeline.color,
+            pipeline.manualRanking ?? DEFAULT_RANKING,
+        ]);
 
         const pipelineIdQuery = `SELECT id FROM Pipeline WHERE uuid = ?`;
         const pipelineIdResult = queryDatabase.select<string>(pipelineIdQuery, [pipeline.id]);

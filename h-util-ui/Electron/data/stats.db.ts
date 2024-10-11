@@ -27,6 +27,7 @@ export const getStats = async (): Promise<PipelineStatsPayload[]> => {
 
 /**
  * This is a three-part
+ * @deprecated
  */
 export const addPipelineRunStat = async (
     pipelineUuid: string,

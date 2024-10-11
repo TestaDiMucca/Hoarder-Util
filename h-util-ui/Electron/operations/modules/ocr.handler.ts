@@ -1,7 +1,6 @@
 import { checkSupportedExt, searchForTextInImage, splitFileNameFromPath } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
 import { addEventLogForReport } from '../handler.helpers';
-import { addPipelineRunStat } from '../../data/stats.db';
 import { addStat } from '@util/ipc';
 
 const ocrHandler: ModuleHandler = {
@@ -18,7 +17,6 @@ const ocrHandler: ModuleHandler = {
         const hasMatches = await searchForTextInImage(fileWithMeta.filePath, matches);
 
         if (opts.context?.pipelineId) {
-            void addPipelineRunStat(opts.context.pipelineId, 'words_parsed', matches.length);
             addStat({
                 pipelineUuid: opts.context.pipelineId,
                 stats: [

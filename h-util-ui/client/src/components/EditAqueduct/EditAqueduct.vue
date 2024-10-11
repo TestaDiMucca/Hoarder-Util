@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Aqueduct, AqueductMessage } from '@shared/common.types';
+import { Aqueduct } from '@shared/common.types';
 import Delete from 'vue-material-design-icons/Delete.vue'
 import PageLayout from 'src/layout/PageLayout.vue';
 
-import { getIpcRenderer, removeVueRefs } from '@utils/helpers';
-import { IpcMessageType } from '@shared/common.constants';
+import { removeVueRefs } from '@utils/helpers';
 import PipelineSelector from '../common/PipelineSelector.vue';
 import DirectoryPicker from '../common/DirectoryPicker.vue';
 import { models } from 'src/data/models';
@@ -29,8 +28,6 @@ const removeDirectory = (index: number) => {
 }
 
 const handleSave = async () => {
-  await getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, { type: 'save', data: removeVueRefs(localAqueduct.value) })
-
   models.aqueducts.upsert(removeVueRefs(localAqueduct.value));
 
   props.returnHome();

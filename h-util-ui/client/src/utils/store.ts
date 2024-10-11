@@ -31,6 +31,7 @@ const state = reactive<VueStore>({
     },
 });
 
+// TODO: save individual pipeline instead of all
 const onPipelinesUpdated = () => {
     saveUserData({ ...state.pipelines });
 };
