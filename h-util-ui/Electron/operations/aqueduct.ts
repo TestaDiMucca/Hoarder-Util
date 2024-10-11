@@ -1,10 +1,10 @@
+import path from 'path';
 import { readdir } from 'fs/promises';
+import { promises } from '@common/common';
 import { AqueductLoadResponse, AqueductMessage } from '@shared/common.types';
 import { db } from '../data/database';
 import { pipelineDbToObject } from '../data/pipeline.db';
-import { promises } from '@common/common';
 import { runPipelineForFiles } from './handler';
-import path from 'path';
 
 export const handleAqueductMessage = async (message: AqueductMessage) => {
     switch (message.type) {

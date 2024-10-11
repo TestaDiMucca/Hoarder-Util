@@ -8,6 +8,7 @@ import { getIpcRenderer, removeVueRefs } from '@utils/helpers';
 import { IpcMessageType } from '@shared/common.constants';
 import PipelineSelector from '../common/PipelineSelector.vue';
 import DirectoryPicker from '../common/DirectoryPicker.vue';
+import { models } from 'src/data/models';
 
 type Props = {
   aqueduct: Aqueduct;
@@ -29,6 +30,8 @@ const removeDirectory = (index: number) => {
 
 const handleSave = async () => {
   await getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, { type: 'save', data: removeVueRefs(localAqueduct.value) })
+
+  models.aqueducts.upsert(removeVueRefs(localAqueduct.value));
 
   props.returnHome();
   emit('update');

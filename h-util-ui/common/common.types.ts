@@ -142,6 +142,18 @@ export type RenameTestRequest = {
     filePaths: string[];
 };
 
+export type PipelineStats = {
+    /** Refers to pipeline stats' id */
+    id: number;
+    /** fkey */
+    pipeline_id: number;
+    times_ran: number;
+    time_taken: number;
+    bytes_compressed: number;
+    words_parsed: number;
+    files_processed: number;
+};
+
 export type Aqueduct = {
     id: string;
     pipelineId: string;
@@ -166,4 +178,10 @@ export type AqueductMessage =
 
 export type AqueductLoadResponse = {
     data: Aqueduct[];
+};
+
+export type UpdateStatPayload = {
+    pipelineUuid: string;
+    stat: keyof PipelineStats;
+    amount?: number;
 };

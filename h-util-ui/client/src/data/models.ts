@@ -1,4 +1,4 @@
-import { Aqueduct, Pipeline, PipelineStatsPayload } from '@shared/common.types';
+import { Aqueduct, Pipeline, PipelineStats, PipelineStatsPayload } from '@shared/common.types';
 import { queryDatabase } from './sqlite';
 
 export const pipeline = {
@@ -104,18 +104,6 @@ export const pipeline = {
     },
 };
 
-type PipelineStats = {
-    /** Refers to pipeline stats' id */
-    id: number;
-    /** fkey */
-    pipeline_id: number;
-    times_ran: number;
-    time_taken: number;
-    bytes_compressed: number;
-    words_parsed: number;
-    files_processed: number;
-};
-
 const stats = {
     create: (pipelineId: number) => {
         const createPipelineStatsQuery = `--sql
@@ -194,7 +182,7 @@ const aqueducts = {
             a.name,
             a.description,
             a.directories
-          FROM Aqueducts a
+          FROM Aqueduct a
           JOIN Pipeline p ON a.pipeline_id = p.id;
         `;
 
@@ -220,9 +208,9 @@ const aqueducts = {
           ), ?, ?, ?)
           ON CONFLICT(uuid) DO UPDATE SET
             name = excluded.name,
-            color = excluded.color,
-            manual_ranking = excluded.manual_ranking,
-            modified = CURRENT_TIMESTAMP;
+            description = excluded.description,
+            directories = excluded.directories,
+            pipeline_id = excluded.pipeline_id;
         `;
 
         queryDatabase.run(aqueductQuery, [

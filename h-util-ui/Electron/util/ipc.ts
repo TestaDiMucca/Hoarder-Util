@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 
 import output from './output';
 import { IpcMessageType } from '../../common/common.constants';
-import { SpawnedTask } from '@shared/common.types';
+import { SpawnedTask, UpdateStatPayload } from '@shared/common.types';
 import logger from '@util/logger';
 
 let mainWindow: BrowserWindow | null = null;
@@ -39,4 +39,13 @@ export const updateTaskProgress = (data: SpawnedTask) => {
 
 export const handleErrorMessage = (message: string, stack?: string) => {
     logger.error(`[err] Error: ${message}`, stack);
+};
+
+export const addStat = (payload: UpdateStatPayload) => {
+    if (!mainWindow) {
+        output.error('Main window not initialized');
+        return;
+    }
+
+    mainWindow.webContents.send(IpcMessageType.updateStat, payload);
 };

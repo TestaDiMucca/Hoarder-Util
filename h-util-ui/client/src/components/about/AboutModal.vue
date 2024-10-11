@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 import { PipelineStatsPayload } from '@shared/common.types';
 import { loadStats, } from '@utils/helpers';
 import StatsDisplay from './StatsDisplay.vue';
+import { models } from 'src/data/models';
 
 enum Tabs {
   stats = 'stat',
@@ -19,6 +20,7 @@ defineProps<{
 }>();
 
 const getStats = () => {
+  console.log('get stats', models.stats.selectAll());
   loadStats().then(data => {
     stats.value = data;
   })

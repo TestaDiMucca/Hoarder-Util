@@ -49,7 +49,7 @@ onMounted(() => {
   })
 
   initializeSQLite().then(() => {
-    models.pipeline.selectAll();
+    console.log(models.pipeline.selectAll());
   });
 
   loadUserData().then(data => {
