@@ -3,6 +3,7 @@ import { ModuleHandler } from '@util/types';
 import { addEventLogForReport, evaluateRulesForFile } from '../handler.helpers';
 import { ExtraData } from '@shared/common.constants';
 import { addPipelineRunStat } from '../../../Electron/data/stats.db';
+import { addStat } from '@util/ipc';
 
 const ruleFilterHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
@@ -15,8 +16,18 @@ const ruleFilterHandler: ModuleHandler = {
         const excluded = await evaluateRulesForFile(fileWithMeta.filePath, rules, {
             onDataDict: (dataDict, ocrOptions) => {
                 if (dataDict[ExtraData.ocr])
-                    if (ocrOptions?.length && opts.context?.pipelineId)
+                    if (ocrOptions?.length && opts.context?.pipelineId) {
                         void addPipelineRunStat(opts.context.pipelineId, 'words_parsed', ocrOptions.length);
+                        addStat({
+                            pipelineUuid: opts.context.pipelineId,
+                            stats: [
+                                {
+                                    stat: 'words_parsed',
+                                    amount: ocrOptions.length,
+                                },
+                            ],
+                        });
+                    }
             },
         });
 

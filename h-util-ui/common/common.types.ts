@@ -182,6 +182,8 @@ export type AqueductLoadResponse = {
 
 export type UpdateStatPayload = {
     pipelineUuid: string;
-    stat: keyof PipelineStats;
-    amount?: number;
+    stats: {
+        stat: keyof PipelineStats;
+        amount?: number;
+    }[];
 };

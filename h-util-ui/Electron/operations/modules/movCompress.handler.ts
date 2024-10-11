@@ -12,6 +12,7 @@ import output from '@util/output';
 import { ModuleHandler } from '@util/types';
 import { addEventLogForReport } from '../handler.helpers';
 import { addPipelineRunStat } from '../../data/stats.db';
+import { addStat } from '@util/ipc';
 
 const movCompressHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
@@ -31,7 +32,18 @@ const movCompressHandler: ModuleHandler = {
         const sizeAfter = await getFileSize(filePath, 'number');
         const reduced = sizeBefore - sizeAfter;
 
-        if (opts.context?.pipelineId) void addPipelineRunStat(opts.context.pipelineId, 'bytes_compressed', reduced);
+        if (opts.context?.pipelineId) {
+            void addPipelineRunStat(opts.context.pipelineId, 'bytes_compressed', reduced);
+            addStat({
+                pipelineUuid: opts.context.pipelineId,
+                stats: [
+                    {
+                        stat: 'bytes_compressed',
+                        amount: reduced,
+                    },
+                ],
+            });
+        }
 
         if (reduced < 0) output.out(`${fileName} bloated by ${reduced}b`);
         else output.log(`${fileName} reduced by ${reduced}b`);

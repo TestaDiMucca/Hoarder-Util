@@ -18,6 +18,7 @@ type IpcRendererExposed = {
     on: <T>(channel: string, cb: (event: unknown, message: T) => void) => void;
     onMainMessage: (cb: (msg: string) => void) => void;
     onTaskProgress: (cb: (task: string) => void) => void;
+    onStatUpdate: <T>(cb: (payload: T) => void) => void;
     loadData: <T>() => Promise<T>;
     saveFile: (content: string) => Promise<void>;
     saveData: (data: string[]) => Promise<void>;

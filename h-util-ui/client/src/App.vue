@@ -13,6 +13,7 @@ import Directories from './components/Directories/Directories.vue'
 import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { initializeSQLite } from './data/sqlite'
 import { models } from './data/models'
+import { UpdateStatPayload } from '@shared/common.types'
 
 const $q = useQuasar();
 
@@ -26,6 +27,8 @@ const routes: Record<PageViews, VueComponent> = {
   [PageViews.Internals]: Internals
 }
 const currentPath = ref(window.location.hash)
+/** Wait for database and any connections to be ready. Should be fast. */
+const loading = ref(true);
 
 window.addEventListener('hashchange', () => {
   currentPath.value = window.location.hash
@@ -48,7 +51,13 @@ onMounted(() => {
     $q.notify(message ?? 'No message')
   })
 
+  getIpcRenderer().onStatUpdate(({ pipelineUuid, stats }: UpdateStatPayload) =>
+    stats.forEach(({ stat, amount }) => models.stats.addRunStat(pipelineUuid, stat, amount))
+
+  );
+
   initializeSQLite().then(() => {
+    loading.value = false;
     console.log(models.pipeline.selectAll());
   });
 
@@ -67,7 +76,7 @@ onMounted(() => {
     <DrawerNav :path-name="pathName" />
     <q-page-container>
       <ErrorBoundary>
-        <component :is="currentView" />
+        <component v-if="!loading" :is="currentView" />
       </ErrorBoundary>
     </q-page-container>
   </q-layout>

@@ -28,7 +28,7 @@ const handleDelete = () => emit('delete');
 
 const pipelineName = computed(() => {
   const pipeline = store.state.pipelines[props.aqueduct.pipelineId];
-  return pipeline.name ?? 'Unknown pipeline';
+  return pipeline?.name ?? 'Unknown pipeline';
 })
 </script>
 
