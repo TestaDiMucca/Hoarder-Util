@@ -18,10 +18,18 @@ contextBridge.exposeInMainWorld('electronIpc', {
         ipcRenderer.on('main-message', (_e, payload) => {
             cb(payload.message);
         }),
-    onStatUpdate: (cb: (statPayload: object) => void) => ipcRenderer.on('update-stat', (_e, payload) => cb(payload)),
-    onTaskProgress: (cb: (taskInfo: string) => void) => ipcRenderer.on('task-progress', (_e, payload) => cb(payload)),
+    onStatUpdate: (cb: (statPayload: object) => void) =>
+        addSoleListener<object>('update-stat', (payload) => cb(payload)),
+    onTaskProgress: (cb: (taskInfo: string) => void) =>
+        addSoleListener<string>('task-progress', (payload) => cb(payload)),
     loadData: () => ipcRenderer.invoke('load-data'),
     saveFile: (content: string) => ipcRenderer.invoke('save-file', content),
     saveData: (data: string) => ipcRenderer.send('save-data', data),
     selectFolder: () => ipcRenderer.invoke('select-dir'),
 });
+
+const addSoleListener = <T>(channel: string, cb: (payload: T) => void) => {
+    ipcRenderer.removeAllListeners(channel);
+
+    ipcRenderer.on(channel, (_e, payload) => cb(payload));
+};
