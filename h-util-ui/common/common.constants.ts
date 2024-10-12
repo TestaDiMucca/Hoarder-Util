@@ -28,6 +28,8 @@ export enum IpcMessageType {
     /** An "aqueduct" operation */
     aqueducts = 'aqueducts',
     getDbPath = 'get-db-path',
+    /** Let main request renderer to update stats */
+    updateStat = 'update-stat',
 }
 
 export enum RenameTemplates {

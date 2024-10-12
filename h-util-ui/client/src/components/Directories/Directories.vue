@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { IpcMessageType } from '@shared/common.constants';
-import { Aqueduct, AqueductLoadResponse, AqueductMessage } from '@shared/common.types';
-import { getIpcRenderer } from '@utils/helpers';
+import { Aqueduct } from '@shared/common.types';
 import { getDefaultAqueduct } from '@utils/models.helpers';
 import store from '@utils/store';
 import EditAqueduct from '../EditAqueduct/EditAqueduct.vue';
 import AqueductGallery from './AqueductGallery.vue';
+import { models } from 'src/data/models';
 
 const stateStore = ref(store.state);
 const selectedAqueduct = ref<Aqueduct | null>(null);
 
 const fetchAqueducts = async () => {
-  const data = await getIpcRenderer().invoke<AqueductMessage, AqueductLoadResponse>(IpcMessageType.aqueducts, { type: 'load' });
+  const data = models.aqueducts.selectAll();
 
-  if (data) store.setAqueducts(data.data);
+  if (data) store.setAqueducts(data);
 }
 
 onMounted(async () => {

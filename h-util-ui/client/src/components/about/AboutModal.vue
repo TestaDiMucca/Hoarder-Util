@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { PipelineStatsPayload } from '@shared/common.types';
-import { loadStats, } from '@utils/helpers';
 import StatsDisplay from './StatsDisplay.vue';
+import { models } from 'src/data/models';
 
 enum Tabs {
   stats = 'stat',
@@ -19,9 +19,8 @@ defineProps<{
 }>();
 
 const getStats = () => {
-  loadStats().then(data => {
-    stats.value = data;
-  })
+  const data = models.stats.selectAll();
+  stats.value = data;
 }
 
 watch(about, (newValue, oldValue) => {

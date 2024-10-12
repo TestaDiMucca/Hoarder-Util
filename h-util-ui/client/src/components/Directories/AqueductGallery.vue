@@ -6,6 +6,7 @@ import PageLayout from 'src/layout/PageLayout.vue';
 import { getIpcRenderer } from '@utils/helpers';
 import { IpcMessageType } from '@shared/common.constants';
 import AqueductItem from './AqueductItem.vue';
+import { models } from 'src/data/models';
 
 type Props = {
   aqueducts: Aqueduct[] | null;
@@ -27,10 +28,7 @@ const handleRun = (id: string) => {
 }
 
 const handleDelete = async (aqueDuctId: string) => {
-  await getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, {
-    type: 'delete',
-    aqueDuctId
-  })
+  models.aqueducts.remove(aqueDuctId);
 
   emit('update');
 }

@@ -4,7 +4,7 @@ import { ProcessingError } from '@util/errors';
 import output from '@util/output';
 import { ModuleHandler } from '@util/types';
 import { addEventLogForReport } from '../handler.helpers';
-import { addPipelineRunStat } from '../../data/stats.db';
+import { addStat } from '@util/ipc';
 
 const jpgCompressHandler: ModuleHandler = {
     handler: async (fileWithMeta, opts) => {
@@ -25,7 +25,17 @@ const jpgCompressHandler: ModuleHandler = {
         const sizeAfter = await getFileSize(filePath, 'number');
         const reduced = sizeBefore - sizeAfter;
 
-        if (opts.context?.pipelineId) void addPipelineRunStat(opts.context.pipelineId, 'bytes_compressed', reduced);
+        if (opts.context?.pipelineId) {
+            addStat({
+                pipelineUuid: opts.context.pipelineId,
+                stats: [
+                    {
+                        stat: 'bytes_compressed',
+                        amount: reduced,
+                    },
+                ],
+            });
+        }
 
         output.log(`${fileName} reduced by ${reduced}b`);
 

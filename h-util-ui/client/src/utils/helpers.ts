@@ -39,6 +39,9 @@ export const sendMessageToMain = (message: string) => {
     ipcRenderer.send(IpcMessageType.clientMessage, [message]);
 };
 
+/**
+ * @deprecated
+ */
 export const loadUserData = async () => {
     const ipcRenderer = getIpcRenderer();
 
@@ -47,6 +50,9 @@ export const loadUserData = async () => {
     return await ipcRenderer?.invoke<null, Storage>(IpcMessageType.loadData);
 };
 
+/**
+ * @deprecated
+ */
 export const loadStats = async () => {
     const ipcRenderer = getIpcRenderer();
 
@@ -59,10 +65,6 @@ export const loadStats = async () => {
 export const removeVueRefs = <T>(source: T): T => JSON.parse(JSON.stringify(source));
 
 export const saveUserData = (pipelines: VueStore['pipelines']) => {
-    const ipcRenderer = getIpcRenderer();
-
-    ipcRenderer?.invoke(IpcMessageType.saveData, { pipelines: removeVueRefs(pipelines) });
-
     // todo: no need to "bulk" upsert
     Object.values(removeVueRefs(pipelines)).forEach((pipeline) => {
         models.pipeline.upsert(pipeline);

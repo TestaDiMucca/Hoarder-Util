@@ -8,11 +8,10 @@ import {
     ProcessingRequest,
 } from '@shared/common.types';
 import { ProcessingError } from '@util/errors';
-import { updateTaskProgress } from '@util/ipc';
+import { addStat, updateTaskProgress } from '@util/ipc';
 import { CommonContext, FileOptions, FileWithMeta, ModuleHandler } from '@util/types';
 import { addEventLogForReport, fileListToFileOptions } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
-import { addPipelineRunStat } from '../data/stats.db';
 import branchingHandler from './modules/branching.handler';
 
 let globalTaskId = 0;
@@ -144,9 +143,22 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
 
     detachPromise({
         cb: async () => {
-            await addPipelineRunStat(pipeline.id, 'times_ran', 1);
-            await addPipelineRunStat(pipeline.id, 'time_taken', timeTaken);
-            await addPipelineRunStat(pipeline.id, 'files_processed', handled);
+            addStat({
+                pipelineUuid: pipeline.id,
+                stats: [
+                    {
+                        stat: 'times_ran',
+                    },
+                    {
+                        stat: 'time_taken',
+                        amount: timeTaken,
+                    },
+                    {
+                        stat: 'files_processed',
+                        amount: handled,
+                    },
+                ],
+            });
         },
     });
 };

@@ -15,10 +15,12 @@ const error = console.error;
 let database: Database | null = null;
 
 const start = async (sqlite3: Sqlite3Static, _dbPath: string) => {
-    log('Running SQLite3 version', sqlite3.version.libVersion);
+    // todo: migrate to OPFS
     const db = new sqlite3.oo1.JsStorageDb('local');
     database = db;
+
     await initDbIfNeeded();
+    log('Running SQLite3 version', sqlite3.version.libVersion);
 };
 
 const noDatabaseError = () => {
