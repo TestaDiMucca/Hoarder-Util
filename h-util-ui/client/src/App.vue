@@ -57,8 +57,7 @@ onMounted(() => {
 
   initializeSQLite().then(() => {
     loading.value = false;
-    const pipelines = models.pipeline.selectAll();
-    store.setAllPipelines(pipelines);
+    store.syncPipelineDataFromStorage();
   });
 
   addErrorListeners();

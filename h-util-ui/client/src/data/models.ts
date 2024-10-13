@@ -3,7 +3,7 @@ import { queryDatabase } from './sqlite';
 import { DEFAULT_RANKING } from '@utils/constants';
 
 export const pipeline = {
-    upsert: (pipeline: Pipeline) => {
+    upsert: (payload: Pipeline) => {
         const pipelineQuery = `--sql
           INSERT INTO Pipeline (uuid, name, color, manual_ranking)
           VALUES (?, ?, ?, ?)
@@ -14,17 +14,17 @@ export const pipeline = {
             modified = CURRENT_TIMESTAMP;
         `;
         queryDatabase.run(pipelineQuery, [
-            pipeline.id,
-            pipeline.name,
-            pipeline.color,
-            pipeline.manualRanking ?? DEFAULT_RANKING,
+            payload.id,
+            payload.name,
+            payload.color,
+            payload.manualRanking ?? DEFAULT_RANKING,
         ]);
 
         const pipelineIdQuery = `SELECT id FROM Pipeline WHERE uuid = ?`;
-        const pipelineIdResult = queryDatabase.select<string>(pipelineIdQuery, [pipeline.id]);
+        const pipelineIdResult = queryDatabase.select<string>(pipelineIdQuery, [payload.id]);
         const pipelineId = pipelineIdResult[0];
 
-        for (const module of pipeline.processingModules) {
+        for (const module of payload.processingModules) {
             const moduleQuery = `--sql
               INSERT INTO Module (uuid, data)
               VALUES (?, ?)
@@ -45,6 +45,8 @@ export const pipeline = {
 
             queryDatabase.run(pipelineModuleQuery, [pipelineId, moduleId]);
         }
+
+        return payload;
     },
     selectAll: (): Record<string, Pipeline> => {
         const pipelineFetchSql = `--sql
