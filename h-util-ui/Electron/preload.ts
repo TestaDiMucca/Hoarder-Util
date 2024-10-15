@@ -22,6 +22,8 @@ contextBridge.exposeInMainWorld('electronIpc', {
         addSoleListener<object>('update-stat', (payload) => cb(payload)),
     onTaskProgress: (cb: (taskInfo: string) => void) =>
         addSoleListener<string>('task-progress', (payload) => cb(payload)),
+    onRendererMessage: (cb: (statPayload: object) => void) =>
+        addSoleListener<object>('renderer-message', (payload) => cb(payload)),
     loadData: () => ipcRenderer.invoke('load-data'),
     saveFile: (content: string) => ipcRenderer.invoke('save-file', content),
     saveData: (data: string) => ipcRenderer.send('save-data', data),

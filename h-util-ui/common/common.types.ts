@@ -187,3 +187,35 @@ export type UpdateStatPayload = {
         amount?: number;
     }[];
 };
+
+type RendererMessageBase = {
+    messageId: string;
+};
+
+export type RendererMessage = RendererMessageBase & RendererMessagePayload;
+
+/** Message from main to renderer */
+export type RendererMessagePayload =
+    | {
+          type: 'updateStat';
+          pipelineUuid: string;
+          stats: {
+              stat: keyof PipelineStats;
+              amount?: number;
+          }[];
+      }
+    | {
+          type: 'message';
+          message: string;
+      }
+    | {
+          type: 'requestPipeline';
+          pipelineUuid: string;
+      }
+    | {
+          type: 'pipelineData';
+          pipeline: Pipeline;
+      }
+    | {
+          type: 'confirm';
+      };
