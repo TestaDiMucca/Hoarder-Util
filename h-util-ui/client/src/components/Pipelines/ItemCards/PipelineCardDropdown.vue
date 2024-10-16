@@ -8,6 +8,7 @@ import DeleteConfirmModal from '../../common/DeleteConfirmModal.vue';
 import store from '@utils/store';
 import { Pipeline } from '@shared/common.types';
 import { navigateTo, PageViews } from '@utils/helpers';
+import { models } from 'src/data/models';
 
 interface Props {
   pipelineItem: Pipeline;
@@ -18,7 +19,7 @@ const props = defineProps<Props>();
 const confirmDelete = ref(false);
 
 const deletePipeline = () =>
-  store.removePipeline(props.pipelineItem.id!)
+  models.pipeline.remove(props.pipelineItem.id);
 
 const selectPipeline = () => {
   store.setSelectedPipeline(props.pipelineItem)
@@ -29,11 +30,14 @@ const selectPipeline = () => {
 const duplicatePipeline = () => {
   const { id, ...pipelineData } = props.pipelineItem;
 
-  const created = store.upsertPipeline({ ...pipelineData, name: `${pipelineData.name} - copy`, id: uuidv4() });
+  const created = models.pipeline.upsert({
+    ...pipelineData, name: `${pipelineData.name} - copy`, id: uuidv4()
+  })
 
   if (!created) return;
 
   setTimeout(() => {
+    store.syncPipelineDataFromStorage();
     store.setSelectedPipeline(created);
     navigateTo(PageViews.Edit);
   }, 1000);

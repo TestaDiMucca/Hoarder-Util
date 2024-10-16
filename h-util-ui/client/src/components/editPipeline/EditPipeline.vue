@@ -15,6 +15,7 @@ import { buildPipelineTopology, ChartNodeData } from './pipelineTopology';
 import EditPipelineTopologyModule from './Topology/EditPipelineTopologyModule.vue';
 import EditPipelineNewModule from './Topology/EditPipelineNewModule.vue';
 import { getDefaultModule } from '@utils/models.helpers';
+import { models } from 'src/data/models';
 
 const pipelineModules = ref<ProcessingModule[]>([
   getDefaultModule(uuidv4())
@@ -73,7 +74,7 @@ const handleNewModules = (fromModuleId?: string, branchIndex?: number) => {
 }
 
 const handleSavePipeline = () => {
-  store.upsertPipeline({
+  models.pipeline.upsert({
     id: store.state.selectedPipeline?.id ?? uuidv4(),
     name: pipelineName.value,
     manualRanking: pipelineRanking.value,
@@ -81,7 +82,8 @@ const handleSavePipeline = () => {
     processingModules: pipelineModules.value
   })
 
-  returnHome()
+  store.syncPipelineDataFromStorage();
+  returnHome();
 };
 
 const returnHome = () => {
