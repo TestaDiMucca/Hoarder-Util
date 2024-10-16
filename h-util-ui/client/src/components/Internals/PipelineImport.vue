@@ -6,6 +6,7 @@ import { computed, onUnmounted, ref } from 'vue';
 import store from '@utils/store';
 import { readTextFileAndParseJson } from '@utils/helpers';
 import { transformLegacyPipelineMap } from '@utils/transformers'
+import { models } from 'src/data/models';
 
 const pipelines = ref<Storage['pipelines']>({});
 const selectedIds = ref<Record<string, boolean>>({});
@@ -34,7 +35,7 @@ const handleImport = () => {
   Object.keys(selectedIds.value).forEach(pId => {
     if (!selectedIds.value[pId]) return;
 
-    store.upsertPipeline({
+    models.pipeline.upsert({
       ...pipelines.value[pId]
     })
   })

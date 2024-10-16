@@ -1,10 +1,9 @@
 import { reactive } from 'vue';
-import { v4 as uuidV4 } from 'uuid';
 
 import { Pipeline, TaskQueue } from './types';
-import { saveUserData } from './helpers';
 import { Aqueduct } from '@shared/common.types';
 import { CardStyles } from 'src/components/Pipelines/pipelineGallery.helpers';
+import { models } from 'src/data/models';
 
 export type AppSettings = {
     cardStyle: CardStyles;
@@ -31,31 +30,10 @@ const state = reactive<VueStore>({
     },
 });
 
-// TODO: save individual pipeline instead of all
-const onPipelinesUpdated = () => {
-    saveUserData({ ...state.pipelines });
-};
+const syncPipelineDataFromStorage = () => {
+    const all = models.pipeline.selectAll();
 
-// TODO: GH issue #190
-const upsertPipeline = (pipeline: Pipeline) => {
-    if (!pipeline.id) {
-        pipeline.id = uuidV4();
-        pipeline.created = new Date().toISOString();
-    }
-
-    pipeline.modified = new Date().toISOString();
-
-    state.pipelines[pipeline.id!] = pipeline;
-
-    onPipelinesUpdated();
-
-    return pipeline;
-};
-
-const removePipeline = (pipelineId: string) => {
-    delete state.pipelines[pipelineId];
-
-    onPipelinesUpdated();
+    state.pipelines = all;
 };
 
 const setAllPipelines = (data: VueStore['pipelines']) => {
@@ -80,11 +58,10 @@ const toggleDarkMode = () => {
 
 export default {
     state,
+    syncPipelineDataFromStorage,
     toggleDarkMode,
     setCardStyles,
     setAqueducts,
-    upsertPipeline,
-    removePipeline,
     setAllPipelines,
     setSelectedPipeline,
 };
