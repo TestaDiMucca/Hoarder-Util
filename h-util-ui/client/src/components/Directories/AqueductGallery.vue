@@ -7,6 +7,7 @@ import { getIpcRenderer } from '@utils/helpers';
 import { IpcMessageType } from '@shared/common.constants';
 import AqueductItem from './AqueductItem.vue';
 import { models } from 'src/data/models';
+import { toRaw } from 'vue';
 
 type Props = {
   aqueducts: Aqueduct[] | null;
@@ -20,10 +21,10 @@ const emit = defineEmits<{
   (e: 'update'): void;
 }>();
 
-const handleRun = (id: string) => {
+const handleRun = (aqueduct: Aqueduct) => {
   getIpcRenderer().invoke<AqueductMessage>(IpcMessageType.aqueducts, {
     type: 'run',
-    aqueductId: id
+    aqueduct: toRaw(aqueduct)
   })
 }
 
@@ -43,7 +44,7 @@ const handleDelete = async (aqueDuctId: string) => {
     <template #content>
       <section class="gallery-container">
         <AqueductItem v-for="aqueduct in aqueducts" :aqueduct="aqueduct" @edit="handleEdit(aqueduct)"
-          @run="handleRun(aqueduct.id)" @delete="handleDelete(aqueduct.id)" />
+          @run="handleRun(aqueduct)" @delete="handleDelete(aqueduct.id)" />
         <div v-if="!aqueducts || aqueducts.length === 0">
           No aqueducts. Aqueducts enable connecting directories to pipelines.
         </div>

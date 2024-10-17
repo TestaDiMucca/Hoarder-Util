@@ -12,6 +12,9 @@ declare module 'vue-material-design-icons/*.vue' {
     export default IconVue;
 }
 
+/**
+ * Template types actually have types, we can't import then here.
+ */
 type IpcRendererExposed = {
     send: <T>(channel: string, data: T[]) => void;
     invoke: <T, R = void>(channel: string, data?: T) => Promise<R>;
@@ -19,6 +22,7 @@ type IpcRendererExposed = {
     onMainMessage: (cb: (msg: string) => void) => void;
     onTaskProgress: (cb: (task: string) => void) => void;
     onStatUpdate: <T>(cb: (payload: T) => void) => void;
+    onRendererMessage: <T>(cb: (payload: T) => void) => void;
     loadData: <T>() => Promise<T>;
     saveFile: (content: string) => Promise<void>;
     saveData: (data: string[]) => Promise<void>;

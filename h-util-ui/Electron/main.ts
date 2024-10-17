@@ -13,7 +13,7 @@ import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import AppUpdater from './AutoUpdate';
 import output from './util/output';
-import { handleErrorMessage, registerMainWindow } from './util/ipc';
+import { handleErrorMessage, registerMainWindow, sendRendererMessage } from './util/ipc';
 import { addListenersToIpc } from './ipcListeners';
 import { disconnectPrisma } from './data/database';
 
@@ -65,6 +65,11 @@ async function createWindow() {
     }
 
     registerMainWindow(mainWindow);
+
+    sendRendererMessage({
+        type: 'message',
+        message: 'string',
+    });
 }
 
 // This method will be called when Electron has finished
