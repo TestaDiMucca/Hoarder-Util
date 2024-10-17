@@ -5,6 +5,7 @@ import { AqueductLoadResponse, AqueductMessage } from '@shared/common.types';
 import { db } from '../data/database';
 import { pipelineDbToObject } from '../data/pipeline.db';
 import { runPipelineForFiles } from './handler';
+import { sendRendererMessage } from '@util/ipc';
 
 export const handleAqueductMessage = async (message: AqueductMessage) => {
     switch (message.type) {
@@ -31,28 +32,19 @@ export const handleAqueductMessage = async (message: AqueductMessage) => {
 
             return result;
         case 'run':
-            const aqueduct = await db.aqueduct.findFirst({
-                where: {
-                    uuid: message.aqueductId,
-                },
-                include: {
-                    pipeline: {
-                        include: {
-                            pipeline_modules: {
-                                include: {
-                                    module: true,
-                                },
-                            },
-                        },
-                    },
-                },
+            const { aqueduct } = message;
+
+            const response = await sendRendererMessage({
+                type: 'requestPipeline',
+                pipelineUuid: aqueduct.pipelineId,
             });
 
-            if (!aqueduct?.pipeline) return;
+            const pipeline = response.type === 'pipelineData' ? response.pipeline : null;
 
-            const pipeline = pipelineDbToObject(aqueduct.pipeline);
+            if (!pipeline) return;
+
             // todo: use shared helper getter to auto do these, or look up hooks in prisma
-            const directories: string[] = JSON.parse(aqueduct.directories);
+            const directories: string[] = aqueduct.directories;
 
             await promises.each(directories, async (directory) => {
                 try {

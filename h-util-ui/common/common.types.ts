@@ -173,7 +173,7 @@ export type AqueductMessage =
       }
     | {
           type: 'run';
-          aqueductId: string;
+          aqueduct: Aqueduct;
       };
 
 export type AqueductLoadResponse = {
