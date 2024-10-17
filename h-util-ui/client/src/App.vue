@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, toRaw } from 'vue'
 import { useQuasar } from 'quasar'
 import Pipelines from './components/Pipelines/Pipelines.vue'
 import EditPipeline from './components/EditPipeline/EditPipeline.vue'
@@ -54,6 +54,14 @@ onMounted(() => {
       case 'message':
         $q.notify(payload.message ?? 'No message')
         break;
+      case 'requestPipeline':
+        const pipeline = store.state.pipelines[payload.pipelineUuid];
+
+        return ipcRenderer.invoke<RendererMessage>(IpcMessageType.rendererMessage, {
+          type: 'pipelineData',
+          messageId: payload.messageId,
+          pipeline: toRaw(pipeline),
+        })
       default:
     }
 
