@@ -2,7 +2,14 @@ import path from 'path';
 import { writeFile } from 'fs/promises';
 import { app, dialog } from 'electron';
 import { IpcMessageType } from '@shared/common.constants';
-import { Pipeline, ProcessingModuleType, ProcessingRequest, RunTestRequest, Storage } from '@shared/common.types';
+import {
+    Pipeline,
+    ProcessingModuleType,
+    ProcessingRequest,
+    RendererMessage,
+    RunTestRequest,
+    Storage,
+} from '@shared/common.types';
 import { getMainWindow, handleErrorMessage } from '@util/ipc';
 import output from '@util/output';
 import { promises } from '@common/common';
@@ -15,6 +22,7 @@ import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
 import { db } from './data/database';
 import { handleAqueductMessage } from './operations/aqueduct';
+import eventEmitter from '@util/events';
 
 const DATA_FILE = 'hUtil-fe.sqlite3';
 const dbFilePath = path.join(app.getPath('userData'), DATA_FILE);
@@ -92,6 +100,12 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
             default:
                 return [];
         }
+    });
+
+    ipcMain.handle(IpcMessageType.rendererMessage, async (_e, payload: RendererMessage) => {
+        if (!payload.messageId) return;
+
+        eventEmitter.emit('rendererMessage', payload);
     });
 
     /** @deprecated use runTest */

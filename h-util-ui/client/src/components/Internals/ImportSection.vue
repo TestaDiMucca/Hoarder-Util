@@ -3,6 +3,7 @@ import { getIpcRenderer, loadUserData } from '@utils/helpers';
 import { ref } from 'vue';
 import ImportExportDisplay from './ImportExportDisplay.vue';
 import PipelineImport from './PipelineImport.vue';
+import { models } from 'src/data/models';
 
 enum View {
   default = 'default',
@@ -12,11 +13,12 @@ enum View {
 const tab = ref(View.default);
 
 const handleExportPipelines = () => {
-  loadUserData().then(data => {
-    if (!data?.pipelines) return;
+  const data = models.pipeline.selectAll();
 
-    getIpcRenderer().saveFile(JSON.stringify(data.pipelines));
-  })
+  if (!data?.pipelines) return;
+
+  getIpcRenderer().saveFile(JSON.stringify(data.pipelines));
+
 }
 
 const handleImportPipelines = () => tab.value = View.import;

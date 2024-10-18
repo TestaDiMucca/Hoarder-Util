@@ -30,6 +30,7 @@ export enum IpcMessageType {
     getDbPath = 'get-db-path',
     /** Let main request renderer to update stats */
     updateStat = 'update-stat',
+    rendererMessage = 'renderer-message',
 }
 
 export enum RenameTemplates {

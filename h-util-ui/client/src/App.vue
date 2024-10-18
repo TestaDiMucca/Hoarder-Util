@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, toRaw } from 'vue'
 import { useQuasar } from 'quasar'
 import Pipelines from './components/Pipelines/Pipelines.vue'
 import EditPipeline from './components/EditPipeline/EditPipeline.vue'
 import { VueComponent } from './utils/util.types'
-import { addErrorListeners, getIpcRenderer, loadUserData, sendMessageToMain } from './utils/helpers'
+import { addErrorListeners, getIpcRenderer, sendMessageToMain } from './utils/helpers'
 import store from './utils/store'
 import { PageViews } from '@utils/types'
 import DrawerNav from './components/Nav/DrawerNav.vue'
@@ -13,7 +13,8 @@ import Directories from './components/Directories/Directories.vue'
 import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { initializeSQLite } from './data/sqlite'
 import { models } from './data/models'
-import { UpdateStatPayload } from '@shared/common.types'
+import { RendererMessage, UpdateStatPayload } from '@shared/common.types'
+import { IpcMessageType } from '@shared/common.constants'
 
 const $q = useQuasar();
 
@@ -44,14 +45,33 @@ const currentView = computed<VueComponent>(() => {
 onMounted(() => {
   sendMessageToMain('App mounted');
 
-  /** Subscribe to main's messages */
-  getIpcRenderer().onMainMessage((payload: string) => {
-    const message = payload;
+  const ipcRenderer = getIpcRenderer();
 
-    $q.notify(message ?? 'No message')
+  ipcRenderer.onRendererMessage((rawPayload: string) => {
+    const payload = JSON.parse(rawPayload) as RendererMessage;
+
+    switch (payload.type) {
+      case 'message':
+        $q.notify(payload.message ?? 'No message')
+        break;
+      case 'requestPipeline':
+        const pipeline = store.state.pipelines[payload.pipelineUuid];
+
+        return ipcRenderer.invoke<RendererMessage>(IpcMessageType.rendererMessage, {
+          type: 'pipelineData',
+          messageId: payload.messageId,
+          pipeline: toRaw(pipeline),
+        })
+      default:
+    }
+
+    ipcRenderer.invoke<RendererMessage>(IpcMessageType.rendererMessage, {
+      type: 'confirm',
+      messageId: payload.messageId
+    })
   })
 
-  getIpcRenderer().onStatUpdate(({ pipelineUuid, stats }: UpdateStatPayload) =>
+  ipcRenderer.onStatUpdate(({ pipelineUuid, stats }: UpdateStatPayload) =>
     stats.forEach(({ stat, amount }) => models.stats.addRunStat(pipelineUuid, stat, amount))
   );
 
