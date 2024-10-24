@@ -55,4 +55,4 @@ export enum ExtraData {
     Extension = 'ext',
 }
 
-export const defaultTimeMask = 'yy-mm-dd-HH-MM_';
+export const defaultTimeMask = 'yy-mm-dd-HH-MM';

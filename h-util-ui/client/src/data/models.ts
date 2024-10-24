@@ -95,7 +95,7 @@ export const pipeline = {
             const removeModulesForPipelineSql = `--sql
           DELETE FROM Module
           WHERE id IN (
-              SELECT r.id FROM Module m
+              SELECT m.id FROM Module m
               JOIN PipelineModule pm ON pm.module_id = m.id
               JOIN Pipeline p ON p.id = pm.pipeline_id
               WHERE p.uuid = ?
