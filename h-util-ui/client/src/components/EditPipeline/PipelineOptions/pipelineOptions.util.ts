@@ -1,4 +1,4 @@
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import { RenameTemplates } from '@shared/common.constants';
 import { formatDateString } from '@shared/common.utils';
 
@@ -28,7 +28,7 @@ const validDateTags = validTags.filter((t) => isDateTag(t));
 
 export const hasDateTag = (stringTemplate: string) => validDateTags.some((tag) => stringTemplate.includes(`%${tag}%`));
 
-export const previewRenamedFile = debounce(
+export const previewRenamedFile = throttle(
     (stringTemplateRaw: string, dateMask?: string) => {
         const stringTemplate = stringTemplateRaw.length ? stringTemplateRaw : '%original%';
         let newName = String(stringTemplate);
