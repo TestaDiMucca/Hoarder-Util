@@ -18,6 +18,7 @@ const convertVideoHandler: ModuleHandler = {
         });
 
         await unlink(filePath);
+        fileWithMeta.filePath = outputFilePath;
 
         addEventLogForReport(opts, fileName, 'converted', outputFilePath);
     },
