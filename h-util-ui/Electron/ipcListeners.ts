@@ -2,25 +2,14 @@ import path from 'path';
 import { writeFile } from 'fs/promises';
 import { app, dialog } from 'electron';
 import { IpcMessageType } from '@shared/common.constants';
-import {
-    Pipeline,
-    ProcessingModuleType,
-    ProcessingRequest,
-    RendererMessage,
-    RunTestRequest,
-    Storage,
-} from '@shared/common.types';
+import { ProcessingModuleType, ProcessingRequest, RendererMessage, RunTestRequest } from '@shared/common.types';
 import { getMainWindow, handleErrorMessage } from '@util/ipc';
 import output from '@util/output';
-import { promises } from '@common/common';
-import pipelineCache from '@util/cache';
 
 import { filterTest } from './operations/filterTest';
 import { renameTest } from './operations/renameTest';
 import { handleClientMessage, runPipelineForFiles } from './operations/handler';
-import { getAllPipelines, upsertPipeline } from './data/pipeline.db';
 import { getStats } from './data/stats.db';
-import { db } from './data/database';
 import { handleAqueductMessage } from './operations/aqueduct';
 import eventEmitter from '@util/events';
 
@@ -28,19 +17,6 @@ const DATA_FILE = 'hUtil-fe.sqlite3';
 const dbFilePath = path.join(app.getPath('userData'), DATA_FILE);
 
 export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
-    ipcMain.handle(IpcMessageType.loadData, async (): Promise<Storage> => {
-        const pipelineList = await getAllPipelines(true);
-        const pipelines = pipelineList.reduce<Record<string, Pipeline>>((a, v) => {
-            a[v.id ?? 'unknown'] = v;
-            return a;
-        }, {});
-        pipelineCache.cachePipelines(pipelines);
-
-        return {
-            pipelines,
-        };
-    });
-
     ipcMain.handle(IpcMessageType.getStats, getStats);
 
     ipcMain.handle(IpcMessageType.aqueducts, (_e, msg) => handleAqueductMessage(msg));
@@ -134,23 +110,4 @@ export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
     });
 
     ipcMain.on(IpcMessageType.clientMessage, (_e, d: string[]) => handleClientMessage(d[0]));
-
-    ipcMain.handle(IpcMessageType.saveData, async (_e, data: Storage) => {
-        const pipelineList = Object.values(data.pipelines);
-
-        const currentPipelineIds: string[] = [];
-        await promises.each(pipelineList, async (pipeline) => {
-            await upsertPipeline(pipeline);
-            currentPipelineIds.push(pipeline.id!);
-        });
-
-        /** Remove others */
-        await db.pipeline.deleteMany({
-            where: {
-                uuid: {
-                    notIn: currentPipelineIds,
-                },
-            },
-        });
-    });
 };
