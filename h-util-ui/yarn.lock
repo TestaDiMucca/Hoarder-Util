@@ -1244,7 +1244,7 @@
   resolved "https://registry.npmjs.org/@types/ms/-/ms-0.7.34.tgz"
   integrity sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==
 
-"@types/node@*", "@types/node@^20.9.0":
+"@types/node@*":
   version "20.17.3"
   resolved "https://registry.npmjs.org/@types/node/-/node-20.17.3.tgz"
   integrity sha512-tSQrmKKatLDGnG92h40GD7FzUt0MjahaHwOME4VAFeeA/Xopayq5qLyQRy7Jg/pjgKIFBXuKcGhJo+UdYG55jQ==
@@ -1255,6 +1255,11 @@
   version "10.17.60"
   resolved "https://registry.npmjs.org/@types/node/-/node-10.17.60.tgz"
   integrity sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==
+
+"@types/node@^16.11.26":
+  version "16.18.119"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.119.tgz"
+  integrity sha512-ia7V9a2FnhUFfetng4/sRPBMTwHZUkPFY736rb1cg9AgG7MZdR97q7/nLR9om+sq5f1la9C857E0l/nrI0RiFQ==
 
 "@types/node@16.9.1":
   version "16.9.1"
@@ -2531,13 +2536,13 @@ electron-updater@^6.3.0:
     semver "^7.3.8"
     tiny-typed-emitter "^2.1.0"
 
-electron@^33.0.2:
-  version "33.0.2"
-  resolved "https://registry.npmjs.org/electron/-/electron-33.0.2.tgz"
-  integrity sha512-C2WksfP0COsMHbYXSJG68j6S3TjuGDrw/YT42B526yXalIlNQZ2GeAYKryg6AEMkIp3p8TUfDRD0+HyiyCt/nw==
+electron@^22.3.27:
+  version "22.3.27"
+  resolved "https://registry.npmjs.org/electron/-/electron-22.3.27.tgz"
+  integrity sha512-7Rht21vHqj4ZFRnKuZdFqZFsvMBCmDqmjetiMqPtF+TmTBiGne1mnstVXOA/SRGhN2Qy5gY5bznJKpiqogjM8A==
   dependencies:
     "@electron/get" "^2.0.0"
-    "@types/node" "^20.9.0"
+    "@types/node" "^16.11.26"
     extract-zip "^2.0.1"
 
 emittery@^0.13.1:

@@ -39,28 +39,6 @@ export const sendMessageToMain = (message: string) => {
     ipcRenderer.send(IpcMessageType.clientMessage, [message]);
 };
 
-/**
- * @deprecated
- */
-export const loadUserData = async () => {
-    const ipcRenderer = getIpcRenderer();
-
-    if (!ipcRenderer) return null;
-
-    return await ipcRenderer?.invoke<null, Storage>(IpcMessageType.loadData);
-};
-
-/**
- * @deprecated
- */
-export const loadStats = async () => {
-    const ipcRenderer = getIpcRenderer();
-
-    if (!ipcRenderer) return null;
-
-    return await ipcRenderer?.invoke<null, PipelineStatsPayload[]>(IpcMessageType.getStats);
-};
-
 /** Strip Vue stuff to be able to send objects */
 export const removeVueRefs = <T>(source: T): T => JSON.parse(JSON.stringify(source));
 

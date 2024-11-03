@@ -35,7 +35,7 @@
     "@types/jest": "^29.5.12",
     "@types/module-alias": "^2.0.4",
     "concurrently": "^7.6.0",
-    "electron": "^33.0.2",
+    "electron": "^22.3.27",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
     "electron-rebuild": "^3.2.9",

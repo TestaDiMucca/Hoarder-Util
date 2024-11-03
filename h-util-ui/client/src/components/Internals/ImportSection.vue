@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getIpcRenderer, loadUserData } from '@utils/helpers';
+import { getIpcRenderer } from '@utils/helpers';
 import { ref } from 'vue';
 import ImportExportDisplay from './ImportExportDisplay.vue';
 import PipelineImport from './PipelineImport.vue';

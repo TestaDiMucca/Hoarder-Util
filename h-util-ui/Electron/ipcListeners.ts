@@ -9,7 +9,6 @@ import output from '@util/output';
 import { filterTest } from './operations/filterTest';
 import { renameTest } from './operations/renameTest';
 import { handleClientMessage, runPipelineForFiles } from './operations/handler';
-import { getStats } from './data/stats.db';
 import { handleAqueductMessage } from './operations/aqueduct';
 import eventEmitter from '@util/events';
 
@@ -17,8 +16,6 @@ const DATA_FILE = 'hUtil-fe.sqlite3';
 const dbFilePath = path.join(app.getPath('userData'), DATA_FILE);
 
 export const addListenersToIpc = (ipcMain: Electron.IpcMain) => {
-    ipcMain.handle(IpcMessageType.getStats, getStats);
-
     ipcMain.handle(IpcMessageType.aqueducts, (_e, msg) => handleAqueductMessage(msg));
 
     ipcMain.handle(IpcMessageType.selectDirectory, async () => {
