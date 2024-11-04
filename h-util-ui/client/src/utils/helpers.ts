@@ -1,5 +1,4 @@
 import { IpcMessageType } from '@shared/common.constants';
-import { PipelineStatsPayload, Storage } from '@shared/common.types';
 import { VueStore } from './store';
 import { PageViews } from './types';
 import { models } from 'src/data/models';

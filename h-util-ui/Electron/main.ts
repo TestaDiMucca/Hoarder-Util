@@ -42,18 +42,8 @@ async function createWindow() {
     if (appBounds !== undefined && appBounds !== null) Object.assign(BrowserWindowOptions, appBounds);
     const mainWindow = new BrowserWindow(BrowserWindowOptions);
 
-    // and load the index.html of the app.
-    // win.loadFile("index.html");
-    // if (isDev) await mainWindow.loadURL('http://localhost:3000');
-    await mainWindow.loadFile(path.join(__dirname, 'index.html'));
-    // await mainWindow.loadURL(
-    //     isDev
-    //         ? 'http://localhost:3000'
-    //         : url.format({
-    //               pathname: path.join(__dirname, 'index.html'),
-    //               protocol: 'file:',
-    //           }),
-    // );
+    if (isDev) await mainWindow.loadURL('http://localhost:3000');
+    else await mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
     if (appBounds !== undefined && appBounds !== null && appBounds.width > width && appBounds.height > height)
         mainWindow.maximize();
