@@ -27,14 +27,8 @@
     "nightly:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI Nightly'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
     "prod:rename": "json -I -f package.json -e \"this.name='h-util-ui'\" && json -I -f package.json -e \"this.build.productName='H-Util UI'\" && json -I -f package.json -e \"this.build.appId='com.official-h-util-ui.app'\"",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
-    "sqlite-rebuild": "cd node_modules/better-sqlite3 && npm run build-release",
     "postinstall": "electron-builder install-app-deps",
     "up:win": "up_using_window.cmd",
-    "migrate": "npx prisma migrate dev --name",
-    "migrate:deploy": "npx prisma migrate deploy",
-    "prisma:studio": "npx prisma studio",
-    "prisma:generate": "npx prisma generate",
-    "rebuild-sqlite3": "electron-rebuild -f -w sqlite3",
     "packages:sync": "cd .. && cp ./packages/common/src/* ./h-util-ui/Electron/packages/common/ && cp ./packages/fileops/src/* ./h-util-ui/Electron/packages/fileops/"
   },
   "devDependencies": {
@@ -53,18 +47,17 @@
     "json": "^11.0.0",
     "nodemon": "^2.0.20",
     "prettier": "^3.3.3",
-    "prisma": "^5.19.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^4.9.4",
     "wait-on": "^7.0.1"
   },
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",
-    "@prisma/client": "^5.19.1",
     "colors": "^1.4.0",
     "dateformat": "^4.6.3",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
+    "electron-unhandled": "^5.0.0",
     "electron-updater": "^6.3.0",
     "exif": "^0.6.0",
     "ffmpeg-static": "^5.2.0",
@@ -72,6 +65,7 @@
     "jimp": "^0.22.12",
     "module-alias": "^2.2.3",
     "tesseract.js": "^5.1.0",
+    "uuid": "^10.0.0",
     "winston": "^3.14.2"
   },
   "workspaces": [
@@ -79,6 +73,7 @@
     "../packages/common"
   ],
   "type": "commonjs",
+  "repository": "https://github.com/TestaDiMucca/Hoarder-Util",
   "build": {
     "appId": "com.official-h-util-ui.app",
     "productName": "H-Util UI Nightly",
@@ -95,15 +90,10 @@
       "deleteAppDataOnUninstall": true
     },
     "files": [
-      "dist/**/*",
-      "../packages/**/*"
+      "dist/**/*"
     ],
     "extraResources": [
-      "defaults/**/*",
-      "../packages/**/*"
-    ],
-    "extraFiles": [
-      "../packages/**/*"
+      "defaults/**/*"
     ],
     "directories": {
       "buildResources": "assets",

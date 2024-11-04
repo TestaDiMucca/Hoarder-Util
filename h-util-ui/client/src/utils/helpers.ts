@@ -1,5 +1,4 @@
 import { IpcMessageType } from '@shared/common.constants';
-import { PipelineStatsPayload, Storage } from '@shared/common.types';
 import { VueStore } from './store';
 import { PageViews } from './types';
 import { models } from 'src/data/models';
@@ -37,28 +36,6 @@ export const sendMessageToMain = (message: string) => {
     if (!ipcRenderer) return;
 
     ipcRenderer.send(IpcMessageType.clientMessage, [message]);
-};
-
-/**
- * @deprecated
- */
-export const loadUserData = async () => {
-    const ipcRenderer = getIpcRenderer();
-
-    if (!ipcRenderer) return null;
-
-    return await ipcRenderer?.invoke<null, Storage>(IpcMessageType.loadData);
-};
-
-/**
- * @deprecated
- */
-export const loadStats = async () => {
-    const ipcRenderer = getIpcRenderer();
-
-    if (!ipcRenderer) return null;
-
-    return await ipcRenderer?.invoke<null, PipelineStatsPayload[]>(IpcMessageType.getStats);
 };
 
 /** Strip Vue stuff to be able to send objects */

@@ -55,7 +55,6 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
         });
     };
 
-    let currentFile = 'none';
     let handled = 0;
     let progress = 0;
 
@@ -79,7 +78,6 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
                 let handling = true;
 
                 const { fileName } = splitFileNameFromPath(fileWithMeta.filePath);
-                currentFile = fileName;
 
                 mainUpdate(fileName, progress);
 
