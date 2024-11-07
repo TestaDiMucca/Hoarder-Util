@@ -8,7 +8,7 @@ import {
     ProcessingRequest,
 } from '@shared/common.types';
 import { ProcessingError } from '@util/errors';
-import { addStat, updateTaskProgress } from '@util/ipc';
+import { addStat, sendFeLog, updateTaskProgress } from '@util/ipc';
 import { CommonContext, FileOptions, FileWithMeta, ModuleHandler } from '@util/types';
 import { addEventLogForReport, fileListToFileOptions } from './handler.helpers';
 import { MODULE_MAP } from './modules/moduleMap';
@@ -66,6 +66,8 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
     }, {});
 
     const onDoneMap: OnDoneMap = {};
+
+    sendFeLog(`Requested ${pipeline.name} with ${filePaths.length} files`);
 
     await withTimer(
         async () => {
@@ -136,6 +138,8 @@ export const runPipelineForFiles = async (params: ProcessingRequest) => {
         },
         (time) => {
             timeTaken = time;
+
+            sendFeLog(`Completed ${pipeline.name} in ${time}ms`);
         },
     );
 

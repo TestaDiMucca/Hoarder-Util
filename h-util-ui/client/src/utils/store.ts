@@ -16,6 +16,7 @@ export type VueStore = {
     selectedPipeline: Pipeline | null;
     taskQueue: TaskQueue;
     settings: AppSettings;
+    logs: string[];
 };
 
 /** See composition API for more info */
@@ -28,6 +29,7 @@ const state = reactive<VueStore>({
         cardStyle: CardStyles.standard,
         darkMode: true,
     },
+    logs: [],
 });
 
 const syncPipelineDataFromStorage = () => {
@@ -56,8 +58,13 @@ const toggleDarkMode = () => {
     state.settings.darkMode = !state.settings.darkMode;
 };
 
+const addLog = (message: string) => {
+    state.logs.unshift(message);
+};
+
 export default {
     state,
+    addLog,
     syncPipelineDataFromStorage,
     toggleDarkMode,
     setCardStyles,

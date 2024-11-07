@@ -44,6 +44,18 @@ watch(() => store.state.settings.darkMode, () => {
             <ImportSection />
           </template>
         </InternalsCards>
+        <InternalsCards>
+          <template #headers>
+            Logs
+          </template>
+          <template #content>
+            <div class="log-display">
+              <li v-for="log of store.state.logs">
+                {{ log }}
+              </li>
+            </div>
+          </template>
+        </InternalsCards>
       </section>
     </template>
   </PageLayout>
@@ -54,5 +66,9 @@ watch(() => store.state.settings.darkMode, () => {
   display: flex;
   flex-direction: column;
   gap: var(--spacer-gap);
+}
+
+.log-display {
+  max-height: 200px;
 }
 </style>
