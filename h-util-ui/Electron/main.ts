@@ -13,7 +13,7 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, screen } 
 import { isDev } from './config';
 import { appConfig } from './ElectronStore/Configuration';
 import output from './util/output';
-import { handleErrorMessage, registerMainWindow, sendRendererMessage } from './util/ipc';
+import { handleErrorMessage, registerMainWindow, sendFeLog, sendRendererMessage } from './util/ipc';
 import { addListenersToIpc } from './ipcListeners';
 
 async function createWindow() {
@@ -59,16 +59,9 @@ async function createWindow() {
         mainWindow.webContents.openDevTools();
     }
 
-    // dialog.showMessageBox(mainWindow, {
-    //     message: 'Test',
-    // });
-
     registerMainWindow(mainWindow);
 
-    sendRendererMessage({
-        type: 'message',
-        message: 'string',
-    });
+    sendFeLog('Initiated');
 }
 
 // This method will be called when Electron has finished

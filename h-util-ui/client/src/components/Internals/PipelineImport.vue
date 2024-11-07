@@ -40,6 +40,8 @@ const handleImport = () => {
     })
   })
 
+  store.syncPipelineDataFromStorage();
+
   reset();
 };
 

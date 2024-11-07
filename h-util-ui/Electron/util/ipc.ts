@@ -42,6 +42,14 @@ export const updateTaskProgress = (data: SpawnedTask) => {
     mainWindow.webContents.send(IpcMessageType.taskProgress, JSON.stringify(data));
 };
 
+/** Sends a front end internals log */
+export const sendFeLog = (message: string) => {
+    sendRendererMessage({
+        type: 'log',
+        message,
+    });
+};
+
 export const sendRendererMessage = (payload: RendererMessagePayload) =>
     new Promise<RendererMessage>((resolve, reject) => {
         if (!mainWindow) {
@@ -70,6 +78,8 @@ export const sendRendererMessage = (payload: RendererMessagePayload) =>
 
 export const handleErrorMessage = (message: string, stack?: string) => {
     logger.error(`[err] Error: ${message}`, stack);
+
+    sendFeLog(`[error] ${message}`);
 };
 
 /** @deprecated use sendRendererMessage */

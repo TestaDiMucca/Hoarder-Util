@@ -62,6 +62,9 @@ onMounted(() => {
           messageId: payload.messageId,
           pipeline: toRaw(pipeline),
         })
+      case 'log':
+        store.addLog(payload.message);
+        break;
       default:
     }
 

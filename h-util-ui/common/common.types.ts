@@ -218,4 +218,8 @@ export type RendererMessagePayload =
       }
     | {
           type: 'confirm';
+      }
+    | {
+          type: 'log';
+          message: string;
       };
