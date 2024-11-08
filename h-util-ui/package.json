@@ -76,7 +76,7 @@
   "repository": "https://github.com/TestaDiMucca/Hoarder-Util",
   "build": {
     "appId": "com.official-h-util-ui.app",
-    "productName": "H-Util UI Nightly",
+    "productName": "H-Util UI",
     "copyright": "Copyright © TdM",
     "publish": [
       {
@@ -91,6 +91,11 @@
     },
     "files": [
       "dist/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
+      "node_modules/ffmpeg-static/index.js",
+      "node_modules/ffmpeg-static/package.json"
     ],
     "extraResources": [
       "defaults/**/*"

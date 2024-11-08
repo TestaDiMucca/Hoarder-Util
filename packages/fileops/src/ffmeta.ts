@@ -7,12 +7,15 @@ const ffmpegCaller = require('fluent-ffmpeg');
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
 ffmpeg.setFfprobePath(ffprobePath);
 
+const ffmpegPath = require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked');
+ffmpeg.setFfmpegPath(ffmpegPath);
+
 /**
  * Get hash of existing metadata in a media obj
  */
-export const readTags = async (filePath: string): Promise<null | ffmpeg.FfprobeData> =>
+export const readTags = async (filePath: string): Promise<null | any> =>
     new Promise((resolve, reject) => {
-        ffmpeg.ffprobe(filePath, (err, meta) => (err ? reject(err) : resolve(meta)));
+        ffmpeg.ffprobe(filePath, (err: Error, meta: any) => (err ? reject(err) : resolve(meta)));
     });
 
 /**
