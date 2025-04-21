@@ -1,5 +1,5 @@
 import path from 'path';
-import { readdir } from 'fs/promises';
+import { readdir, stat } from 'fs/promises';
 import { promises } from '@common/common';
 import { AqueductMessage } from '@shared/common.types';
 import { runPipelineForFiles } from './handler';
@@ -21,16 +21,22 @@ export const handleAqueductMessage = async (message: AqueductMessage) => {
             const pipeline = response.type === 'pipelineData' ? response.pipeline : null;
 
             if (!pipeline) return;
-
             const directories: string[] = aqueduct.directories;
 
             await promises.each(directories, async (directory) => {
                 try {
-                    const filePaths = (await readdir(directory)).map((file) => path.join(directory, file));
+                    const dirContents = await readdir(directory);
+                    const filePaths = await Promise.all(
+                        dirContents.map(async (file) => {
+                            const fullPath = path.join(directory, file);
+                            const stats = await stat(fullPath);
+                            return stats.isFile() ? fullPath : null;
+                        }),
+                    );
 
                     await runPipelineForFiles({
                         pipeline,
-                        filePaths,
+                        filePaths: filePaths.filter((path): path is string => path !== null),
                     });
                 } catch (e) {
                     console.error(e);
