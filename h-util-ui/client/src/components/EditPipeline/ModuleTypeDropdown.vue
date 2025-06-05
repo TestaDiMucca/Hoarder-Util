@@ -24,6 +24,11 @@ const menuItems: MenuItem[] = [
     label: 'Dynamic renaming',
     onClick: handleModuleTypeSelect(ProcessingModuleType.dynamicRename)
   },
+  {
+    type: 'item',
+    label: 'Sanitize filename',
+    onClick: handleModuleTypeSelect(ProcessingModuleType.filenameSanitize)
+  },
   { type: 'separator' },
   {
     type: 'item',

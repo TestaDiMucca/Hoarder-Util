@@ -14,6 +14,7 @@ import dynamicRenameHandler from './dynamicRename.handler';
 import ruleFilterHandler from './ruleFilter.handler';
 import runPipelineHandler from './runPipeline.handler';
 import convertVideoHandler from './convertVideo.handler';
+import fileSanitize from './fileSanitize.handler';
 
 export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.datePrefix]: datePrefixHandler,
@@ -30,4 +31,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.branch]: null,
     [ProcessingModuleType.runPipeline]: runPipelineHandler,
     [ProcessingModuleType.videoConvert]: convertVideoHandler,
+    [ProcessingModuleType.filenameSanitize]: fileSanitize,
 };

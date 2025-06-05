@@ -1,13 +1,8 @@
-const makeFileSafe = (input: string) => input.replace(/[^a-zA-Z0-9 _.\-()]/g, '_');
-/**
- * Source: GPT ;)
- * @param filename Title from filename
- * @param metadataTitle
- * @returns
- */
+import { sanitizeStringForFilename } from '../handler.helpers';
+
 export const fileNameSafeTitleReplace = (filename: string, metadataTitle: string): string => {
-    const fileSafeFilename = makeFileSafe(filename);
-    const fileSafeTitle = makeFileSafe(metadataTitle);
+    const fileSafeFilename = sanitizeStringForFilename(filename);
+    const fileSafeTitle = sanitizeStringForFilename(metadataTitle);
 
     if (fileSafeTitle === metadataTitle) return filename; // No change needed
 

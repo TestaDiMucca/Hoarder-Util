@@ -12,6 +12,7 @@ import Rename from 'vue-material-design-icons/RenameBoxOutline.vue';
 import Branching from 'vue-material-design-icons/FamilyTree.vue';
 import Pipe from 'vue-material-design-icons/Pipe.vue';
 import VideoConvert from 'vue-material-design-icons/VideoSwitch.vue';
+import Sanitize from 'vue-material-design-icons/FormatClear.vue';
 
 import { ProcessingModuleType } from './types';
 import { VueComponent } from './util.types';
@@ -38,6 +39,7 @@ export const MODULE_ICONS: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.branch]: '🌳',
     [ProcessingModuleType.runPipeline]: '🪈',
     [ProcessingModuleType.videoConvert]: '📼',
+    [ProcessingModuleType.filenameSanitize]: '🧼',
 };
 
 export const MODULE_LABEL: Record<ProcessingModuleType, string> = {
@@ -55,6 +57,7 @@ export const MODULE_LABEL: Record<ProcessingModuleType, string> = {
     [ProcessingModuleType.branch]: 'Branching',
     [ProcessingModuleType.runPipeline]: 'Forward to Pipeline',
     [ProcessingModuleType.videoConvert]: 'Convert to mp4',
+    [ProcessingModuleType.filenameSanitize]: 'Sanitize filename',
 };
 
 /** Icon representation of the module operations */
@@ -73,6 +76,7 @@ export const MODULE_MATERIAL_ICONS: Record<ProcessingModuleType, VueComponent> =
     [ProcessingModuleType.branch]: Branching,
     [ProcessingModuleType.runPipeline]: Pipe,
     [ProcessingModuleType.videoConvert]: VideoConvert,
+    [ProcessingModuleType.filenameSanitize]: Sanitize,
 };
 
 /**
@@ -95,6 +99,7 @@ export const OPTION_LABELS: Record<ProcessingModuleType, string | null> = {
     [ProcessingModuleType.branch]: '-',
     [ProcessingModuleType.runPipeline]: 'Target pipeline',
     [ProcessingModuleType.videoConvert]: '-',
+    [ProcessingModuleType.filenameSanitize]: 'Replacement character',
 };
 
 export const OPTION_TOOLTIP: Partial<Record<ProcessingModuleType, string>> = {
@@ -120,6 +125,7 @@ export const getOptionsComponent = (moduleType: ProcessingModuleType) => {
         case ProcessingModuleType.runPipeline:
             return OptionsPipelineSelect;
         default:
+            // Provides a simple string input
             return OptionsStandard;
     }
 };

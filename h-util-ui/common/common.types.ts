@@ -1,6 +1,6 @@
 import { Rule } from './rules.types';
 
-/** Do not modify these, they shouldn't be user facing anymore */
+/** Do not modify the copy here; they shouldn't be user facing anymore */
 export enum ProcessingModuleType {
     datePrefix = 'Date Prefix',
     metadata = 'Metadata Tagging',
@@ -16,6 +16,7 @@ export enum ProcessingModuleType {
     branch = 'branch',
     runPipeline = 'runPipeline',
     videoConvert = 'Convert to mp4',
+    filenameSanitize = 'Sanitize Filename',
 }
 
 /** Options that work by switching on/off only */
