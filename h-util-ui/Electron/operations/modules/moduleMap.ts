@@ -30,4 +30,5 @@ export const MODULE_MAP: Record<ProcessingModuleType, ModuleHandler | null> = {
     [ProcessingModuleType.branch]: null,
     [ProcessingModuleType.runPipeline]: runPipelineHandler,
     [ProcessingModuleType.videoConvert]: convertVideoHandler,
+    [ProcessingModuleType.filenameSanitize]: null, // No handler yet
 };
