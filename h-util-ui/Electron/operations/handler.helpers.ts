@@ -170,3 +170,5 @@ const getRuleAttrsUsed = (
 
     return [...attrsUsed];
 };
+
+export const sanitizeStringForFilename = (input: string) => input.replace(/[^a-zA-Z0-9 _.\-()]/g, '_');
