@@ -10,6 +10,18 @@ import {
 } from '@common/fileops';
 import { ModuleHandler } from '@util/types';
 import { addEventLogForReport } from '../handler.helpers';
+import { fileNameSafeTitleReplace } from './nameTag.helpers';
+
+type TagReturnType = {
+    streams: unknown[];
+    format: {
+        tags: {
+            title?: string;
+            artist?: string;
+            album?: string;
+        };
+    };
+};
 
 const nameTagHandler: ModuleHandler = {
     handler: async ({ filePath }, opts) => {
@@ -21,7 +33,14 @@ const nameTagHandler: ModuleHandler = {
 
         const parsedTags = parseStringToTags(pattern, removeExt(fileName));
 
+        if (!parsedTags) return;
+
         await withUTimes(async () => {
+            const readTags = (await ffMeta.readTags(filePath)) as TagReturnType;
+            const existingTitle = readTags.format?.tags?.title || '';
+            const withMetaDataTitle = fileNameSafeTitleReplace(parsedTags.title, existingTitle);
+            parsedTags.title = withMetaDataTitle;
+
             await ffMeta.writeTags(filePath, { ...parsedTags });
             await replaceFile(filePath, getTempName(filePath));
         }, filePath);
