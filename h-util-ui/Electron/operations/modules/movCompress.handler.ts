@@ -1,3 +1,4 @@
+import { unlink } from 'fs/promises';
 import { parseNumber } from '@common/common';
 import {
     checkSupportedExt,
@@ -26,10 +27,21 @@ const movCompressHandler: ModuleHandler = {
         const { fileName } = splitFileNameFromPath(filePath);
 
         await ffMeta.compressVideo(filePath, parsedQuality, (progress) => opts.onProgress?.(`${fileName}`, progress));
-        await replaceFile(filePath, getTempName(filePath));
 
-        const sizeAfter = await getFileSize(filePath, 'number');
+        const tempFilePath = getTempName(filePath);
+
+        const sizeAfter = await getFileSize(tempFilePath, 'number');
         const reduced = sizeBefore - sizeAfter;
+
+        if (reduced < 0) {
+            // File got larger, so we don't replace it
+            output.out(`${fileName} bloated by ${reduced}b`);
+            addEventLogForReport(opts, fileName, 'failed compress', `${reduced}b`);
+            await unlink(tempFilePath);
+            return;
+        }
+
+        await replaceFile(filePath, tempFilePath);
 
         if (opts.context?.pipelineId) {
             addStat({
@@ -43,8 +55,7 @@ const movCompressHandler: ModuleHandler = {
             });
         }
 
-        if (reduced < 0) output.out(`${fileName} bloated by ${reduced}b`);
-        else output.log(`${fileName} reduced by ${reduced}b`);
+        output.log(`${fileName} reduced by ${reduced}b`);
 
         addEventLogForReport(opts, fileName, 'compressed', `${reduced}b`);
     },
