@@ -61,7 +61,7 @@ describe('sanitizeStringForFilename', () => {
     it('replaces consecutive special characters with multiple underscores', () => {
         const input = 'file佢話我中國豬嗰個死鬼佬.txt';
         const sanitized = sanitizeStringForFilename(input);
-        expect(sanitized).toEqual('file_.txt');
+        expect(sanitized).toEqual('file___________.txt');
     });
 
     it('does not modify strings without special characters', () => {

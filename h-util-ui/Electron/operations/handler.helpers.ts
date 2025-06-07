@@ -171,5 +171,9 @@ const getRuleAttrsUsed = (
     return [...attrsUsed];
 };
 
+/**
+ * We can't dedupe the replacement characters when they appear consecutively, as otherwise
+ * if the name tagging is run again, it won't recognize it as a sanitized version of the existing name.
+ */
 export const sanitizeStringForFilename = (input: string, replacement = '_') =>
-    input.replace(/[^a-zA-Z0-9 _.\-()']/g, replacement).replace(new RegExp(`${replacement}{2,}`, 'g'), replacement);
+    input.replace(/[^a-zA-Z0-9 _.\-()']/g, replacement);
