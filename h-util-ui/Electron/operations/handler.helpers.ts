@@ -171,5 +171,16 @@ const getRuleAttrsUsed = (
     return [...attrsUsed];
 };
 
+const allowedCharacters = '_.-() ';
+
 export const sanitizeStringForFilename = (input: string, replacement = '_') =>
-    input.replace(/[^a-zA-Z0-9 _.\-()]/g, replacement);
+    input.replace(
+        new RegExp(
+            `[^a-zA-Z0-9${allowedCharacters
+                .split('')
+                .map((char) => `\\${char}`)
+                .join('')}]`,
+            'g',
+        ),
+        replacement,
+    );

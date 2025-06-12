@@ -38,5 +38,7 @@
     "vetur.format.defaultFormatter.html": "none",
     // Set the default
     "editor.formatOnSave": true,
-    "cSpell.language": "en,it"
+    "cSpell.language": "en,it",
+    "jest.runMode": "on-demand",
+    "jest.jestCommandLine": "true"
 }

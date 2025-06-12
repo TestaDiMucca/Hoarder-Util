@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "build": "tsc && yarn build:front",
-    "test": "jest",
+    "test": "jest  --testPathPattern=*.spec.*",
     "watch": "nodemon --exec yarn serve:electron",
     "dev": "npm start",
     "start": "yarn nightly:rename && concurrently --names 'CLIENT-KUN,PACKARINO' --prefix-colors 'red,yellow' -k \"yarn serve:front\" \"yarn watch\"",

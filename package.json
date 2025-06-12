@@ -4,7 +4,7 @@
   "description": "Turns some common data operations into a CLI tool, to prevent needing various third party apps and utilities and configs. This includes:",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --testPathPattern=*.spec.*",
     "build": "tsc --build --verbose",
     "build:common": "npm run build --workspace ./packages/common",
     "build:fileops": "npm run build --workspace ./packages/fileops"
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.12",
+    "jest": "^30.0.0",
     "ts-node": "^10.9.2"
   }
 }
