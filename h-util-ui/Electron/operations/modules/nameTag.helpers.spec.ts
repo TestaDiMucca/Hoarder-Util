@@ -12,9 +12,9 @@ describe('fileNameSafeTitleReplace', () => {
     });
 
     it('returns metadataTitle if too many replacement characters', () => {
-        // filename has 6 underscores out of 12 chars (50%)
-        const result = fileNameSafeTitleReplace('a_b_c_d_e_f.txt', 'abcdef');
-        expect(result).toBe('abcdef');
+        // filename has 6 underscores out of 12 chars (40%)
+        const result = fileNameSafeTitleReplace('a_____b___c_d_e_f.txt', 'a?????b???c?d?e?f');
+        expect(result).toBe('a?????b???c?d?e?f');
     });
 
     it('replaces fileSafeTitle in filename with metadataTitle', () => {
