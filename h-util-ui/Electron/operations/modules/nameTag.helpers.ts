@@ -10,7 +10,7 @@ export const fileNameSafeTitleReplace = (filename: string, metadataTitle: string
 
     if (!fileSafeFilename.includes(fileSafeTitle)) return filename; // No match found
 
-    const replacementCharCount = (fileSafeFilename.match(new RegExp(replacementCharacter, 'g')) || []).length;
+    const replacementCharCount = (filename.match(new RegExp(replacementCharacter, 'g')) || []).length;
 
     if (filename.length > 10 && replacementCharCount / filename.length > 0.4) return metadataTitle; // Too many replacement characters
 
