@@ -4,6 +4,9 @@ import { ModuleHandler } from '@util/types';
 import { addEventLogForReport, sanitizeStringForFilename } from '../handler.helpers';
 import output from '@util/output';
 
+/** If replacement characters make up more than this threshold, check name duplication */
+const REPLACEMENT_THRESHOLD = 0.4;
+
 const fileSanitize: ModuleHandler = {
     handler: async ({ filePath }, opts) => {
         const { fileName, rootPath: _rootPath } = splitFileNameFromPath(filePath);
@@ -14,11 +17,15 @@ const fileSanitize: ModuleHandler = {
         let newPath = filePath.replace(fileName!, newName);
         let counter = 1;
 
+        const replacementCharCount = newName.split('').filter((char) => char === replacementCharacter).length;
+        const isOverThresholdReplacementChar = replacementCharCount / newName.length > REPLACEMENT_THRESHOLD;
+
         // Check if a file with the newPath already exists and modify the name if necessary
         while (
-            await fsAccess(newPath)
+            isOverThresholdReplacementChar &&
+            (await fsAccess(newPath)
                 .then(() => true)
-                .catch(() => false)
+                .catch(() => false))
         ) {
             const fileExtension = newName.includes('.') ? getExt(fileName) : '';
             const baseName = newName.replace(fileExtension, '');
